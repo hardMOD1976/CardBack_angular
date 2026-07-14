@@ -20,13 +20,14 @@ Domain Design
 - Product Release
 - Owned Figure
 
+- Domain Review
+- Prisma Schema
+- PostgreSQL
+
 ---
 
 ## Pending
 
-- Domain Review
-- Prisma Schema
-- PostgreSQL
 - Backend Architecture
 - REST API
 - Authentication
@@ -40,7 +41,7 @@ Domain Design
 
 Next milestone:
 
-Create the first Prisma schema.
+Create Backend.
 
 ---
 

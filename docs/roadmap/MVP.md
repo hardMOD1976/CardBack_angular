@@ -1,8 +1,8 @@
 ✅ Domain
 
-⬜ Prisma
+✅ Prisma
 
-⬜ PostgreSQL
+✅ PostgreSQL
 
 ⬜ NestJS
 

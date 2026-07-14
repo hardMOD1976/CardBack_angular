@@ -1,0 +1,181 @@
+# Example 001 - Luke Skywalker (1978)
+
+## Status
+
+🟡 Draft
+
+---
+
+# Purpose
+
+This document is a real-world domain study.
+
+Its purpose is not to define the data model, but to identify business concepts that may become domain entities, relationships or business rules.
+
+---
+
+# Character
+
+Luke Skywalker
+
+> Candidate Domain Entity:
+> Character
+
+---
+
+# Figure
+
+Luke Skywalker (Original Kenner 1978)
+
+Manufacturer:
+Kenner
+
+Release Year:
+1978
+
+> Candidate Domain Entities:
+> Figure
+> Manufacturer
+
+---
+
+# Product History
+
+Luke Skywalker was first made available through the **Early Bird Certificate Package** before the standard retail release.
+
+Later, it became part of the original "First 12" figures released by Kenner.
+
+> Open Questions:
+>
+> - Is "Early Bird" a Product Release?
+> - Is "First 12" a Collection?
+> - Are both simply marketing campaigns?
+> - Should these concepts belong to the catalog?
+
+---
+
+# Known Variations
+
+Hair Color
+
+- Brown Hair
+- Blonde Hair
+
+Lightsaber
+
+- Double-Telescoping Lightsaber
+- Standard Lightsaber
+
+> Candidate Domain Entity:
+> Variant
+>
+> Open Question:
+>
+> Is the telescoping saber a Variant or a Production Variant?
+
+---
+
+# Commercial Appearances
+
+The same figure was commercially available through multiple releases.
+
+Known appearances include:
+
+- Early Bird Certificate Package
+- Standard Carded Release
+- Sears 3-Pack
+- Hero Set
+- Promotional Multipacks
+
+> Open Questions:
+>
+> Does the catalog need a Product Release entity?
+>
+> Can the same Variant belong to multiple Product Releases?
+>
+> Should Multipacks be independent products?
+
+---
+
+# Accessories
+
+Known accessories include:
+
+- Lightsaber
+
+> Candidate Domain Entity:
+> Accessory
+
+---
+
+# Packaging
+
+Known packaging includes:
+
+- Carded
+- Early Bird Package
+- Multipack
+
+> Open Question:
+>
+> Is Packaging an entity or simply a property of a Product Release?
+
+---
+
+# Timeline
+
+1977
+↓
+
+Early Bird Certificate Package
+
+↓
+
+1978
+
+Original Carded Release
+
+↓
+
+Multipacks
+
+↓
+
+Hero Set
+
+---
+
+# Domain Concepts Identified
+
+Character
+
+Manufacturer
+
+Figure
+
+Variant
+
+Accessory
+
+Packaging (?)
+
+Product Release (?)
+
+Collection (?)
+
+Marketing Campaign (?)
+
+Multipack (?)
+
+Production Variant (?)
+
+---
+
+# Open Questions
+
+- Can a Figure exist in multiple Product Releases?
+- Is Packaging part of the Variant or the Product Release?
+- Should "First 12" be modeled?
+- How should promotional packs be represented?
+- Is a Multipack a Product or a Product Release?
+- How should production changes be represented?

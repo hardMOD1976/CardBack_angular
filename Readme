@@ -16,3 +16,23 @@ Future supported universes:
 Current phase
 
 ✅ Domain Design
+
+## Working Methodology
+
+This project is developed using a domain-first approach.
+
+Each domain entity is designed in two iterations:
+
+1. **Business Definition**
+   - Purpose
+   - Relationships
+   - Business Rules
+   - Examples
+
+2. **Technical Definition**
+   - Properties
+   - Constraints
+   - Data Types
+   - Persistence Model
+
+No implementation should begin until the business definition has been reviewed and approved.

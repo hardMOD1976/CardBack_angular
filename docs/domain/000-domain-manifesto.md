@@ -143,3 +143,18 @@ The following topics will be evaluated as the project evolves:
 - Social features
 
 These features must adapt to the domain, never redefine it.
+
+# Architectural Goal
+
+Figure Archive aims to become the reference platform for action figure collectors by combining:
+
+- Historical accuracy
+- Excellent user experience
+- High-quality catalog data
+- Personal collection management
+- Community contribution
+- Long-term maintainability
+
+Every design decision should move the project closer to this goal.
+
+The domain model is the product. The software is only its implementation.

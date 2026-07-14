@@ -54,7 +54,7 @@ An Owned Figure is NOT:
 | purchaseDate | No | Purchase date |
 | purchasePrice | No | Purchase price |
 | purchaseLocation | No | Seller or marketplace |
-| estimatedValue | No | Personal estimated value |
+| estimatedMarketValue | No |  Estimated market value |
 | storageLocation | No | Shelf, box, room, etc. |
 | personalRating | No | Collector rating |
 | notes | No | Personal notes |
@@ -75,7 +75,9 @@ An Owned Figure:
 
 ## Design Principles
 
-Every Owned Figure is unique.
+Every Owned Figure represents a unique physical collectible owned by a single Collector.
+
+Different collectors owning the same Product Release always have different Owned Figures.
 
 Two collectors owning the same Product Release still have different Owned Figures.
 
@@ -132,6 +134,10 @@ Future versions may support:
 - Trade history.
 - QR identification.
 - NFC tags.
+- Collection folders
+- Custom tags
+- Display status
+- Insurance value history
 
 ---
 

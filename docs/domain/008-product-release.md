@@ -1,37 +1,22 @@
 # Product Release
 
-The commercial distribution of a Variant.
-
-A Product Release defines how a Variant reached the market.
-
-Examples include:
-
-- Carded release
-- Boxed release
-- Multipack
-- Mail-away
-- Convention exclusive
-- Retail exclusive
-
-Product Releases define packaging, barcode, region and distribution.
-
-They do not modify the physical characteristics of a Variant.# Product Release
-
 ## Purpose
 
-Represents the commercial distribution of a Variant.
+Represents a specific commercial release of a Variant.
 
-A Product Release defines how and where a Variant was sold without modifying the physical collectible itself.
+A Product Release defines how a Variant was marketed and distributed to collectors.
+
+It represents packaging, regional distribution, retailer exclusives and promotional content, while preserving the physical identity of the Variant.
 
 ---
 
 ## Definition
 
-A Product Release represents a specific commercial release of a Variant.
-
-It defines packaging, distribution, region and retail information.
+A Product Release is the commercial representation of a Variant.
 
 Multiple Product Releases may exist for the same Variant.
+
+Each Product Release defines how collectors could acquire that collectible at retail or through promotional channels.
 
 ---
 
@@ -41,9 +26,10 @@ A Product Release:
 
 - Belongs to a single Variant.
 - Defines the commercial packaging.
-- Defines the distribution market.
-- Defines commercial identifiers such as barcodes.
-- Remains independent from collectors.
+- Defines the market or region.
+- Defines promotional inclusions.
+- Defines retailer exclusivity.
+- May define release dates.
 
 ---
 
@@ -66,14 +52,14 @@ A Product Release is NOT:
 | id | Yes | Internal unique identifier |
 | variantId | Yes | Parent Variant |
 | name | Yes | Commercial release name |
-| packagingType | No | Card, Box, Multipack, Mail-away, etc. |
-| region | No | Market or country |
+| packagingType | No | Card, Box, Window Box, Bagged... |
+| region | No | US, Europe, Canada, Japan... |
 | language | No | Packaging language |
+| retailer | No | Exclusive retailer (if applicable) |
+| releaseDate | No | Official release date |
 | barcode | No | UPC / EAN |
-| releaseDate | No | Commercial release date |
-| retailer | No | Exclusive retailer |
-| wave | No | Release wave |
 | notes | No | Additional release information |
+| defaultImage | No | Representative packaging image |
 
 ---
 
@@ -82,7 +68,7 @@ A Product Release is NOT:
 A Product Release:
 
 - Belongs to one Variant.
-- Can be owned by many Collectors through Owned Figures.
+- Can have many Owned Figures.
 
 ---
 
@@ -90,34 +76,47 @@ A Product Release:
 
 Typical examples include:
 
-- Different packaging.
-- Different barcode.
+- New cardback design.
+- New box artwork.
 - Different language.
-- Different country.
-- Retail exclusive.
-- Convention exclusive.
+- Different barcode.
+- Regional packaging.
+- Retailer exclusive.
+- Promotional insert.
 - Multipack release.
 - Mail-away release.
-- Anniversary packaging.
-- Promotional packaging.
+
+---
+
+## What does NOT create a new Product Release?
+
+The following differences do NOT create a new Product Release:
+
+- Paint changes.
+- Sculpt revisions.
+- Mold changes.
+- Different accessories.
+- Factory production changes.
+
+Those belong to Variants.
 
 ---
 
 ## Design Principles
 
-Product Releases define commercial distribution.
+A Product Release represents how a collectible reached the market.
 
-They never define the physical identity of the collectible.
+Removing the packaging should never change the identity of the Product Release's Variant.
 
 ---
 
 ## Examples
 
-Luke Skywalker (VC13)
+### Luke Skywalker (VC13)
 
 Variant:
 
-Brown Hair
+- Brown Hair
 
 Product Releases:
 
@@ -125,7 +124,21 @@ Product Releases:
 - Canadian Card
 - Tri-Logo
 - Toys R Us Exclusive
-- Convention Exclusive
+
+---
+
+### Darth Vader
+
+Variant:
+
+- Standard Release
+
+Product Releases:
+
+- 12 Back
+- 20 Back
+- Empire Card
+- Return of the Jedi Card
 
 ---
 
@@ -133,16 +146,17 @@ Product Releases:
 
 Future versions may support:
 
-- MSRP
-- Production quantities
-- Release status
-- Distribution timeline
-- Market availability
+- Release waves.
+- MSRP.
+- Distribution countries.
+- Production quantities.
+- Packaging revisions.
+- Historical market availability.
 
 ---
 
 ## Open Questions
 
-- Should retailer exclusives become their own entity?
-- Should release waves be modeled independently?
-- Should packaging artwork have its own gallery?
+- Should Release Wave become its own entity?
+- Should packaging types become an enum or a dedicated entity?
+- Should promotional campaigns be modeled separately?

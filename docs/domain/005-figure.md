@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Represents the canonical design of a collectible within a specific Line.
+Represents the canonical collectible product within a specific Line.
 
 A Figure defines the collectible independently of packaging, distribution, ownership or physical condition.
 
@@ -31,6 +31,7 @@ A Figure:
 - Defines the collectible's canonical identity.
 - Groups all physical Variants of that collectible.
 - Remains independent from packaging, country and ownership.
+- Represents the collectible independently from its commercial distribution.
 
 ---
 
@@ -54,9 +55,8 @@ A Figure is NOT:
 | id | Yes | Internal unique identifier |
 | characterId | Yes | Parent Character |
 | lineId | Yes | Parent Line |
-| officialName | Yes | Official catalog name |
+| name | Yes | Official catalog name |
 | code | No | Manufacturer catalog code (e.g. VC13) |
-| releaseYear | No | First release year |
 | description | No | Short catalog description |
 | defaultImage | No | Primary catalog image |
 

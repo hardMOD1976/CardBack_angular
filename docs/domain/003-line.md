@@ -2,7 +2,9 @@
 
 ## Purpose
 
-Represents an official commercial product line within a Franchise.
+Represents an official commercial collectible line within a Franchise.
+
+A Line defines the commercial identity under which a manufacturer releases collectibles during a specific period.
 
 A Line groups together all collectibles released under the same commercial identity, branding and packaging style.
 
@@ -24,7 +26,7 @@ A Line:
 
 - Belongs to a single Franchise.
 - Has an official commercial name.
-- Groups Figures and Vehicles sharing the same branding.
+- Groups Figures and Collectibles sharing the same branding.
 - Exists during a specific commercial period.
 - May continue for many years with multiple release waves.
 
@@ -56,6 +58,7 @@ A Line is NOT:
 | scale | No | Primary scale (3.75", 6", etc.) |
 | logo | No | Official line logo |
 | description | No | Short description |
+| status | No | Active / Discontinued |
 
 ---
 

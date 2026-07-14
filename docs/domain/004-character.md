@@ -55,7 +55,6 @@ A Character is NOT:
 | species | No | Character species |
 | homeworld | No | Planet or place of origin |
 | affiliation | No | Faction or organization |
-| firstAppearance | No | First appearance in canon |
 | description | No | Short biography |
 | image | No | Representative catalog image |
 
@@ -120,6 +119,7 @@ Future versions may support:
 - Character groups
 - Canon / Legends information
 - Timeline appearances
+- Add  'status' as attribute
 
 ---
 
@@ -127,4 +127,4 @@ Future versions may support:
 
 - Should alternate identities become separate Characters?
 - Should generic troops (Stormtrooper, Clone Trooper, Battle Droid...) be treated as Characters?
-- Should creatures be modeled as Characters or as a separate entity?
+- Should Characters and Vehicles eventually inherit from a common Collectible Subject?

@@ -21,13 +21,13 @@ Examples:
 - G.I. Joe
 - Marvel Legends
 
-A franchise contains one or more product lines.
+A franchise defines one or more official collectible lines.
 
 ---
 
 # Manufacturer
 
-The company that produced the figure.
+The company responsible for manufacturing collectible products.
 
 Examples:
 - Kenner
@@ -41,17 +41,19 @@ A manufacturer can produce multiple product lines.
 
 # Line
 
-A commercial collection released by a manufacturer.
+An official commercial product line released under a franchise.
+
+A line defines a family of collectibles sharing the same branding, packaging style and commercial identity.
 
 Examples:
+
 - The Vintage Collection
-- Black Series
 - Power of the Force
-- The Legacy Collection
+- Black Series
+- Masterverse
+- Origins
 
-A line contains many figures.
-
----
+A line contains figures and vehicles.
 
 # Character
 
@@ -68,7 +70,11 @@ A character may appear in multiple product lines.
 
 # Figure
 
-The conceptual collectible.
+A physical representation of a Character within a specific Line.
+
+A Figure exists independently from packaging, ownership or condition.
+
+A Figure may have one or more Variants.
 
 It represents the product independently of its packaging, condition or owner.
 
@@ -83,7 +89,11 @@ A figure may have one or more variants.
 
 # Variant
 
-A specific commercial release of a figure.
+A physical variation of the same Figure.
+
+Variants differ because of changes in sculpt, paint, accessories, mold, production or other physical characteristics.
+
+Commercial packaging and distribution belong to Product Releases, not Variants.
 
 Variants may differ by:
 
@@ -217,7 +227,7 @@ They are historical snapshots.
 
 A UPC, EAN or similar identifier assigned to a specific variant.
 
-Barcodes belong to variants, not figures.
+Barcodes belong to Product Releases.
 
 ---
 
@@ -236,6 +246,8 @@ It is never manually edited.
 The complete database of collectible information.
 
 The catalog exists independently of users.
+
+The catalog is immutable from the collector's perspective.
 
 It contains franchises, manufacturers, lines, figures and variants.
 

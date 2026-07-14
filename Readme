@@ -36,3 +36,12 @@ Each domain entity is designed in two iterations:
    - Persistence Model
 
 No implementation should begin until the business definition has been reviewed and approved.
+
+## Development Environment
+
+- Node.js 22 LTS
+- npm 10+
+- PostgreSQL 17
+- Prisma 6.x
+- NestJS 11
+- Angular 20

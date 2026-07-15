@@ -2,15 +2,20 @@
 
 ## Current Phase
 
-Domain Design
+Backend Foundation
 
 ---
 
 ## Completed
 
+### Vision
+
 - Project Vision
-- Glossary
-- Domain Principles
+- MVP Scope
+- Architecture Decision Records (ADR)
+
+### Domain
+
 - Manufacturer
 - Franchise
 - Line
@@ -20,35 +25,51 @@ Domain Design
 - Product Release
 - Owned Figure
 
-- Domain Review
-- Prisma Schema
-- PostgreSQL
+### Architecture
+
+- System Overview
+- Backend Architecture
+- Frontend Architecture
+- Deployment Strategy
+- API Guidelines
+
+### Infrastructure
+
+- Repository restructured
+- backend/ and frontend/ separation
+- PostgreSQL database (Neon)
+- Prisma installed
+- Prisma schema completed
+- Initial migration executed
+- Prisma Client generated
+- NestJS application created
+- Backend running successfully
 
 ---
 
 ## Pending
 
-- Backend Architecture
-- REST API
-- Authentication
-- Angular Workspace
+### Backend
+
+- PrismaModule
+- First REST endpoint
+- Manufacturer module
+- Seed data
+- Swagger
+
+### Frontend
+
+- Angular workspace
 - Design System
-- Branding
+- Authentication
+- UI Foundation
 
 ---
 
-## Current Decision
+## Current Milestone
 
-Next milestone:
+Backend development begins.
 
-Create Backend.
+First objective:
 
----
-
-## Important Architectural Decisions
-
-- Packaging never defines a Figure.
-- Variant represents physical changes.
-- Product Release represents commercial distribution.
-- Catalog data and collector data are always separated.
-- MVP scope is Action Figures and Vehicles only.
+Manufacturer CRUD.

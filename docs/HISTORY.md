@@ -1,11 +1,44 @@
-2026-07-14
+# History
 
-Domain model completed.
+---
 
-Major decision:
+## 2026-07-14
 
-Product Release separated from Variant.
+### Domain Model Completed
 
-Reason:
+Major decisions:
 
-Packaging must never define the collectible.
+- Figure became the canonical collectible entity.
+- Variant represents physical differences.
+- Product Release represents commercial distribution.
+- Owned Figure stores collector-specific information.
+- Packaging never defines a Figure.
+
+Infrastructure:
+
+- Prisma installed.
+- PostgreSQL database created.
+- Initial migration executed.
+
+---
+
+## 2026-07-15
+
+### Backend Foundation
+
+Repository reorganized:
+
+- backend/
+- frontend/
+
+NestJS created.
+
+Prisma integrated with PostgreSQL.
+
+First migration successfully applied.
+
+Backend server running locally.
+
+Next milestone:
+
+Connect NestJS with Prisma and implement the first REST module.

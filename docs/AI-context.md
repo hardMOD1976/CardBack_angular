@@ -1,40 +1,59 @@
-Project Name:
-Figure Archive
+# Figure Archive
 
-Goal:
-Build the best action figure cataloging platform.
+## Goal
 
-Current Phase:
-Domain Modeling
+Build the best action figure cataloging platform for collectors.
 
-Core Domain:
+The platform separates immutable catalog data from personal collection data, providing a scalable foundation for collectors, contributors and future community features.
 
-Manufacturer
+---
 
-Franchise
+## Current Phase
 
-Line
+Backend Foundation
 
-Character
+---
 
-Figure
+## Core Domain
 
-Variant
+- Manufacturer
+- Franchise
+- Line
+- Character
+- Figure
+- Variant
+- Product Release
+- Owned Figure
 
-Product Release
+---
 
-Owned Figure
+## Golden Rules
 
-Golden Rules:
+- Packaging never defines a Figure.
+- Variants represent physical differences.
+- Product Releases represent commercial distributions.
+- Collector data never modifies catalog data.
+- A Figure represents the collectible itself.
+- An Owned Figure represents a collector's physical copy.
 
-Packaging never defines a Figure.
+---
 
-Variants are physical differences.
+## Current Architecture
 
-Product Releases are commercial distributions.
+Repository
 
-Collector data never modifies catalog data.
+- backend/
+  - NestJS
+  - Prisma ORM
+  - PostgreSQL (Neon)
 
-Current Next Step:
+- frontend/
+  - (planned) Angular
 
-Generate the first Prisma schema.
+---
+
+## Current Next Step
+
+Connect NestJS with Prisma by creating the application's PrismaModule.
+
+This will become the single entry point for database access throughout the backend.

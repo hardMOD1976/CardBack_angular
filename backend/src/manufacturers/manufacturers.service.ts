@@ -3,12 +3,9 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class ManufacturersService {
+  constructor(private prisma: PrismaService) {}
 
-  constructor(
-    private readonly prisma: PrismaService,
-  ) {}
-
-  async findAll() {
+  findAll() {
     return this.prisma.manufacturer.findMany({
       orderBy: {
         name: 'asc',
@@ -16,4 +13,11 @@ export class ManufacturersService {
     });
   }
 
+  findOne(id: string) {
+    return this.prisma.manufacturer.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
 }

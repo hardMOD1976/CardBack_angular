@@ -1,5 +1,6 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ManufacturersService } from './manufacturers.service';
+import { CreateManufacturerDto } from './dto/create-manufacturer.dto';
 
 @Controller('manufacturers')
 export class ManufacturersController {
@@ -14,4 +15,10 @@ export class ManufacturersController {
   findOne(@Param('id') id: string) {
     return this.manufacturersService.findOne(id);
   }
+
+  @Post()
+  create(@Body() createManufacturerDto: CreateManufacturerDto) {
+    return this.manufacturersService.create(createManufacturerDto);
+  }
+
 }

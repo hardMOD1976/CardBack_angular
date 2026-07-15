@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreateManufacturerDto } from './dto/create-manufacturer.dto';
 
 @Injectable()
 export class ManufacturersService {
@@ -20,4 +21,11 @@ export class ManufacturersService {
       },
     });
   }
+
+async create(createManufacturerDto: CreateManufacturerDto) {
+  return this.prisma.manufacturer.create({
+    data: createManufacturerDto,
+  });
+}
+
 }

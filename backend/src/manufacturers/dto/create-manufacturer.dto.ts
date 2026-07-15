@@ -8,7 +8,7 @@ import {
 export class CreateManufacturerDto {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  name!: string;
 
   @IsOptional()
   @IsInt()

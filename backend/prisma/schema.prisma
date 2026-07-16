@@ -14,16 +14,21 @@ datasource db {
 }
 
 model Manufacturer {
-  id            String   @id @default(cuid())
-  name          String   @unique
-  foundedYear   Int?
-  dissolvedYear Int?
-  country       String?
+  id             String   @id @default(cuid())
+  name           String   @unique
 
-  lines         Line[]
+  foundedYear    Int?
+  dissolvedYear  Int?
+  country        String?
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  deletedAt      DateTime?
+
+  lines          Line[]
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([name])
 }
 
 model Franchise {
@@ -33,6 +38,8 @@ model Franchise {
   firstAppearance Int?
   description     String?
   logo            String?
+
+  deletedAt DateTime?
 
   lines           Line[]
   characters Character[]

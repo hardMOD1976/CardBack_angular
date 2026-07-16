@@ -34,6 +34,8 @@ export class FranchisesController {
     return this.franchisesService.create(createFranchiseDto);
   }
 
+  // prova watcher
+
   @Put(':id')
   update(
     @Param('id') id: string,

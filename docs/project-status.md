@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Backend Foundation
+Backend Development
 
 ---
 
@@ -25,25 +25,42 @@ Backend Foundation
 - Product Release
 - Owned Figure
 
-### Architecture
-
-- System Overview
-- Backend Architecture
-- Frontend Architecture
-- Deployment Strategy
-- API Guidelines
-
 ### Infrastructure
 
 - Repository restructured
 - backend/ and frontend/ separation
-- PostgreSQL database (Neon)
-- Prisma installed
+- PostgreSQL (Neon)
+- Prisma ORM
 - Prisma schema completed
-- Initial migration executed
-- Prisma Client generated
-- NestJS application created
-- Backend running successfully
+- Initial migration
+- Prisma Client
+- NestJS application
+- ValidationPipe
+- Prisma Exception Filter
+- Soft Delete infrastructure
+
+### Backend
+
+#### Manufacturer
+
+- CRUD
+- DTO validation
+- Soft Delete
+- Prisma integration
+
+#### Franchise
+
+- CRUD
+- DTO validation
+- Soft Delete
+
+---
+
+## In Progress
+
+### Backend
+
+- Line module
 
 ---
 
@@ -51,11 +68,15 @@ Backend Foundation
 
 ### Backend
 
-- PrismaModule
-- First REST endpoint
-- Manufacturer module
+- Character
+- Figure
+- Variant
+- Product Release
+- Owned Figure
+- Authentication
 - Seed data
 - Swagger
+- Testing
 
 ### Frontend
 
@@ -68,8 +89,10 @@ Backend Foundation
 
 ## Current Milestone
 
-Backend development begins.
+Implement relational modules.
 
-First objective:
+Current focus:
 
-Manufacturer CRUD.
+Line module
+
+This module introduces the first foreign-key relationships in the API.

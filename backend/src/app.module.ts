@@ -5,12 +5,14 @@ import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { ManufacturersModule } from './manufacturers/manufacturers.module';
 import { FranchisesModule } from './franchises/franchises.module';
+import { LinesModule } from './lines/lines.module';
 
 @Module({
   imports: [
     PrismaModule,
     ManufacturersModule,
-    FranchisesModule
+    FranchisesModule,
+    LinesModule
   ],
   controllers: [AppController],
   providers: [AppService],

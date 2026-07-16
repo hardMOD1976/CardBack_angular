@@ -10,7 +10,7 @@ The platform separates immutable catalog data from personal collection data, pro
 
 ## Current Phase
 
-Backend Foundation
+Backend Development
 
 ---
 
@@ -43,17 +43,42 @@ Backend Foundation
 Repository
 
 - backend/
-  - NestJS
+  - NestJS 11
   - Prisma ORM
   - PostgreSQL (Neon)
 
 - frontend/
-  - (planned) Angular
+  - Angular (planned)
+
+---
+
+## Backend Progress
+
+Completed modules:
+
+- Manufacturer (CRUD + Soft Delete)
+- Franchise (CRUD + Soft Delete)
+
+Current module:
+
+- Line
+
+Shared infrastructure:
+
+- PrismaModule
+- ValidationPipe
+- Prisma Exception Filter
+- Soft Delete pattern
 
 ---
 
 ## Current Next Step
 
-Connect NestJS with Prisma by creating the application's PrismaModule.
+Implement the Line module.
 
-This will become the single entry point for database access throughout the backend.
+This is the first module that introduces relationships between entities:
+
+- Manufacturer → Line
+- Franchise → Line
+
+It will become the template for the remaining relational modules.

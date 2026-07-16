@@ -51,7 +51,7 @@ model Franchise {
 }
 
 model Line {
-  id             String   @id @default(cuid())
+  id             String @id @default(cuid())
   name           String
 
   startYear      Int?
@@ -69,8 +69,12 @@ model Line {
 
   figures        Figure[]
 
+  deletedAt      DateTime?
+
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+
+  @@unique([manufacturerId, name])
 
   @@index([name])
   @@index([manufacturerId])

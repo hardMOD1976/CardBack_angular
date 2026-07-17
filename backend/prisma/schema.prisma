@@ -122,6 +122,8 @@ model Figure {
 
   variants       Variant[]
 
+  deletedAt DateTime?
+
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -143,6 +145,8 @@ model Variant {
   figure         Figure @relation(fields: [figureId], references: [id])
 
   productReleases ProductRelease[]
+
+  deletedAt DateTime?
 
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -169,6 +173,8 @@ model ProductRelease {
   variant         Variant @relation(fields: [variantId], references: [id])
 
   ownedFigures    OwnedFigure[]
+
+  deletedAt DateTime?
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -203,6 +209,8 @@ model OwnedFigure {
   collector             Collector @relation(fields: [collectorId], references: [id])
   productRelease        ProductRelease @relation(fields: [productReleaseId], references: [id])
 
+  deletedAt   DateTime?
+
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
@@ -223,6 +231,8 @@ model Collector {
   avatar        String?
 
   ownedFigures  OwnedFigure[]
+
+  deletedAt   DateTime?
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

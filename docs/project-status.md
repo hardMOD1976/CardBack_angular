@@ -23,6 +23,7 @@ Backend Development
 - Figure
 - Variant
 - Product Release
+- Collector
 - Owned Figure
 
 ### Infrastructure
@@ -38,6 +39,7 @@ Backend Development
 - ValidationPipe
 - Prisma Exception Filter
 - Soft Delete infrastructure
+- Relational validation infrastructure
 
 ### Backend
 
@@ -46,7 +48,6 @@ Backend Development
 - CRUD
 - DTO validation
 - Soft Delete
-- Prisma integration
 
 #### Franchise
 
@@ -54,13 +55,56 @@ Backend Development
 - DTO validation
 - Soft Delete
 
----
+#### Line
 
-## In Progress
+- CRUD
+- DTO validation
+- Soft Delete
+- Manufacturer validation
+- Franchise validation
 
-### Backend
+#### Character
 
-- Line module
+- CRUD
+- DTO validation
+- Soft Delete
+- Franchise validation
+
+#### Figure
+
+- CRUD
+- DTO validation
+- Soft Delete
+- Character validation
+- Line validation
+
+#### Variant
+
+- CRUD
+- DTO validation
+- Soft Delete
+- Figure validation
+
+#### Product Release
+
+- CRUD
+- DTO validation
+- Soft Delete
+- Variant validation
+
+#### Collector
+
+- CRUD
+- DTO validation
+- Soft Delete
+
+#### Owned Figure
+
+- CRUD
+- DTO validation
+- Soft Delete
+- Collector validation
+- Product Release validation
 
 ---
 
@@ -68,15 +112,14 @@ Backend Development
 
 ### Backend
 
-- Character
-- Figure
-- Variant
-- Product Release
-- Owned Figure
-- Authentication
-- Seed data
 - Swagger
+- API documentation
+- Initial Seed
+- Authentication
 - Testing
+- Pagination
+- Filtering
+- Search
 
 ### Frontend
 
@@ -89,10 +132,8 @@ Backend Development
 
 ## Current Milestone
 
-Implement relational modules.
+Backend domain completed.
 
-Current focus:
+Next objective:
 
-Line module
-
-This module introduces the first foreign-key relationships in the API.
+Expose and document the API using Swagger, validate the complete REST interface, and prepare the backend for Angular integration.

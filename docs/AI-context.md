@@ -23,6 +23,7 @@ Backend Development
 - Figure
 - Variant
 - Product Release
+- Collector
 - Owned Figure
 
 ---
@@ -58,10 +59,13 @@ Completed modules:
 
 - Manufacturer (CRUD + Soft Delete)
 - Franchise (CRUD + Soft Delete)
-
-Current module:
-
-- Line
+- Line (CRUD + Soft Delete + relational validation)
+- Character (CRUD + Soft Delete + relational validation)
+- Figure (CRUD + Soft Delete + relational validation)
+- Variant (CRUD + Soft Delete + relational validation)
+- Product Release (CRUD + Soft Delete + relational validation)
+- Collector (CRUD + Soft Delete)
+- Owned Figure (CRUD + Soft Delete + relational validation)
 
 Shared infrastructure:
 
@@ -69,16 +73,19 @@ Shared infrastructure:
 - ValidationPipe
 - Prisma Exception Filter
 - Soft Delete pattern
+- Relational validation
+- Prisma Studio workflow
 
 ---
 
 ## Current Next Step
 
-Implement the Line module.
+The complete backend domain is implemented.
 
-This is the first module that introduces relationships between entities:
+Next milestone:
 
-- Manufacturer → Line
-- Franchise → Line
-
-It will become the template for the remaining relational modules.
+- Integrate Swagger
+- Document the REST API
+- Review endpoint consistency
+- Create initial seed data
+- Prepare the backend for Angular integration

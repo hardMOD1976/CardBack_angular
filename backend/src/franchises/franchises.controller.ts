@@ -7,14 +7,21 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+
 import { FranchisesService } from './franchises.service';
 import { CreateFranchiseDto } from './dto/create-franchise.dto';
 import { UpdateFranchiseDto } from './dto/update-franchise.dto';
+
 import {
-  ApiTags,
+  ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
-  ApiResponse,
   ApiParam,
+  ApiTags,
 } from '@nestjs/swagger';
 
 @ApiTags('Franchises')
@@ -28,10 +35,13 @@ export class FranchisesController {
     summary: 'Get all franchises',
     description:
       'Returns all active franchises ordered alphabetically.',
+    operationId: 'findAllFranchises',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Franchises retrieved successfully.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Get()
   findAll() {
@@ -40,19 +50,22 @@ export class FranchisesController {
 
   @ApiOperation({
     summary: 'Get franchise by id',
-    description: 'Returns a single franchise.',
+    description:
+      'Returns an active franchise by its identifier.',
+    operationId: 'findFranchiseById',
   })
   @ApiParam({
     name: 'id',
-    description: 'Franchise identifier',
+    description: 'Franchise identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Franchise found.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Franchise not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -61,51 +74,60 @@ export class FranchisesController {
 
   @ApiOperation({
     summary: 'Create franchise',
-    description: 'Creates a new franchise in the catalog.',
+    description:
+      'Creates a new franchise in the catalog.',
+    operationId: 'createFranchise',
   })
-  @ApiResponse({
-    status: 201,
+  @ApiCreatedResponse({
     description: 'Franchise created successfully.',
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     description: 'Validation error.',
   })
-  @ApiResponse({
-    status: 409,
+  @ApiConflictResponse({
     description: 'Franchise already exists.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Post()
   create(
-    @Body() createFranchiseDto: CreateFranchiseDto,
+    @Body()
+    createFranchiseDto: CreateFranchiseDto,
   ) {
     return this.franchisesService.create(createFranchiseDto);
   }
 
   @ApiOperation({
     summary: 'Update franchise',
-    description: 'Updates an existing franchise.',
+    description:
+      'Updates an existing franchise.',
+    operationId: 'updateFranchise',
   })
   @ApiParam({
     name: 'id',
-    description: 'Franchise identifier',
+    description: 'Franchise identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Franchise updated successfully.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiBadRequestResponse({
+    description: 'Validation error.',
+  })
+  @ApiNotFoundResponse({
     description: 'Franchise not found.',
   })
-  @ApiResponse({
-    status: 409,
+  @ApiConflictResponse({
     description: 'Duplicate franchise name.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Put(':id')
   update(
     @Param('id') id: string,
-    @Body() updateFranchiseDto: UpdateFranchiseDto,
+    @Body()
+    updateFranchiseDto: UpdateFranchiseDto,
   ) {
     return this.franchisesService.update(
       id,
@@ -116,19 +138,21 @@ export class FranchisesController {
   @ApiOperation({
     summary: 'Soft delete franchise',
     description:
-      'Marks a franchise as deleted without removing it from the database.',
+      'Soft deletes a franchise by setting its deletedAt timestamp.',
+    operationId: 'deleteFranchise',
   })
   @ApiParam({
     name: 'id',
-    description: 'Franchise identifier',
+    description: 'Franchise identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Franchise deleted successfully.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Franchise not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Delete(':id')
   remove(@Param('id') id: string) {

@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,6 +12,7 @@ datasource db {
 
 model Manufacturer {
   id             String   @id @default(cuid())
+
   name           String   @unique
 
   foundedYear    Int?
@@ -33,16 +31,18 @@ model Manufacturer {
 
 model Franchise {
   id              String   @id @default(cuid())
-  name            String
+
+  name            String   @unique
+
   owner           String?
   firstAppearance Int?
   description     String?
   logo            String?
 
-  deletedAt DateTime?
+  deletedAt       DateTime?
 
   lines           Line[]
-  characters Character[]
+  characters      Character[]
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -51,7 +51,8 @@ model Franchise {
 }
 
 model Line {
-  id             String @id @default(cuid())
+  id             String   @id @default(cuid())
+
   name           String
 
   startYear      Int?
@@ -83,6 +84,7 @@ model Line {
 
 model Character {
   id            String   @id @default(cuid())
+
   name          String
 
   species       String?
@@ -93,14 +95,16 @@ model Character {
 
   franchiseId   String
 
-  franchise      Franchise @relation(fields: [franchiseId], references: [id])
+  franchise     Franchise @relation(fields: [franchiseId], references: [id])
 
-  figures        Figure[]
+  figures       Figure[]
 
-  deletedAt DateTime?
+  deletedAt     DateTime?
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([franchiseId, name])
 
   @@index([name])
   @@index([franchiseId])
@@ -117,15 +121,17 @@ model Figure {
   characterId   String
   lineId        String
 
-  character      Character @relation(fields: [characterId], references: [id])
-  line           Line      @relation(fields: [lineId], references: [id])
+  character     Character @relation(fields: [characterId], references: [id])
+  line          Line      @relation(fields: [lineId], references: [id])
 
-  variants       Variant[]
+  variants      Variant[]
 
-  deletedAt DateTime?
+  deletedAt     DateTime?
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([lineId, characterId, name])
 
   @@index([name])
   @@index([code])
@@ -134,22 +140,24 @@ model Figure {
 }
 
 model Variant {
-  id            String   @id @default(cuid())
+  id              String   @id @default(cuid())
 
-  name          String?
-  description   String?
-  defaultImage  String?
+  name            String?
+  description     String?
+  defaultImage    String?
 
-  figureId      String
+  figureId        String
 
-  figure         Figure @relation(fields: [figureId], references: [id])
+  figure          Figure @relation(fields: [figureId], references: [id])
 
   productReleases ProductRelease[]
 
-  deletedAt DateTime?
+  deletedAt       DateTime?
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([figureId, name])
 
   @@index([figureId])
 }
@@ -174,10 +182,12 @@ model ProductRelease {
 
   ownedFigures    OwnedFigure[]
 
-  deletedAt DateTime?
+  deletedAt      DateTime?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([variantId, name])
 
   @@index([variantId])
   @@index([barcode])
@@ -209,7 +219,7 @@ model OwnedFigure {
   collector             Collector @relation(fields: [collectorId], references: [id])
   productRelease        ProductRelease @relation(fields: [productReleaseId], references: [id])
 
-  deletedAt   DateTime?
+  deletedAt             DateTime?
 
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
@@ -232,7 +242,7 @@ model Collector {
 
   ownedFigures  OwnedFigure[]
 
-  deletedAt   DateTime?
+  deletedAt     DateTime?
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

@@ -9,9 +9,13 @@ import {
 } from '@nestjs/common';
 
 import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 
@@ -29,12 +33,14 @@ export class OwnedFiguresController {
 
   @ApiOperation({
     summary: 'Get all owned figures',
-    description:
-      'Returns all active owned figures.',
+    description: 'Returns all active owned figures.',
+    operationId: 'findAllOwnedFigures',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Owned figures retrieved successfully.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Get()
   findAll() {
@@ -43,19 +49,21 @@ export class OwnedFiguresController {
 
   @ApiOperation({
     summary: 'Get owned figure by id',
-    description: 'Returns a single owned figure.',
+    description: 'Returns an active owned figure by its identifier.',
+    operationId: 'findOwnedFigureById',
   })
   @ApiParam({
     name: 'id',
-    description: 'Owned Figure identifier',
+    description: 'Owned Figure identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Owned figure found.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Owned figure not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -65,19 +73,20 @@ export class OwnedFiguresController {
   @ApiOperation({
     summary: 'Create owned figure',
     description:
-      'Adds a figure to a collector collection.',
+      'Adds a product release to a collector collection.',
+    operationId: 'createOwnedFigure',
   })
-  @ApiResponse({
-    status: 201,
+  @ApiCreatedResponse({
     description: 'Owned figure created successfully.',
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     description: 'Validation error.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Collector or Product Release not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Post()
   create(
@@ -91,18 +100,23 @@ export class OwnedFiguresController {
     summary: 'Update owned figure',
     description:
       'Updates collector-specific information for an owned figure.',
+    operationId: 'updateOwnedFigure',
   })
   @ApiParam({
     name: 'id',
-    description: 'Owned Figure identifier',
+    description: 'Owned Figure identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Owned figure updated successfully.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiBadRequestResponse({
+    description: 'Validation error.',
+  })
+  @ApiNotFoundResponse({
     description: 'Owned figure not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Put(':id')
   update(
@@ -116,19 +130,21 @@ export class OwnedFiguresController {
   @ApiOperation({
     summary: 'Soft delete owned figure',
     description:
-      'Marks an owned figure as deleted without removing it from the database.',
+      'Soft deletes an owned figure by setting its deletedAt timestamp.',
+    operationId: 'deleteOwnedFigure',
   })
   @ApiParam({
     name: 'id',
-    description: 'Owned Figure identifier',
+    description: 'Owned Figure identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Owned figure deleted successfully.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Owned figure not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Delete(':id')
   remove(@Param('id') id: string) {

@@ -9,9 +9,14 @@ import {
 } from '@nestjs/common';
 
 import {
+  ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 
@@ -28,10 +33,13 @@ export class FiguresController {
     summary: 'Get all figures',
     description:
       'Returns all active figures ordered alphabetically.',
+    operationId: 'findAllFigures',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Figures retrieved successfully.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Get()
   findAll() {
@@ -40,19 +48,22 @@ export class FiguresController {
 
   @ApiOperation({
     summary: 'Get figure by id',
-    description: 'Returns a single figure.',
+    description:
+      'Returns an active figure by its identifier.',
+    operationId: 'findFigureById',
   })
   @ApiParam({
     name: 'id',
-    description: 'Figure identifier',
+    description: 'Figure identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Figure found.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Figure not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -63,22 +74,22 @@ export class FiguresController {
     summary: 'Create figure',
     description:
       'Creates a new figure associated with an existing character and line.',
+    operationId: 'createFigure',
   })
-  @ApiResponse({
-    status: 201,
+  @ApiCreatedResponse({
     description: 'Figure created successfully.',
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     description: 'Validation error.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Character or Line not found.',
   })
-  @ApiResponse({
-    status: 409,
+  @ApiConflictResponse({
     description: 'Duplicate figure.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Post()
   create(@Body() createFigureDto: CreateFigureDto) {
@@ -88,22 +99,26 @@ export class FiguresController {
   @ApiOperation({
     summary: 'Update figure',
     description: 'Updates an existing figure.',
+    operationId: 'updateFigure',
   })
   @ApiParam({
     name: 'id',
-    description: 'Figure identifier',
+    description: 'Figure identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Figure updated successfully.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiBadRequestResponse({
+    description: 'Validation error.',
+  })
+  @ApiNotFoundResponse({
     description: 'Figure, Character or Line not found.',
   })
-  @ApiResponse({
-    status: 409,
+  @ApiConflictResponse({
     description: 'Duplicate figure.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Put(':id')
   update(
@@ -116,19 +131,21 @@ export class FiguresController {
   @ApiOperation({
     summary: 'Soft delete figure',
     description:
-      'Marks a figure as deleted without removing it from the database.',
+      'Soft deletes a figure by setting its deletedAt timestamp.',
+    operationId: 'deleteFigure',
   })
   @ApiParam({
     name: 'id',
-    description: 'Figure identifier',
+    description: 'Figure identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Figure deleted successfully.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Figure not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Delete(':id')
   remove(@Param('id') id: string) {

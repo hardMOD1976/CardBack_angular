@@ -9,9 +9,14 @@ import {
 } from '@nestjs/common';
 
 import {
+  ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 
@@ -28,10 +33,13 @@ export class VariantsController {
     summary: 'Get all variants',
     description:
       'Returns all active variants ordered alphabetically.',
+    operationId: 'findAllVariants',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Variants retrieved successfully.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Get()
   findAll() {
@@ -40,19 +48,22 @@ export class VariantsController {
 
   @ApiOperation({
     summary: 'Get variant by id',
-    description: 'Returns a single variant.',
+    description:
+      'Returns an active variant by its identifier.',
+    operationId: 'findVariantById',
   })
   @ApiParam({
     name: 'id',
-    description: 'Variant identifier',
+    description: 'Variant identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Variant found.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Variant not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -63,18 +74,22 @@ export class VariantsController {
     summary: 'Create variant',
     description:
       'Creates a new physical variant associated with an existing figure.',
+    operationId: 'createVariant',
   })
-  @ApiResponse({
-    status: 201,
+  @ApiCreatedResponse({
     description: 'Variant created successfully.',
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     description: 'Validation error.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Figure not found.',
+  })
+  @ApiConflictResponse({
+    description: 'Duplicate variant.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Post()
   create(@Body() createVariantDto: CreateVariantDto) {
@@ -84,18 +99,26 @@ export class VariantsController {
   @ApiOperation({
     summary: 'Update variant',
     description: 'Updates an existing variant.',
+    operationId: 'updateVariant',
   })
   @ApiParam({
     name: 'id',
-    description: 'Variant identifier',
+    description: 'Variant identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Variant updated successfully.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiBadRequestResponse({
+    description: 'Validation error.',
+  })
+  @ApiNotFoundResponse({
     description: 'Variant or Figure not found.',
+  })
+  @ApiConflictResponse({
+    description: 'Duplicate variant.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Put(':id')
   update(
@@ -108,19 +131,21 @@ export class VariantsController {
   @ApiOperation({
     summary: 'Soft delete variant',
     description:
-      'Marks a variant as deleted without removing it from the database.',
+      'Soft deletes a variant by setting its deletedAt timestamp.',
+    operationId: 'deleteVariant',
   })
   @ApiParam({
     name: 'id',
-    description: 'Variant identifier',
+    description: 'Variant identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Variant deleted successfully.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Variant not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Delete(':id')
   remove(@Param('id') id: string) {

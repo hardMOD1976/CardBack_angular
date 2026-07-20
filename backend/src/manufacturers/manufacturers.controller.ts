@@ -1,30 +1,46 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
+
 import { ManufacturersService } from './manufacturers.service';
 import { CreateManufacturerDto } from './dto/create-manufacturer.dto';
 import { UpdateManufacturerDto } from './dto/update-manufacturer.dto';
+
 import {
-  ApiTags,
+  ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
-  ApiResponse,
   ApiParam,
+  ApiTags,
 } from '@nestjs/swagger';
 
 @ApiTags('Manufacturers')
 @Controller('manufacturers')
 export class ManufacturersController {
-  constructor(private readonly manufacturersService: ManufacturersService) {}
+  constructor(
+    private readonly manufacturersService: ManufacturersService,
+  ) {}
 
   @ApiOperation({
     summary: 'Get all manufacturers',
-    description: 'Returns all active manufacturers ordered alphabetically.',
+    description:
+      'Returns all active manufacturers ordered alphabetically.',
     operationId: 'findAllManufacturers',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Manufacturers retrieved successfully.',
   })
-  @ApiResponse({
-    status: 500,
+  @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
   @Get()
@@ -34,23 +50,21 @@ export class ManufacturersController {
 
   @ApiOperation({
     summary: 'Get manufacturer by id',
-    description: 'Returns an active manufacturer by its identifier.',
+    description:
+      'Returns an active manufacturer by its identifier.',
     operationId: 'findManufacturerById',
   })
   @ApiParam({
     name: 'id',
     description: 'Manufacturer identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Manufacturer found.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Manufacturer not found.',
   })
-  @ApiResponse({
-    status: 500,
+  @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
   @Get(':id')
@@ -60,82 +74,86 @@ export class ManufacturersController {
 
   @ApiOperation({
     summary: 'Create manufacturer',
-    description: 'Creates a new manufacturer in the catalog.',
+    description:
+      'Creates a new manufacturer in the catalog.',
     operationId: 'createManufacturer',
   })
-  @ApiResponse({
-    status: 201,
+  @ApiCreatedResponse({
     description: 'Manufacturer created successfully.',
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     description: 'Validation error.',
   })
-  @ApiResponse({
-    status: 409,
+  @ApiConflictResponse({
     description: 'Manufacturer already exists.',
   })
-  @ApiResponse({
-    status: 500,
+  @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
   @Post()
-  create(@Body() createManufacturerDto: CreateManufacturerDto) {
-    return this.manufacturersService.create(createManufacturerDto);
+  create(
+    @Body()
+    createManufacturerDto: CreateManufacturerDto,
+  ) {
+    return this.manufacturersService.create(
+      createManufacturerDto,
+    );
   }
 
   @ApiOperation({
     summary: 'Update manufacturer',
-    description: 'Updates an existing manufacturer.',
+    description:
+      'Updates an existing manufacturer.',
     operationId: 'updateManufacturer',
   })
   @ApiParam({
     name: 'id',
     description: 'Manufacturer identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Manufacturer updated successfully.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiBadRequestResponse({
+    description: 'Validation error.',
+  })
+  @ApiNotFoundResponse({
     description: 'Manufacturer not found.',
   })
-  @ApiResponse({
-    status: 409,
+  @ApiConflictResponse({
     description: 'Duplicate manufacturer name.',
   })
-  @ApiResponse({
-    status: 500,
+  @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
   @Put(':id')
   update(
     @Param('id') id: string,
-    @Body() updateManufacturerDto: UpdateManufacturerDto,
+    @Body()
+    updateManufacturerDto: UpdateManufacturerDto,
   ) {
-    return this.manufacturersService.update(id, updateManufacturerDto);
+    return this.manufacturersService.update(
+      id,
+      updateManufacturerDto,
+    );
   }
 
   @ApiOperation({
     summary: 'Soft delete manufacturer',
-    description: 'Soft deletes a manufacturer by setting its deletedAt timestamp.',
+    description:
+      'Soft deletes a manufacturer by setting its deletedAt timestamp.',
     operationId: 'deleteManufacturer',
   })
   @ApiParam({
     name: 'id',
     description: 'Manufacturer identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Manufacturer deleted successfully.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Manufacturer not found.',
   })
-  @ApiResponse({
-    status: 500,
+  @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
   @Delete(':id')

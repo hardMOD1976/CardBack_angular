@@ -9,9 +9,14 @@ import {
 } from '@nestjs/common';
 
 import {
+  ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 
@@ -31,10 +36,13 @@ export class ProductReleasesController {
     summary: 'Get all product releases',
     description:
       'Returns all active product releases ordered alphabetically.',
+    operationId: 'findAllProductReleases',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Product releases retrieved successfully.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Get()
   findAll() {
@@ -43,19 +51,22 @@ export class ProductReleasesController {
 
   @ApiOperation({
     summary: 'Get product release by id',
-    description: 'Returns a single product release.',
+    description:
+      'Returns an active product release by its identifier.',
+    operationId: 'findProductReleaseById',
   })
   @ApiParam({
     name: 'id',
-    description: 'Product Release identifier',
+    description: 'Product Release identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Product release found.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Product release not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -66,18 +77,22 @@ export class ProductReleasesController {
     summary: 'Create product release',
     description:
       'Creates a commercial release associated with an existing variant.',
+    operationId: 'createProductRelease',
   })
-  @ApiResponse({
-    status: 201,
+  @ApiCreatedResponse({
     description: 'Product release created successfully.',
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     description: 'Validation error.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Variant not found.',
+  })
+  @ApiConflictResponse({
+    description: 'Duplicate product release.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Post()
   create(
@@ -90,18 +105,26 @@ export class ProductReleasesController {
   @ApiOperation({
     summary: 'Update product release',
     description: 'Updates an existing product release.',
+    operationId: 'updateProductRelease',
   })
   @ApiParam({
     name: 'id',
-    description: 'Product Release identifier',
+    description: 'Product Release identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Product release updated successfully.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiBadRequestResponse({
+    description: 'Validation error.',
+  })
+  @ApiNotFoundResponse({
     description: 'Product release or Variant not found.',
+  })
+  @ApiConflictResponse({
+    description: 'Duplicate product release.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Put(':id')
   update(
@@ -115,19 +138,21 @@ export class ProductReleasesController {
   @ApiOperation({
     summary: 'Soft delete product release',
     description:
-      'Marks a product release as deleted without removing it from the database.',
+      'Soft deletes a product release by setting its deletedAt timestamp.',
+    operationId: 'deleteProductRelease',
   })
   @ApiParam({
     name: 'id',
-    description: 'Product Release identifier',
+    description: 'Product Release identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Product release deleted successfully.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Product release not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Delete(':id')
   remove(@Param('id') id: string) {

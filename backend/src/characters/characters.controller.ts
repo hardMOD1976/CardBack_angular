@@ -9,9 +9,14 @@ import {
 } from '@nestjs/common';
 
 import {
+  ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 
@@ -22,16 +27,21 @@ import { UpdateCharacterDto } from './dto/update-character.dto';
 @ApiTags('Characters')
 @Controller('characters')
 export class CharactersController {
-  constructor(private readonly charactersService: CharactersService) {}
+  constructor(
+    private readonly charactersService: CharactersService,
+  ) {}
 
   @ApiOperation({
     summary: 'Get all characters',
     description:
       'Returns all active characters ordered alphabetically.',
+    operationId: 'findAllCharacters',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Characters retrieved successfully.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Get()
   findAll() {
@@ -40,19 +50,22 @@ export class CharactersController {
 
   @ApiOperation({
     summary: 'Get character by id',
-    description: 'Returns a single character.',
+    description:
+      'Returns an active character by its identifier.',
+    operationId: 'findCharacterById',
   })
   @ApiParam({
     name: 'id',
-    description: 'Character identifier',
+    description: 'Character identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Character found.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Character not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -63,72 +76,85 @@ export class CharactersController {
     summary: 'Create character',
     description:
       'Creates a new character associated with an existing franchise.',
+    operationId: 'createCharacter',
   })
-  @ApiResponse({
-    status: 201,
+  @ApiCreatedResponse({
     description: 'Character created successfully.',
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     description: 'Validation error.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Franchise not found.',
   })
-  @ApiResponse({
-    status: 409,
+  @ApiConflictResponse({
     description: 'Duplicate character.',
   })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
+  })
   @Post()
-  create(@Body() createCharacterDto: CreateCharacterDto) {
+  create(
+    @Body()
+    createCharacterDto: CreateCharacterDto,
+  ) {
     return this.charactersService.create(createCharacterDto);
   }
 
   @ApiOperation({
     summary: 'Update character',
     description: 'Updates an existing character.',
+    operationId: 'updateCharacter',
   })
   @ApiParam({
     name: 'id',
-    description: 'Character identifier',
+    description: 'Character identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Character updated successfully.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiBadRequestResponse({
+    description: 'Validation error.',
+  })
+  @ApiNotFoundResponse({
     description: 'Character or Franchise not found.',
   })
-  @ApiResponse({
-    status: 409,
+  @ApiConflictResponse({
     description: 'Duplicate character.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Put(':id')
   update(
     @Param('id') id: string,
-    @Body() updateCharacterDto: UpdateCharacterDto,
+    @Body()
+    updateCharacterDto: UpdateCharacterDto,
   ) {
-    return this.charactersService.update(id, updateCharacterDto);
+    return this.charactersService.update(
+      id,
+      updateCharacterDto,
+    );
   }
 
   @ApiOperation({
     summary: 'Soft delete character',
     description:
-      'Marks a character as deleted without removing it from the database.',
+      'Soft deletes a character by setting its deletedAt timestamp.',
+    operationId: 'deleteCharacter',
   })
   @ApiParam({
     name: 'id',
-    description: 'Character identifier',
+    description: 'Character identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Character deleted successfully.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Character not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Delete(':id')
   remove(@Param('id') id: string) {

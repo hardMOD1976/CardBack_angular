@@ -9,9 +9,14 @@ import {
 } from '@nestjs/common';
 
 import {
+  ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 
@@ -31,10 +36,13 @@ export class CollectorsController {
     summary: 'Get all collectors',
     description:
       'Returns all active collectors ordered alphabetically.',
+    operationId: 'findAllCollectors',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Collectors retrieved successfully.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Get()
   findAll() {
@@ -43,19 +51,22 @@ export class CollectorsController {
 
   @ApiOperation({
     summary: 'Get collector by id',
-    description: 'Returns a single collector.',
+    description:
+      'Returns an active collector by its identifier.',
+    operationId: 'findCollectorById',
   })
   @ApiParam({
     name: 'id',
-    description: 'Collector identifier',
+    description: 'Collector identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Collector found.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Collector not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -64,20 +75,20 @@ export class CollectorsController {
 
   @ApiOperation({
     summary: 'Create collector',
-    description:
-      'Creates a new collector account.',
+    description: 'Creates a new collector account.',
+    operationId: 'createCollector',
   })
-  @ApiResponse({
-    status: 201,
+  @ApiCreatedResponse({
     description: 'Collector created successfully.',
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     description: 'Validation error.',
   })
-  @ApiResponse({
-    status: 409,
+  @ApiConflictResponse({
     description: 'Username or email already exists.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Post()
   create(
@@ -92,22 +103,26 @@ export class CollectorsController {
   @ApiOperation({
     summary: 'Update collector',
     description: 'Updates an existing collector.',
+    operationId: 'updateCollector',
   })
   @ApiParam({
     name: 'id',
-    description: 'Collector identifier',
+    description: 'Collector identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Collector updated successfully.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiBadRequestResponse({
+    description: 'Validation error.',
+  })
+  @ApiNotFoundResponse({
     description: 'Collector not found.',
   })
-  @ApiResponse({
-    status: 409,
+  @ApiConflictResponse({
     description: 'Username or email already exists.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Put(':id')
   update(
@@ -124,19 +139,21 @@ export class CollectorsController {
   @ApiOperation({
     summary: 'Soft delete collector',
     description:
-      'Marks a collector as deleted without removing it from the database.',
+      'Soft deletes a collector by setting its deletedAt timestamp.',
+    operationId: 'deleteCollector',
   })
   @ApiParam({
     name: 'id',
-    description: 'Collector identifier',
+    description: 'Collector identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Collector deleted successfully.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Collector not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Delete(':id')
   remove(@Param('id') id: string) {

@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { manufacturers } from './seed/manufacturers.seed';
+import { franchises } from './seed/franchises.seed';
 
 const prisma = new PrismaClient();
 
@@ -20,8 +21,25 @@ async function main() {
     });
   }
 
-  console.log(`✅ Seeded ${manufacturers.length} manufacturers`);
+  for (const franchise of franchises) {
+  await prisma.franchise.upsert({
+    where: {
+      name: franchise.name,
+    },
+    update: {
+      owner: franchise.owner,
+      firstAppearance: franchise.firstAppearance,
+      description: franchise.description,
+      logo: franchise.logo,
+    },
+    create: franchise,
+  });
 }
+
+console.log(`✅ Seeded ${franchises.length} franchises`);
+console.log(`✅ Seeded ${manufacturers.length} manufacturers`);
+}
+
 
 main()
   .catch((error) => {
@@ -31,3 +49,5 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
+  

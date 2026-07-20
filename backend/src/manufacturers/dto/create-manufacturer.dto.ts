@@ -13,7 +13,7 @@ import {
 export class CreateManufacturerDto {
   @ApiProperty({
     example: 'Kenner',
-    description: 'Manufacturer name.',
+    description: 'Manufacturer name',
   })
   @IsString()
   @IsNotEmpty()
@@ -21,7 +21,7 @@ export class CreateManufacturerDto {
 
   @ApiPropertyOptional({
     example: 1946,
-    description: 'Year the company was founded.',
+    description: 'Year the manufacturer was founded',
   })
   @IsOptional()
   @IsInt()
@@ -29,7 +29,7 @@ export class CreateManufacturerDto {
 
   @ApiPropertyOptional({
     example: 2000,
-    description: 'Year the company was dissolved.',
+    description: 'Year the manufacturer was dissolved',
   })
   @IsOptional()
   @IsInt()
@@ -37,7 +37,7 @@ export class CreateManufacturerDto {
 
   @ApiPropertyOptional({
     example: 'United States',
-    description: 'Country where the manufacturer was based.',
+    description: 'Country of origin',
   })
   @IsOptional()
   @IsString()

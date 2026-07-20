@@ -9,9 +9,14 @@ import {
 } from '@nestjs/common';
 
 import {
+  ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 
@@ -28,10 +33,13 @@ export class LinesController {
     summary: 'Get all lines',
     description:
       'Returns all active figure lines ordered alphabetically, including their manufacturer and franchise.',
+    operationId: 'findAllLines',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Lines retrieved successfully.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Get()
   findAll() {
@@ -40,19 +48,22 @@ export class LinesController {
 
   @ApiOperation({
     summary: 'Get line by id',
-    description: 'Returns a single line.',
+    description:
+      'Returns an active figure line by its identifier.',
+    operationId: 'findLineById',
   })
   @ApiParam({
     name: 'id',
-    description: 'Line identifier',
+    description: 'Line identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Line found.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Line not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -63,22 +74,22 @@ export class LinesController {
     summary: 'Create line',
     description:
       'Creates a new figure line associated with an existing manufacturer and franchise.',
+    operationId: 'createLine',
   })
-  @ApiResponse({
-    status: 201,
+  @ApiCreatedResponse({
     description: 'Line created successfully.',
   })
-  @ApiResponse({
-    status: 400,
+  @ApiBadRequestResponse({
     description: 'Validation error.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Manufacturer or Franchise not found.',
   })
-  @ApiResponse({
-    status: 409,
+  @ApiConflictResponse({
     description: 'Duplicate line.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Post()
   create(@Body() dto: CreateLineDto) {
@@ -88,22 +99,26 @@ export class LinesController {
   @ApiOperation({
     summary: 'Update line',
     description: 'Updates an existing line.',
+    operationId: 'updateLine',
   })
   @ApiParam({
     name: 'id',
-    description: 'Line identifier',
+    description: 'Line identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Line updated successfully.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiBadRequestResponse({
+    description: 'Validation error.',
+  })
+  @ApiNotFoundResponse({
     description: 'Line, Manufacturer or Franchise not found.',
   })
-  @ApiResponse({
-    status: 409,
+  @ApiConflictResponse({
     description: 'Duplicate line.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Put(':id')
   update(
@@ -116,19 +131,21 @@ export class LinesController {
   @ApiOperation({
     summary: 'Soft delete line',
     description:
-      'Marks a line as deleted without removing it from the database.',
+      'Soft deletes a line by setting its deletedAt timestamp.',
+    operationId: 'deleteLine',
   })
   @ApiParam({
     name: 'id',
-    description: 'Line identifier',
+    description: 'Line identifier.',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Line deleted successfully.',
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Line not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
   })
   @Delete(':id')
   remove(@Param('id') id: string) {

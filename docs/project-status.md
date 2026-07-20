@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Backend Development
+Backend Foundation Completed
 
 ---
 
@@ -33,7 +33,7 @@ Backend Development
 - PostgreSQL (Neon)
 - Prisma ORM
 - Prisma schema completed
-- Initial migration
+- Database migrations
 - Prisma Client
 - NestJS application
 - ValidationPipe
@@ -106,20 +106,33 @@ Backend Development
 - Collector validation
 - Product Release validation
 
+### Documentation
+
+- Swagger integrated
+- REST API fully documented
+- Endpoint consistency reviewed
+
+### Database
+
+- Golden Dataset
+- Idempotent seed
+- Robust upsert strategy
+- Composite unique constraints
+- Referential integrity verified
+
 ---
 
 ## Pending
 
 ### Backend
 
-- Swagger
-- API documentation
-- Initial Seed
-- Authentication
-- Testing
+- Authentication (JWT)
+- Authorization / Roles
+- Search
 - Pagination
 - Filtering
-- Search
+- Testing
+- Image upload
 
 ### Frontend
 
@@ -127,13 +140,14 @@ Backend Development
 - Design System
 - Authentication
 - UI Foundation
+- Collection management
 
 ---
 
 ## Current Milestone
 
-Backend domain completed.
+Backend Foundation completed.
 
 Next objective:
 
-Expose and document the API using Swagger, validate the complete REST interface, and prepare the backend for Angular integration.
+Implement authentication and authorization, then begin application-level features (search, collection management and Angular frontend integration).

@@ -39,7 +39,7 @@ VC13 Canada
 
 Collector
 ---------
-isaacnegri
+isaacnegrie
 
 Owned Figures
 -------------

@@ -12,7 +12,7 @@ import {
 
 export class CreateCollectorDto {
   @ApiProperty({
-    example: 'isaacnegri',
+    example: 'isaacnegrie',
   })
   @IsString()
   @IsNotEmpty()

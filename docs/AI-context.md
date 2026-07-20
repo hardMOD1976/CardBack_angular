@@ -10,7 +10,7 @@ The platform separates immutable catalog data from personal collection data, pro
 
 ## Current Phase
 
-Backend Development
+Backend Foundation Completed
 
 ---
 
@@ -76,16 +76,29 @@ Shared infrastructure:
 - Relational validation
 - Prisma Studio workflow
 
+Documentation:
+
+- Swagger integrated
+- Complete REST API documentation
+- Endpoint consistency reviewed
+
+Database:
+
+- Golden Dataset implemented
+- Robust seed with upsert()
+- Referential integrity verified
+- Unique constraints reviewed
+
 ---
 
 ## Current Next Step
 
-The complete backend domain is implemented.
+Backend foundation is complete.
 
 Next milestone:
 
-- Integrate Swagger
-- Document the REST API
-- Review endpoint consistency
-- Create initial seed data
-- Prepare the backend for Angular integration
+- Authentication (JWT)
+- Authorization / Roles
+- Global Search
+- Collection management
+- Angular frontend integration

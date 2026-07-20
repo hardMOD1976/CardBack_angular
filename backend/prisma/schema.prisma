@@ -84,7 +84,6 @@ model Line {
 
 model Character {
   id            String   @id @default(cuid())
-
   name          String
 
   species       String?
@@ -226,6 +225,7 @@ model OwnedFigure {
 
   @@index([collectorId])
   @@index([productReleaseId])
+  @@unique([collectorId, productReleaseId])
 }
 
 model Collector {

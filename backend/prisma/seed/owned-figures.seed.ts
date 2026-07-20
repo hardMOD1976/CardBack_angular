@@ -4,7 +4,7 @@ export const ownedFigures = [
   // ==========================================================
 
   {
-    collectorUsername: 'isaacnegri',
+    collectorUsername: 'isaacnegrie',
     productReleaseName: 'VC13 US Release',
 
     condition: 'Mint',
@@ -26,7 +26,7 @@ export const ownedFigures = [
   },
 
   {
-    collectorUsername: 'isaacnegri',
+    collectorUsername: 'isaacnegrie',
     productReleaseName: 'VC08 US Release',
 
     condition: 'Near Mint',
@@ -48,7 +48,7 @@ export const ownedFigures = [
   },
 
   {
-    collectorUsername: 'isaacnegri',
+    collectorUsername: 'isaacnegrie',
     productReleaseName: 'Grogu Retro',
 
     condition: 'Mint',

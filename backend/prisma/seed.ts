@@ -104,115 +104,168 @@ async function main() {
   console.log(`✅ Seeded ${lines.length} lines`);
 
   // ============================================================
-  // Characters
-  // ============================================================
+// Characters
+// ============================================================
 
-  for (const character of characters) {
-    const franchise = await prisma.franchise.findUniqueOrThrow({
-      where: {
-        name: character.franchiseName,
-      },
-    });
+for (const character of characters) {
+  const franchise = await prisma.franchise.findUniqueOrThrow({
+    where: {
+      name: character.franchiseName,
+    },
+  });
 
-    await prisma.character.create({
-      data: {
-        name: character.name,
-        species: character.species,
-        homeworld: character.homeworld,
-        affiliation: character.affiliation,
-        description: character.description,
-        image: character.image,
+  await prisma.character.upsert({
+    where: {
+      franchiseId_name: {
         franchiseId: franchise.id,
+        name: character.name,
       },
-    });
-  }
+    },
+    update: {
+      species: character.species,
+      homeworld: character.homeworld,
+      affiliation: character.affiliation,
+      description: character.description,
+      image: character.image,
+    },
+    create: {
+      name: character.name,
+      species: character.species,
+      homeworld: character.homeworld,
+      affiliation: character.affiliation,
+      description: character.description,
+      image: character.image,
+      franchiseId: franchise.id,
+    },
+  });
+}
 
-  console.log(`✅ Seeded ${characters.length} characters`);
+console.log(`✅ Seeded ${characters.length} characters`);
 
-  // ============================================================
-  // Figures
-  // ============================================================
+// ============================================================
+// Figures
+// ============================================================
 
-  for (const figure of figures) {
-    const character = await prisma.character.findFirstOrThrow({
-      where: {
-        name: figure.characterName,
-      },
-    });
+for (const figure of figures) {
+  const character = await prisma.character.findFirstOrThrow({
+    where: {
+      name: figure.characterName,
+    },
+  });
 
-    const line = await prisma.line.findFirstOrThrow({
-      where: {
-        name: figure.lineName,
-      },
-    });
+  const line = await prisma.line.findFirstOrThrow({
+    where: {
+      name: figure.lineName,
+    },
+  });
 
-    await prisma.figure.create({
-      data: {
-        name: figure.name,
-        code: figure.code,
-        description: figure.description,
-        defaultImage: figure.defaultImage,
-        characterId: character.id,
+  await prisma.figure.upsert({
+    where: {
+      lineId_characterId_name: {
         lineId: line.id,
+        characterId: character.id,
+        name: figure.name,
       },
-    });
-  }
+    },
+    update: {
+      code: figure.code,
+      description: figure.description,
+      defaultImage: figure.defaultImage,
+    },
+    create: {
+      name: figure.name,
+      code: figure.code,
+      description: figure.description,
+      defaultImage: figure.defaultImage,
+      characterId: character.id,
+      lineId: line.id,
+    },
+  });
+}
 
-  console.log(`✅ Seeded ${figures.length} figures`);
+console.log(`✅ Seeded ${figures.length} figures`);
 
   // ============================================================
-  // Variants
-  // ============================================================
+// Variants
+// ============================================================
 
-  for (const variant of variants) {
-    const figure = await prisma.figure.findFirstOrThrow({
-      where: {
-        name: variant.figureName,
-      },
-    });
+for (const variant of variants) {
+  const figure = await prisma.figure.findFirstOrThrow({
+    where: {
+      name: variant.figureName,
+    },
+  });
 
-    await prisma.variant.create({
-      data: {
-        name: variant.name,
-        description: variant.description,
-        defaultImage: variant.defaultImage,
+  await prisma.variant.upsert({
+    where: {
+      figureId_name: {
         figureId: figure.id,
+        name: variant.name,
       },
-    });
-  }
+    },
+    update: {
+      description: variant.description,
+      defaultImage: variant.defaultImage,
+    },
+    create: {
+      name: variant.name,
+      description: variant.description,
+      defaultImage: variant.defaultImage,
+      figureId: figure.id,
+    },
+  });
+}
 
-  console.log(`✅ Seeded ${variants.length} variants`);
+console.log(`✅ Seeded ${variants.length} variants`);
 
   // ============================================================
-  // Product Releases
-  // ============================================================
+// Product Releases
+// ============================================================
 
-  for (const release of productReleases) {
-    const variant = await prisma.variant.findFirstOrThrow({
-      where: {
-        name: release.variantName,
-      },
-    });
+for (const release of productReleases) {
+  const variant = await prisma.variant.findFirstOrThrow({
+    where: {
+      name: release.variantName,
+    },
+  });
 
-    await prisma.productRelease.create({
-      data: {
-        name: release.name,
-        packagingType: release.packagingType,
-        region: release.region,
-        language: release.language,
-        retailer: release.retailer,
-        releaseDate: release.releaseDate
-          ? new Date(release.releaseDate)
-          : null,
-        barcode: release.barcode,
-        notes: release.notes,
-        defaultImage: release.defaultImage,
+  await prisma.productRelease.upsert({
+    where: {
+      variantId_name: {
         variantId: variant.id,
+        name: release.name,
       },
-    });
-  }
+    },
+    update: {
+      packagingType: release.packagingType,
+      region: release.region,
+      language: release.language,
+      retailer: release.retailer,
+      releaseDate: release.releaseDate
+        ? new Date(release.releaseDate)
+        : null,
+      barcode: release.barcode,
+      notes: release.notes,
+      defaultImage: release.defaultImage,
+    },
+    create: {
+      name: release.name,
+      packagingType: release.packagingType,
+      region: release.region,
+      language: release.language,
+      retailer: release.retailer,
+      releaseDate: release.releaseDate
+        ? new Date(release.releaseDate)
+        : null,
+      barcode: release.barcode,
+      notes: release.notes,
+      defaultImage: release.defaultImage,
+      variantId: variant.id,
+    },
+  });
+}
 
-  console.log(`✅ Seeded ${productReleases.length} product releases`);
+console.log(`✅ Seeded ${productReleases.length} product releases`);
 
   // ============================================================
   // Collectors
@@ -236,50 +289,63 @@ async function main() {
   console.log(`✅ Seeded ${collectors.length} collectors`);
 
   // ============================================================
-  // Owned Figures
-  // ============================================================
+// Owned Figures
+// ============================================================
 
-  for (const ownedFigure of ownedFigures) {
-    const collector = await prisma.collector.findUniqueOrThrow({
-      where: {
-        username: ownedFigure.collectorUsername,
-      },
-    });
+for (const ownedFigure of ownedFigures) {
+  const collector = await prisma.collector.findUniqueOrThrow({
+    where: {
+      username: ownedFigure.collectorUsername,
+    },
+  });
 
-    const productRelease =
-      await prisma.productRelease.findFirstOrThrow({
-        where: {
-          name: ownedFigure.productReleaseName,
-        },
-      });
+  const productRelease = await prisma.productRelease.findFirstOrThrow({
+    where: {
+      name: ownedFigure.productReleaseName,
+    },
+  });
 
-    await prisma.ownedFigure.create({
-      data: {
+  await prisma.ownedFigure.upsert({
+    where: {
+      collectorId_productReleaseId: {
         collectorId: collector.id,
         productReleaseId: productRelease.id,
-
-        condition: ownedFigure.condition,
-        completeness: ownedFigure.completeness,
-        packagingState: ownedFigure.packagingState,
-
-        purchaseDate: ownedFigure.purchaseDate
-          ? new Date(ownedFigure.purchaseDate)
-          : null,
-
-        purchasePrice: ownedFigure.purchasePrice,
-        currency: ownedFigure.currency,
-        purchaseLocation: ownedFigure.purchaseLocation,
-
-        estimatedMarketValue:
-          ownedFigure.estimatedMarketValue,
-
-        storageLocation: ownedFigure.storageLocation,
-        notes: ownedFigure.notes,
       },
-    });
-  }
+    },
+    update: {
+      condition: ownedFigure.condition,
+      completeness: ownedFigure.completeness,
+      packagingState: ownedFigure.packagingState,
+      purchaseDate: ownedFigure.purchaseDate
+        ? new Date(ownedFigure.purchaseDate)
+        : null,
+      purchasePrice: ownedFigure.purchasePrice,
+      currency: ownedFigure.currency,
+      purchaseLocation: ownedFigure.purchaseLocation,
+      estimatedMarketValue: ownedFigure.estimatedMarketValue,
+      storageLocation: ownedFigure.storageLocation,
+      notes: ownedFigure.notes,
+    },
+    create: {
+      collectorId: collector.id,
+      productReleaseId: productRelease.id,
+      condition: ownedFigure.condition,
+      completeness: ownedFigure.completeness,
+      packagingState: ownedFigure.packagingState,
+      purchaseDate: ownedFigure.purchaseDate
+        ? new Date(ownedFigure.purchaseDate)
+        : null,
+      purchasePrice: ownedFigure.purchasePrice,
+      currency: ownedFigure.currency,
+      purchaseLocation: ownedFigure.purchaseLocation,
+      estimatedMarketValue: ownedFigure.estimatedMarketValue,
+      storageLocation: ownedFigure.storageLocation,
+      notes: ownedFigure.notes,
+    },
+  });
+}
 
-  console.log(`✅ Seeded ${ownedFigures.length} owned figures`);
+console.log(`✅ Seeded ${ownedFigures.length} owned figures`);
 
   console.log('🎉 FigureArchive seed completed successfully.');
 }

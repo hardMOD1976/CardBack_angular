@@ -90,15 +90,15 @@ export class UsersController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
-  @Post()
-  create(
-    @Body()
-    createUserDto: CreateUserDto,
-  ) {
-    return this.usersService.create(
-      createUserDto,
-    );
-  }
+  // @Post()
+  // create(
+  //   @Body()
+  //   createUserDto: CreateUserDto,
+  // ) {
+  //   return this.usersService.create(
+  //     createUserDto,
+  //   );
+  // }
 
   @ApiOperation({
     summary: 'Update user',

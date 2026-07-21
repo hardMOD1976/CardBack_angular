@@ -7,7 +7,7 @@ import { characters } from './seed/characters.seed';
 import { figures } from './seed/figures.seed';
 import { variants } from './seed/variants.seed';
 import { productReleases } from './seed/product-releases.seed';
-import { users } from './seed/users.seed';
+import { getUsers } from './seed/users.seed';
 import { ownedFigures } from './seed/owned-figures.seed';
 
 const prisma = new PrismaClient();
@@ -270,6 +270,8 @@ console.log(`✅ Seeded ${productReleases.length} product releases`);
  // ============================================================
 // Users
 // ============================================================
+
+const users = await getUsers();
 
 for (const user of users) {
   await prisma.user.upsert({

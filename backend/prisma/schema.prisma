@@ -10,6 +10,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model Manufacturer {
   id             String   @id @default(cuid())
 
@@ -229,23 +234,33 @@ model OwnedFigure {
 }
 
 model User {
-  id            String   @id @default(cuid())
+  id                String   @id @default(cuid())
 
-  username      String   @unique
-  displayName   String?
+  username          String   @unique
+  displayName       String?
 
-  email         String?  @unique
+  role              Role     @default(USER)
 
-  country       String?
+  email             String?  @unique
 
-  avatar        String?
+  passwordHash      String
 
-  ownedFigures  OwnedFigure[]
+  refreshTokenHash  String?
 
-  deletedAt     DateTime?
+  lastLoginAt       DateTime?
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  emailVerifiedAt   DateTime?
+
+  country           String?
+
+  avatar            String?
+
+  ownedFigures      OwnedFigure[]
+
+  deletedAt         DateTime?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   @@index([username])
 }

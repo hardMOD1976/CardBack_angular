@@ -73,7 +73,7 @@ export class OwnedFiguresController {
   @ApiOperation({
     summary: 'Create owned figure',
     description:
-      'Adds a product release to a collector collection.',
+      'Adds a product release to a user collection.',
     operationId: 'createOwnedFigure',
   })
   @ApiCreatedResponse({
@@ -83,7 +83,7 @@ export class OwnedFiguresController {
     description: 'Validation error.',
   })
   @ApiNotFoundResponse({
-    description: 'Collector or Product Release not found.',
+    description: 'User or Product Release not found.',
   })
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
@@ -99,7 +99,7 @@ export class OwnedFiguresController {
   @ApiOperation({
     summary: 'Update owned figure',
     description:
-      'Updates collector-specific information for an owned figure.',
+      'Updates user-specific information for an owned figure.',
     operationId: 'updateOwnedFigure',
   })
   @ApiParam({

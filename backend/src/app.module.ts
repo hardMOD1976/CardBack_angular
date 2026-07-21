@@ -12,9 +12,14 @@ import { VariantsModule } from './variants/variants.module';
 import { ProductReleasesModule } from './product-releases/product-releases.module';
 import { UsersModule } from './users/users.module';
 import { OwnedFiguresModule } from './owned-figures/owned-figures.module';
+import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+    isGlobal: true,
+  }),
     PrismaModule,
     ManufacturersModule,
     FranchisesModule,
@@ -24,7 +29,8 @@ import { OwnedFiguresModule } from './owned-figures/owned-figures.module';
     VariantsModule,
     ProductReleasesModule,
     UsersModule,
-    OwnedFiguresModule
+    OwnedFiguresModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -29,11 +29,20 @@ export class UsersService {
     });
   }
 
-  create(createUserDto: CreateUserDto) {
-    return this.prisma.user.create({
-      data: createUserDto,
+  async findByUsername(username: string) {
+    return this.prisma.user.findFirst({
+      where: {
+        username,
+        deletedAt: null,
+      },
     });
   }
+
+  // create(createUserDto: CreateUserDto) {
+  //   return this.prisma.user.create({
+  //     data: createUserDto,
+  //   });
+  // }
 
   update(
     id: string,
@@ -46,6 +55,20 @@ export class UsersService {
       data: updateUserDto,
     });
   }
+
+  async updateRefreshToken(
+  userId: string,
+  refreshTokenHash: string | null,
+) {
+  return this.prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      refreshTokenHash,
+    },
+  });
+}
 
   remove(id: string) {
     return this.prisma.user.update({

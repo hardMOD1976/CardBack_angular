@@ -10,7 +10,7 @@ import {
   ApiPropertyOptional,
 } from '@nestjs/swagger';
 
-export class CreateCollectorDto {
+export class CreateUserDto {
   @ApiProperty({
     example: 'isaacnegrie',
   })

@@ -1,4 +1,4 @@
-export const collectors = [
+export const users = [
   {
     username: 'isaacnegrie',
     displayName: 'Isaac Negrie',

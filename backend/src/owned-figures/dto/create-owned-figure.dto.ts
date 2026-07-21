@@ -17,7 +17,7 @@ export class CreateOwnedFigureDto {
   })
   @IsString()
   @IsNotEmpty()
-  collectorId!: string;
+  userId!: string;
 
   @ApiProperty({
     example: 'cmf9jb1ms0002efgh87654321',

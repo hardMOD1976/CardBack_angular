@@ -5,6 +5,7 @@ CREATE TABLE "Manufacturer" (
     "foundedYear" INTEGER,
     "dissolvedYear" INTEGER,
     "country" TEXT,
+    "deletedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -19,6 +20,7 @@ CREATE TABLE "Franchise" (
     "firstAppearance" INTEGER,
     "description" TEXT,
     "logo" TEXT,
+    "deletedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -36,6 +38,7 @@ CREATE TABLE "Line" (
     "description" TEXT,
     "manufacturerId" TEXT NOT NULL,
     "franchiseId" TEXT NOT NULL,
+    "deletedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -52,6 +55,7 @@ CREATE TABLE "Character" (
     "description" TEXT,
     "image" TEXT,
     "franchiseId" TEXT NOT NULL,
+    "deletedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -67,6 +71,7 @@ CREATE TABLE "Figure" (
     "defaultImage" TEXT,
     "characterId" TEXT NOT NULL,
     "lineId" TEXT NOT NULL,
+    "deletedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -80,6 +85,7 @@ CREATE TABLE "Variant" (
     "description" TEXT,
     "defaultImage" TEXT,
     "figureId" TEXT NOT NULL,
+    "deletedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -99,6 +105,7 @@ CREATE TABLE "ProductRelease" (
     "notes" TEXT,
     "defaultImage" TEXT,
     "variantId" TEXT NOT NULL,
+    "deletedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -108,7 +115,7 @@ CREATE TABLE "ProductRelease" (
 -- CreateTable
 CREATE TABLE "OwnedFigure" (
     "id" TEXT NOT NULL,
-    "collectorId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
     "productReleaseId" TEXT NOT NULL,
     "condition" TEXT NOT NULL,
     "completeness" TEXT NOT NULL,
@@ -120,6 +127,7 @@ CREATE TABLE "OwnedFigure" (
     "estimatedMarketValue" DECIMAL(65,30),
     "storageLocation" TEXT,
     "notes" TEXT,
+    "deletedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -127,21 +135,28 @@ CREATE TABLE "OwnedFigure" (
 );
 
 -- CreateTable
-CREATE TABLE "Collector" (
+CREATE TABLE "User" (
     "id" TEXT NOT NULL,
     "username" TEXT NOT NULL,
     "displayName" TEXT,
     "email" TEXT,
     "country" TEXT,
     "avatar" TEXT,
+    "deletedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Collector_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Manufacturer_name_key" ON "Manufacturer"("name");
+
+-- CreateIndex
 CREATE INDEX "Manufacturer_name_idx" ON "Manufacturer"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Franchise_name_key" ON "Franchise"("name");
 
 -- CreateIndex
 CREATE INDEX "Franchise_name_idx" ON "Franchise"("name");
@@ -156,10 +171,16 @@ CREATE INDEX "Line_manufacturerId_idx" ON "Line"("manufacturerId");
 CREATE INDEX "Line_franchiseId_idx" ON "Line"("franchiseId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Line_manufacturerId_name_key" ON "Line"("manufacturerId", "name");
+
+-- CreateIndex
 CREATE INDEX "Character_name_idx" ON "Character"("name");
 
 -- CreateIndex
 CREATE INDEX "Character_franchiseId_idx" ON "Character"("franchiseId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Character_franchiseId_name_key" ON "Character"("franchiseId", "name");
 
 -- CreateIndex
 CREATE INDEX "Figure_name_idx" ON "Figure"("name");
@@ -174,7 +195,13 @@ CREATE INDEX "Figure_characterId_idx" ON "Figure"("characterId");
 CREATE INDEX "Figure_lineId_idx" ON "Figure"("lineId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Figure_lineId_characterId_name_key" ON "Figure"("lineId", "characterId", "name");
+
+-- CreateIndex
 CREATE INDEX "Variant_figureId_idx" ON "Variant"("figureId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Variant_figureId_name_key" ON "Variant"("figureId", "name");
 
 -- CreateIndex
 CREATE INDEX "ProductRelease_variantId_idx" ON "ProductRelease"("variantId");
@@ -183,19 +210,25 @@ CREATE INDEX "ProductRelease_variantId_idx" ON "ProductRelease"("variantId");
 CREATE INDEX "ProductRelease_barcode_idx" ON "ProductRelease"("barcode");
 
 -- CreateIndex
-CREATE INDEX "OwnedFigure_collectorId_idx" ON "OwnedFigure"("collectorId");
+CREATE UNIQUE INDEX "ProductRelease_variantId_name_key" ON "ProductRelease"("variantId", "name");
+
+-- CreateIndex
+CREATE INDEX "OwnedFigure_userId_idx" ON "OwnedFigure"("userId");
 
 -- CreateIndex
 CREATE INDEX "OwnedFigure_productReleaseId_idx" ON "OwnedFigure"("productReleaseId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Collector_username_key" ON "Collector"("username");
+CREATE UNIQUE INDEX "OwnedFigure_userId_productReleaseId_key" ON "OwnedFigure"("userId", "productReleaseId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Collector_email_key" ON "Collector"("email");
+CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 
 -- CreateIndex
-CREATE INDEX "Collector_username_idx" ON "Collector"("username");
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE INDEX "User_username_idx" ON "User"("username");
 
 -- AddForeignKey
 ALTER TABLE "Line" ADD CONSTRAINT "Line_manufacturerId_fkey" FOREIGN KEY ("manufacturerId") REFERENCES "Manufacturer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -219,7 +252,7 @@ ALTER TABLE "Variant" ADD CONSTRAINT "Variant_figureId_fkey" FOREIGN KEY ("figur
 ALTER TABLE "ProductRelease" ADD CONSTRAINT "ProductRelease_variantId_fkey" FOREIGN KEY ("variantId") REFERENCES "Variant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OwnedFigure" ADD CONSTRAINT "OwnedFigure_collectorId_fkey" FOREIGN KEY ("collectorId") REFERENCES "Collector"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "OwnedFigure" ADD CONSTRAINT "OwnedFigure_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "OwnedFigure" ADD CONSTRAINT "OwnedFigure_productReleaseId_fkey" FOREIGN KEY ("productReleaseId") REFERENCES "ProductRelease"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -10,7 +10,7 @@ import { CharactersModule } from './characters/characters.module';
 import { FiguresModule } from './figures/figures.module';
 import { VariantsModule } from './variants/variants.module';
 import { ProductReleasesModule } from './product-releases/product-releases.module';
-import { CollectorsModule } from './collectors/collectors.module';
+import { UsersModule } from './users/users.module';
 import { OwnedFiguresModule } from './owned-figures/owned-figures.module';
 
 @Module({
@@ -23,7 +23,7 @@ import { OwnedFiguresModule } from './owned-figures/owned-figures.module';
     FiguresModule,
     VariantsModule,
     ProductReleasesModule,
-    CollectorsModule,
+    UsersModule,
     OwnedFiguresModule
   ],
   controllers: [AppController],

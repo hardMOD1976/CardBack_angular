@@ -12,17 +12,17 @@ import { UpdateOwnedFigureDto } from './dto/update-owned-figure.dto';
 export class OwnedFiguresService {
   constructor(private prisma: PrismaService) {}
 
-  async ensureCollectorExists(id: string) {
-    const collector = await this.prisma.collector.findFirst({
+  async ensureUserExists(id: string) {
+    const user = await this.prisma.user.findFirst({
       where: {
         id,
         deletedAt: null,
       },
     });
 
-    if (!collector) {
+    if (!user) {
       throw new NotFoundException(
-        `Collector with id '${id}' not found.`,
+        `User with id '${id}' not found.`,
       );
     }
   }
@@ -48,7 +48,7 @@ export class OwnedFiguresService {
         deletedAt: null,
       },
       include: {
-        collector: true,
+        user: true,
         productRelease: true,
       },
       orderBy: {
@@ -64,14 +64,14 @@ export class OwnedFiguresService {
         deletedAt: null,
       },
       include: {
-        collector: true,
+        user: true,
         productRelease: true,
       },
     });
   }
 
   async create(dto: CreateOwnedFigureDto) {
-    await this.ensureCollectorExists(dto.collectorId);
+    await this.ensureUserExists(dto.userId);
     await this.ensureProductReleaseExists(dto.productReleaseId);
 
     return this.prisma.ownedFigure.create({
@@ -83,8 +83,8 @@ export class OwnedFiguresService {
     id: string,
     dto: UpdateOwnedFigureDto,
   ) {
-    if (dto.collectorId) {
-      await this.ensureCollectorExists(dto.collectorId);
+    if (dto.userId) {
+      await this.ensureUserExists(dto.userId);
     }
 
     if (dto.productReleaseId) {

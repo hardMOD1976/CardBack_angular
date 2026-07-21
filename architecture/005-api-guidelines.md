@@ -291,7 +291,7 @@ Authentication identifies the user.
 
 Authorization determines what the user can access.
 
-Collectors should only modify their own personal data.
+Users should only modify their own personal data.
 
 ---
 

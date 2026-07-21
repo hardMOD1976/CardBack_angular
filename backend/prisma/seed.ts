@@ -7,7 +7,7 @@ import { characters } from './seed/characters.seed';
 import { figures } from './seed/figures.seed';
 import { variants } from './seed/variants.seed';
 import { productReleases } from './seed/product-releases.seed';
-import { collectors } from './seed/collectors.seed';
+import { users } from './seed/users.seed';
 import { ownedFigures } from './seed/owned-figures.seed';
 
 const prisma = new PrismaClient();
@@ -218,7 +218,7 @@ for (const variant of variants) {
 
 console.log(`✅ Seeded ${variants.length} variants`);
 
-  // ============================================================
+// ============================================================
 // Product Releases
 // ============================================================
 
@@ -267,37 +267,37 @@ for (const release of productReleases) {
 
 console.log(`✅ Seeded ${productReleases.length} product releases`);
 
-  // ============================================================
-  // Collectors
-  // ============================================================
+ // ============================================================
+// Users
+// ============================================================
 
-  for (const collector of collectors) {
-    await prisma.collector.upsert({
-      where: {
-        username: collector.username,
-      },
-      update: {
-        displayName: collector.displayName,
-        email: collector.email,
-        country: collector.country,
-        avatar: collector.avatar,
-      },
-      create: collector,
-    });
-  }
+for (const user of users) {
+  await prisma.user.upsert({
+    where: {
+      username: user.username,
+    },
+    update: {
+      displayName: user.displayName,
+      email: user.email,
+      country: user.country,
+      avatar: user.avatar,
+    },
+    create: user,
+  });
+}
 
-  console.log(`✅ Seeded ${collectors.length} collectors`);
+console.log(`✅ Seeded ${users.length} users`);
 
-  // ============================================================
+// ============================================================
 // Owned Figures
 // ============================================================
 
 for (const ownedFigure of ownedFigures) {
-  const collector = await prisma.collector.findUniqueOrThrow({
-    where: {
-      username: ownedFigure.collectorUsername,
-    },
-  });
+  const user = await prisma.user.findUniqueOrThrow({
+  where: {
+    username: ownedFigure.userUsername,
+  },
+});
 
   const productRelease = await prisma.productRelease.findFirstOrThrow({
     where: {
@@ -307,8 +307,8 @@ for (const ownedFigure of ownedFigures) {
 
   await prisma.ownedFigure.upsert({
     where: {
-      collectorId_productReleaseId: {
-        collectorId: collector.id,
+      userId_productReleaseId: {
+      userId: user.id,
         productReleaseId: productRelease.id,
       },
     },
@@ -327,7 +327,7 @@ for (const ownedFigure of ownedFigures) {
       notes: ownedFigure.notes,
     },
     create: {
-      collectorId: collector.id,
+      userId: user.id,
       productReleaseId: productRelease.id,
       condition: ownedFigure.condition,
       completeness: ownedFigure.completeness,

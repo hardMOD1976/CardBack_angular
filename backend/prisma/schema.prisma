@@ -193,42 +193,42 @@ model ProductRelease {
 }
 
 model OwnedFigure {
-  id                    String   @id @default(cuid())
+  id                   String   @id @default(cuid())
 
-  collectorId           String
-  productReleaseId      String
+  userId               String
+  productReleaseId     String
 
-  condition             String
-  completeness          String
+  condition            String
+  completeness         String
 
-  packagingState        String?
+  packagingState       String?
 
-  purchaseDate          DateTime?
-  purchasePrice         Decimal?
-  currency              String?
+  purchaseDate         DateTime?
+  purchasePrice        Decimal?
+  currency             String?
 
-  purchaseLocation      String?
+  purchaseLocation     String?
 
-  estimatedMarketValue  Decimal?
+  estimatedMarketValue Decimal?
 
-  storageLocation       String?
+  storageLocation      String?
 
-  notes                 String?
+  notes                String?
 
-  collector             Collector @relation(fields: [collectorId], references: [id])
-  productRelease        ProductRelease @relation(fields: [productReleaseId], references: [id])
+  user                 User @relation(fields: [userId], references: [id])
+  productRelease       ProductRelease @relation(fields: [productReleaseId], references: [id])
 
-  deletedAt             DateTime?
+  deletedAt            DateTime?
 
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
-  @@index([collectorId])
+  @@index([userId])
   @@index([productReleaseId])
-  @@unique([collectorId, productReleaseId])
+  @@unique([userId, productReleaseId])
 }
 
-model Collector {
+model User {
   id            String   @id @default(cuid())
 
   username      String   @unique

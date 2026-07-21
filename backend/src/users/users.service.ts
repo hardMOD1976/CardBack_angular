@@ -2,15 +2,15 @@ import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 
-import { CreateCollectorDto } from './dto/create-collector.dto';
-import { UpdateCollectorDto } from './dto/update-collector.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
-export class CollectorsService {
+export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   findAll() {
-    return this.prisma.collector.findMany({
+    return this.prisma.user.findMany({
       where: {
         deletedAt: null,
       },
@@ -21,7 +21,7 @@ export class CollectorsService {
   }
 
   findOne(id: string) {
-    return this.prisma.collector.findFirst({
+    return this.prisma.user.findFirst({
       where: {
         id,
         deletedAt: null,
@@ -29,26 +29,26 @@ export class CollectorsService {
     });
   }
 
-  create(createCollectorDto: CreateCollectorDto) {
-    return this.prisma.collector.create({
-      data: createCollectorDto,
+  create(createUserDto: CreateUserDto) {
+    return this.prisma.user.create({
+      data: createUserDto,
     });
   }
 
   update(
     id: string,
-    updateCollectorDto: UpdateCollectorDto,
+    updateUserDto: UpdateUserDto,
   ) {
-    return this.prisma.collector.update({
+    return this.prisma.user.update({
       where: {
         id,
       },
-      data: updateCollectorDto,
+      data: updateUserDto,
     });
   }
 
   remove(id: string) {
-    return this.prisma.collector.update({
+    return this.prisma.user.update({
       where: {
         id,
       },

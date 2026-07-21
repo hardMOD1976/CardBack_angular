@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Backend Foundation Completed
+Authentication (JWT) in progress
 
 ---
 
@@ -23,7 +23,7 @@ Backend Foundation Completed
 - Figure
 - Variant
 - Product Release
-- Collector
+- User
 - Owned Figure
 
 ### Infrastructure
@@ -43,74 +43,53 @@ Backend Foundation Completed
 
 ### Backend
 
-#### Manufacturer
+- Manufacturer
+- Franchise
+- Line
+- Character
+- Figure
+- Variant
+- Product Release
+- User
+- Owned Figure
+
+All modules include:
 
 - CRUD
 - DTO validation
 - Soft Delete
+- Relational validation where applicable
 
-#### Franchise
+### Authentication
 
-- CRUD
-- DTO validation
-- Soft Delete
+Completed
 
-#### Line
+- AuthModule
+- AuthController
+- AuthService
+- JWT configuration
+- ConfigModule integration
+- Login endpoint
+- Password hashing (bcrypt)
+- Access Token generation
+- Refresh Token generation
+- Refresh Token hashing
+- Refresh Token persistence
+- Refresh Token rotation
+- Token revocation support
 
-- CRUD
-- DTO validation
-- Soft Delete
-- Manufacturer validation
-- Franchise validation
+Validated
 
-#### Character
-
-- CRUD
-- DTO validation
-- Soft Delete
-- Franchise validation
-
-#### Figure
-
-- CRUD
-- DTO validation
-- Soft Delete
-- Character validation
-- Line validation
-
-#### Variant
-
-- CRUD
-- DTO validation
-- Soft Delete
-- Figure validation
-
-#### Product Release
-
-- CRUD
-- DTO validation
-- Soft Delete
-- Variant validation
-
-#### Collector
-
-- CRUD
-- DTO validation
-- Soft Delete
-
-#### Owned Figure
-
-- CRUD
-- DTO validation
-- Soft Delete
-- Collector validation
-- Product Release validation
+- Login endpoint
+- Refresh endpoint
+- Token rotation
+- Invalidated refresh tokens rejected
 
 ### Documentation
 
 - Swagger integrated
 - REST API fully documented
-- Endpoint consistency reviewed
+- Authentication endpoints documented
 
 ### Database
 
@@ -124,10 +103,18 @@ Backend Foundation Completed
 
 ## Pending
 
+### Authentication
+
+- Logout endpoint
+- Jwt Strategy
+- Passport integration
+- JwtAuthGuard
+- Roles Guard
+- Authorization decorators
+- Protect existing endpoints
+
 ### Backend
 
-- Authentication (JWT)
-- Authorization / Roles
 - Search
 - Pagination
 - Filtering
@@ -146,8 +133,8 @@ Backend Foundation Completed
 
 ## Current Milestone
 
-Backend Foundation completed.
+Complete authentication.
 
 Next objective:
 
-Implement authentication and authorization, then begin application-level features (search, collection management and Angular frontend integration).
+Protect the REST API using JWT Guards and Role-based authorization before starting application-level features.

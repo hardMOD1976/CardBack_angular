@@ -156,3 +156,70 @@ Next milestone:
 - Search
 - Collection features
 - Angular frontend
+
+## 2026-07-21
+
+### Authentication (JWT) - Phase 1
+
+User model extended.
+
+Implemented:
+
+- passwordHash
+- role
+- emailVerifiedAt
+- lastLoginAt
+- refreshTokenHash
+
+Authentication module created.
+
+Implemented:
+
+- AuthModule
+- AuthController
+- AuthService
+- Login DTO
+- Refresh Token DTO
+
+JWT infrastructure:
+
+- ConfigModule integration
+- Access Tokens
+- Refresh Tokens
+- Environment-based configuration
+
+Security:
+
+- Password hashing using bcrypt
+- Password validation
+- Refresh token hashing
+- Refresh token persistence
+- Refresh token rotation
+- Refresh token invalidation after use
+
+Users module:
+
+- findByUsername()
+- updateRefreshToken()
+
+Authentication successfully tested through Swagger.
+
+Verified:
+
+- Login
+- Access Token generation
+- Refresh Token generation
+- Refresh Token rotation
+- Refresh Token revocation
+
+Current milestone:
+
+Authentication foundation completed.
+
+Next milestone:
+
+- Logout
+- Jwt Strategy
+- JwtAuthGuard
+- Roles
+- Authorization

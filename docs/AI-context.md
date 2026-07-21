@@ -10,7 +10,7 @@ The platform separates immutable catalog data from personal collection data, pro
 
 ## Current Phase
 
-Backend Foundation Completed
+Authentication (JWT) in progress
 
 ---
 
@@ -23,7 +23,7 @@ Backend Foundation Completed
 - Figure
 - Variant
 - Product Release
-- Collector
+- User
 - Owned Figure
 
 ---
@@ -33,9 +33,9 @@ Backend Foundation Completed
 - Packaging never defines a Figure.
 - Variants represent physical differences.
 - Product Releases represent commercial distributions.
-- Collector data never modifies catalog data.
+- User data never modifies catalog data.
 - A Figure represents the collectible itself.
-- An Owned Figure represents a collector's physical copy.
+- An Owned Figure represents a user's physical copy.
 
 ---
 
@@ -55,7 +55,7 @@ Repository
 
 ## Backend Progress
 
-Completed modules:
+Completed modules
 
 - Manufacturer (CRUD + Soft Delete)
 - Franchise (CRUD + Soft Delete)
@@ -64,10 +64,10 @@ Completed modules:
 - Figure (CRUD + Soft Delete + relational validation)
 - Variant (CRUD + Soft Delete + relational validation)
 - Product Release (CRUD + Soft Delete + relational validation)
-- Collector (CRUD + Soft Delete)
+- User (CRUD + Soft Delete)
 - Owned Figure (CRUD + Soft Delete + relational validation)
 
-Shared infrastructure:
+Shared infrastructure
 
 - PrismaModule
 - ValidationPipe
@@ -76,29 +76,58 @@ Shared infrastructure:
 - Relational validation
 - Prisma Studio workflow
 
-Documentation:
+Documentation
 
 - Swagger integrated
 - Complete REST API documentation
 - Endpoint consistency reviewed
 
-Database:
+Database
 
 - Golden Dataset implemented
 - Robust seed with upsert()
 - Referential integrity verified
 - Unique constraints reviewed
 
+Authentication (implemented)
+
+- JWT Access Token
+- JWT Refresh Token
+- Login endpoint
+- Password hashing (bcrypt)
+- Refresh token hashing
+- Refresh token rotation
+- Refresh token persistence in database
+- Token revocation support
+- ConfigModule integration
+- JwtModule configured through environment variables
+
+Authentication (pending)
+
+- Logout endpoint
+- JWT Guard
+- Passport JWT Strategy
+- Current User decorator
+- Roles Guard
+- Authorization decorators
+- Protected endpoints
+
 ---
 
 ## Current Next Step
 
-Backend foundation is complete.
+Continue authentication module.
 
-Next milestone:
+Immediate milestone:
 
-- Authentication (JWT)
-- Authorization / Roles
+- Logout endpoint
+- JWT Strategy
+- JwtAuthGuard
+- Roles authorization
+- Protect REST endpoints
+
+After authentication:
+
 - Global Search
 - Collection management
 - Angular frontend integration

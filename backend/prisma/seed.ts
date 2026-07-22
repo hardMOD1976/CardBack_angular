@@ -279,11 +279,13 @@ for (const user of users) {
       username: user.username,
     },
     update: {
-      displayName: user.displayName,
-      email: user.email,
-      country: user.country,
-      avatar: user.avatar,
-    },
+  displayName: user.displayName,
+  email: user.email,
+  passwordHash: user.passwordHash,
+  role: user.role,
+  country: user.country,
+  avatar: user.avatar,
+},
     create: user,
   });
 }

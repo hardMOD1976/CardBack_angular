@@ -80,4 +80,10 @@ export class UsersService {
       },
     });
   }
+
+  async create(createUserDto: CreateUserDto) {
+  return this.prisma.user.create({
+    data: createUserDto,
+  });
+}
 }

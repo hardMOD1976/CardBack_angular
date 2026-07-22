@@ -23,6 +23,8 @@ import {
 
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
+import { Public } from './decorators/public.decorator';
+
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
@@ -30,6 +32,7 @@ export class AuthController {
     private readonly authService: AuthService,
   ) {}
 
+  @Public()
   @Post('login')
   @ApiOperation({
     summary: 'User login',
@@ -41,6 +44,7 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
+  @Public()
   @Post('refresh')
   @ApiOperation({
     summary: 'Refresh access token',

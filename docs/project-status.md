@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Authentication (JWT) in progress
+Pagination infrastructure
 
 ---
 
@@ -53,14 +53,14 @@ Authentication (JWT) in progress
 - User
 - Owned Figure
 
-All modules include:
+All modules include
 
 - CRUD
 - DTO validation
 - Soft Delete
 - Relational validation where applicable
 
-### Authentication
+### Authentication & Authorization
 
 Completed
 
@@ -70,26 +70,35 @@ Completed
 - JWT configuration
 - ConfigModule integration
 - Login endpoint
-- Password hashing (bcrypt)
-- Access Token generation
-- Refresh Token generation
+- Refresh endpoint
+- Password hashing
 - Refresh Token hashing
-- Refresh Token persistence
+- Access Token generation
 - Refresh Token rotation
-- Token revocation support
+- Token revocation
+- Passport JWT Strategy
+- JwtAuthGuard
+- Public decorator
+- Roles decorator
+- RolesGuard
+- Swagger Authorize integration
+- Role-based authorization
 
 Validated
 
-- Login endpoint
-- Refresh endpoint
-- Token rotation
-- Invalidated refresh tokens rejected
+- Login
+- Refresh
+- JWT validation
+- Protected endpoints
+- ADMIN-only write operations
+- Public catalog access
 
 ### Documentation
 
 - Swagger integrated
 - REST API fully documented
-- Authentication endpoints documented
+- Authentication documented
+- JWT Authorization documented
 
 ### Database
 
@@ -101,22 +110,22 @@ Validated
 
 ---
 
+## In Progress
+
+### Pagination
+
+- Generic Pagination DTO
+- Generic Pagination Response
+- Manufacturers endpoint migration
+
+---
+
 ## Pending
-
-### Authentication
-
-- Logout endpoint
-- Jwt Strategy
-- Passport integration
-- JwtAuthGuard
-- Roles Guard
-- Authorization decorators
-- Protect existing endpoints
 
 ### Backend
 
-- Search
-- Pagination
+- Apply pagination to remaining modules
+- Global Search
 - Filtering
 - Testing
 - Image upload
@@ -133,8 +142,8 @@ Validated
 
 ## Current Milestone
 
-Complete authentication.
+Implement reusable pagination across the REST API.
 
-Next objective:
+Next objective
 
-Protect the REST API using JWT Guards and Role-based authorization before starting application-level features.
+Complete pagination and filtering before starting the Angular frontend.

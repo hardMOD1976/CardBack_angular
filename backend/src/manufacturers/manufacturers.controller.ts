@@ -6,6 +6,8 @@ import {
   Param,
   Post,
   Put,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
 
 import { ManufacturersService } from './manufacturers.service';
@@ -14,6 +16,7 @@ import { UpdateManufacturerDto } from './dto/update-manufacturer.dto';
 
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -21,8 +24,16 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
+
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '@prisma/client';
+
+import { PaginationQueryDto } from '../common/pagination';
 
 @ApiTags('Manufacturers')
 @Controller('manufacturers')
@@ -31,22 +42,37 @@ export class ManufacturersController {
     private readonly manufacturersService: ManufacturersService,
   ) {}
 
-  @ApiOperation({
-    summary: 'Get all manufacturers',
-    description:
-      'Returns all active manufacturers ordered alphabetically.',
-    operationId: 'findAllManufacturers',
-  })
-  @ApiOkResponse({
-    description: 'Manufacturers retrieved successfully.',
-  })
-  @ApiInternalServerErrorResponse({
-    description: 'Internal server error.',
-  })
-  @Get()
-  findAll() {
-    return this.manufacturersService.findAll();
-  }
+@ApiOperation({
+  summary: 'Get all manufacturers',
+  description:
+    'Returns all active manufacturers ordered alphabetically.',
+  operationId: 'findAllManufacturers',
+})
+@ApiQuery({
+  name: 'page',
+  required: false,
+  example: 1,
+})
+@ApiQuery({
+  name: 'limit',
+  required: false,
+  example: 20,
+})
+@ApiOkResponse({
+  description: 'Manufacturers retrieved successfully.',
+})
+@ApiInternalServerErrorResponse({
+  description: 'Internal server error.',
+})
+@Get()
+findAll(
+  @Query()
+  pagination: PaginationQueryDto,
+) {
+  return this.manufacturersService.findAll(
+    pagination,
+  );
+}
 
   @ApiOperation({
     summary: 'Get manufacturer by id',
@@ -90,6 +116,9 @@ export class ManufacturersController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+  @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Post()
   create(
     @Body()
@@ -125,6 +154,9 @@ export class ManufacturersController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+  @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Put(':id')
   update(
     @Param('id') id: string,
@@ -156,6 +188,9 @@ export class ManufacturersController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+  @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.manufacturersService.remove(id);

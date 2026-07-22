@@ -6,10 +6,12 @@ import {
   Param,
   Post,
   Put,
+  UseGuards
 } from '@nestjs/common';
 
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -23,6 +25,10 @@ import {
 import { LinesService } from './lines.service';
 import { CreateLineDto } from './dto/create-lines.dto';
 import { UpdateLineDto } from './dto/update-lines.dto';
+import { Role } from '@prisma/client';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @ApiTags('Lines')
 @Controller('lines')
@@ -91,6 +97,9 @@ export class LinesController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+  @ApiBearerAuth('access-token')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.ADMIN)
   @Post()
   create(@Body() dto: CreateLineDto) {
     return this.linesService.create(dto);

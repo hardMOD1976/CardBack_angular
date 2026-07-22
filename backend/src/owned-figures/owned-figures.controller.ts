@@ -6,10 +6,12 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
@@ -23,6 +25,10 @@ import { OwnedFiguresService } from './owned-figures.service';
 
 import { CreateOwnedFigureDto } from './dto/create-owned-figure.dto';
 import { UpdateOwnedFigureDto } from './dto/update-owned-figure.dto';
+import { Role } from '@prisma/client';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @ApiTags('Owned Figures')
 @Controller('owned-figures')
@@ -88,6 +94,9 @@ export class OwnedFiguresController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+   @ApiBearerAuth('access-token')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.ADMIN)
   @Post()
   create(
     @Body()
@@ -118,6 +127,9 @@ export class OwnedFiguresController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+   @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Put(':id')
   update(
     @Param('id') id: string,
@@ -146,6 +158,9 @@ export class OwnedFiguresController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+   @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.ownedFiguresService.remove(id);

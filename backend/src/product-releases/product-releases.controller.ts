@@ -6,10 +6,12 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -24,6 +26,10 @@ import { ProductReleasesService } from './product-releases.service';
 
 import { CreateProductReleaseDto } from './dto/create-product-release.dto';
 import { UpdateProductReleaseDto } from './dto/update-product-release.dto';
+import { Role } from '@prisma/client';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @ApiTags('Product Releases')
 @Controller('product-releases')
@@ -94,6 +100,9 @@ export class ProductReleasesController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+   @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Post()
   create(
     @Body()
@@ -126,6 +135,9 @@ export class ProductReleasesController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+   @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Put(':id')
   update(
     @Param('id') id: string,
@@ -154,6 +166,9 @@ export class ProductReleasesController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+   @ApiBearerAuth('access-token')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.productReleasesService.remove(id);

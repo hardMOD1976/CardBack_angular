@@ -6,10 +6,12 @@ import {
   Param,
   Post,
   Put,
+  UseGuards
 } from '@nestjs/common';
 
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -23,6 +25,10 @@ import {
 import { VariantsService } from './variants.service';
 import { CreateVariantDto } from './dto/create-variant.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto';
+import { Role } from '@prisma/client';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @ApiTags('Variants')
 @Controller('variants')
@@ -91,6 +97,9 @@ export class VariantsController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+   @ApiBearerAuth('access-token')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.ADMIN)
   @Post()
   create(@Body() createVariantDto: CreateVariantDto) {
     return this.variantsService.create(createVariantDto);
@@ -120,6 +129,9 @@ export class VariantsController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+   @ApiBearerAuth('access-token')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.ADMIN)
   @Put(':id')
   update(
     @Param('id') id: string,
@@ -147,6 +159,9 @@ export class VariantsController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+   @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.variantsService.remove(id);

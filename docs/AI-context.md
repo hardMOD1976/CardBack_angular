@@ -10,7 +10,8 @@ The platform separates immutable catalog data from personal collection data, pro
 
 ## Current Phase
 
-Authentication (JWT) in progress
+Authentication & Authorization completed
+Pagination infrastructure started
 
 ---
 
@@ -80,7 +81,8 @@ Documentation
 
 - Swagger integrated
 - Complete REST API documentation
-- Endpoint consistency reviewed
+- Swagger JWT authentication
+- Protected endpoints documented
 
 Database
 
@@ -89,7 +91,9 @@ Database
 - Referential integrity verified
 - Unique constraints reviewed
 
-Authentication (implemented)
+Authentication & Authorization
+
+Implemented
 
 - JWT Access Token
 - JWT Refresh Token
@@ -97,37 +101,48 @@ Authentication (implemented)
 - Password hashing (bcrypt)
 - Refresh token hashing
 - Refresh token rotation
-- Refresh token persistence in database
+- Refresh token persistence
 - Token revocation support
 - ConfigModule integration
 - JwtModule configured through environment variables
-
-Authentication (pending)
-
-- Logout endpoint
-- JWT Guard
 - Passport JWT Strategy
-- Current User decorator
-- Roles Guard
-- Authorization decorators
-- Protected endpoints
+- JwtAuthGuard
+- Public decorator
+- Roles decorator
+- RolesGuard
+- Role-based authorization
+- Swagger Authorize integration
+- Protected endpoints validated
+
+Current authorization model
+
+- Public catalog (GET endpoints)
+- Authenticated users can browse catalog
+- Only ADMIN users can create, update or delete catalog entities
+
+Pagination
+
+Started
+
+- PaginationQueryDto
+- PaginationMetaDto
+- PaginatedResponseDto
 
 ---
 
 ## Current Next Step
 
-Continue authentication module.
+Finish reusable pagination infrastructure.
 
-Immediate milestone:
+Immediate milestone
 
-- Logout endpoint
-- JWT Strategy
-- JwtAuthGuard
-- Roles authorization
-- Protect REST endpoints
+- Paginated responses
+- Apply pagination to Manufacturers
+- Roll out pagination to remaining catalog endpoints
 
-After authentication:
+After pagination
 
 - Global Search
+- Filtering
 - Collection management
 - Angular frontend integration

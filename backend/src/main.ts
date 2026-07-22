@@ -1,33 +1,51 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { PrismaExceptionFilter } from './common/exceptions/prisma-exception.filter';
+
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+
+import { AppModule } from './app.module';
+
+import { PrismaExceptionFilter } from './common/exceptions/prisma-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(
-  new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-  }),
-);
-  
-app.useGlobalFilters(new PrismaExceptionFilter());
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
-const config = new DocumentBuilder()
-  .setTitle('Figure Archive API')
-  .setDescription('REST API for Figure Archive')
-  .setVersion('1.0')
-  .build();
+  app.useGlobalFilters(new PrismaExceptionFilter());
 
-const document = SwaggerModule.createDocument(app, config);
+  const config = new DocumentBuilder()
+    .setTitle('Figure Archive API')
+    .setDescription('REST API for Figure Archive')
+    .setVersion('1.0')
+    .addBearerAuth({
+  type: 'http',
+  scheme: 'bearer',
+  bearerFormat: 'JWT',
+  description: 'Paste the Access Token here',
+})
+    .build();
 
-SwaggerModule.setup('api', app, document);
+  const document = SwaggerModule.createDocument(
+    app,
+    config,
+  );
 
-await app.listen(process.env.PORT ?? 3000);
+  SwaggerModule.setup(
+    'api',
+    app,
+    document,
+  );
 
+  await app.listen(
+    process.env.PORT ?? 3000,
+  );
 }
+
 bootstrap();

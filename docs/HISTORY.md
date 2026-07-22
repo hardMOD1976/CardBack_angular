@@ -223,3 +223,52 @@ Next milestone:
 - JwtAuthGuard
 - Roles
 - Authorization
+
+## 2026-07-22
+
+### Authentication & Authorization Completed
+
+JWT infrastructure finalized.
+
+Implemented
+
+- Passport JWT Strategy
+- JwtAuthGuard
+- Public decorator
+- Roles decorator
+- RolesGuard
+- Role-based authorization
+- Swagger Bearer authentication
+- Protected endpoints validated
+- ADMIN-only write operations
+- Public read-only catalog
+
+Authorization policy established
+
+- GET endpoints remain public.
+- POST / PUT / DELETE require authentication.
+- Administrative operations require ADMIN role.
+
+Swagger
+
+- JWT Authorize support
+- Bearer authentication documentation
+- Protected endpoints marked
+
+Pagination
+
+Infrastructure started.
+
+Implemented
+
+- PaginationQueryDto
+- PaginationMetaDto
+- PaginatedResponseDto
+
+Current milestone
+
+Security layer completed.
+
+Next milestone
+
+Apply reusable pagination to all catalog endpoints before implementing search and filtering.

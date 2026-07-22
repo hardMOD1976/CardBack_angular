@@ -4,12 +4,14 @@ import {
   Delete,
   Get,
   Param,
+  Post,
   Put,
   UseGuards,
 } from '@nestjs/common';
 
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -20,12 +22,16 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
+import { Role } from '@prisma/client';
+
 import { UsersService } from './users.service';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @ApiTags('Users')
 @Controller('users')
@@ -46,7 +52,9 @@ export class UsersController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
-  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Get()
   findAll() {
     return this.usersService.findAll();
@@ -71,6 +79,9 @@ export class UsersController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+  @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
@@ -93,15 +104,18 @@ export class UsersController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
-  // @Post()
-  // create(
-  //   @Body()
-  //   createUserDto: CreateUserDto,
-  // ) {
-  //   return this.usersService.create(
-  //     createUserDto,
-  //   );
-  // }
+  @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @Post()
+  create(
+    @Body()
+    createUserDto: CreateUserDto,
+  ) {
+    return this.usersService.create(
+      createUserDto,
+    );
+  }
 
   @ApiOperation({
     summary: 'Update user',
@@ -127,6 +141,9 @@ export class UsersController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+  @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Put(':id')
   update(
     @Param('id') id: string,
@@ -158,6 +175,9 @@ export class UsersController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+  @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);

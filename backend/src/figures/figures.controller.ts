@@ -10,6 +10,7 @@ import {
 
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -25,6 +26,7 @@ import { CreateFigureDto } from './dto/create-figure.dto';
 import { UpdateFigureDto } from './dto/update-figure.dto';
 
 @ApiTags('Figures')
+@ApiBearerAuth('access-token')
 @Controller('figures')
 export class FiguresController {
   constructor(private readonly figuresService: FiguresService) {}

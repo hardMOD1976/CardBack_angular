@@ -1,4 +1,5 @@
 import * as bcrypt from 'bcrypt';
+import { Role } from '@prisma/client';
 
 export async function getUsers() {
   const saltRounds = 10;
@@ -35,7 +36,11 @@ export async function getUsers() {
       username: 'retrofan',
       displayName: 'Retro Fan',
       email: 'retro@example.com',
-      passwordHash: await bcrypt.hash('eternia2026', saltRounds),
+      passwordHash: await bcrypt.hash(
+        'eternia2026',
+        saltRounds,
+      ),
+      role: Role.ADMIN,
       country: 'France',
       avatar: null,
     },

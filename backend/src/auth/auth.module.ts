@@ -1,10 +1,16 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import {
+  ConfigModule,
+  ConfigService,
+} from '@nestjs/config';
+
 import type { StringValue } from 'ms';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 import { UsersModule } from '../users/users.module';
 
@@ -16,13 +22,19 @@ import { UsersModule } from '../users/users.module';
       imports: [ConfigModule],
       inject: [ConfigService],
 
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.getOrThrow<string>('JWT_SECRET'),
+      useFactory: (
+        configService: ConfigService,
+      ) => ({
+        secret:
+          configService.getOrThrow<string>(
+            'JWT_SECRET',
+          ),
 
         signOptions: {
-          expiresIn: configService.getOrThrow<string>(
-            'JWT_EXPIRES_IN',
-          ) as StringValue,
+          expiresIn:
+            configService.getOrThrow<string>(
+              'JWT_EXPIRES_IN',
+            ) as StringValue,
         },
       }),
     }),
@@ -30,6 +42,9 @@ import { UsersModule } from '../users/users.module';
 
   controllers: [AuthController],
 
-  providers: [AuthService],
+  providers: [
+    AuthService,
+    JwtStrategy,
+  ],
 })
 export class AuthModule {}

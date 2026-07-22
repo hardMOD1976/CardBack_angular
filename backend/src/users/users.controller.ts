@@ -4,8 +4,8 @@ import {
   Delete,
   Get,
   Param,
-  Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 
 import {
@@ -24,6 +24,8 @@ import { UsersService } from './users.service';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('Users')
 @Controller('users')
@@ -44,6 +46,7 @@ export class UsersController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {
     return this.usersService.findAll();

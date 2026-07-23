@@ -228,9 +228,10 @@ model OwnedFigure {
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 
+  quantity Int @default(1)
+
   @@index([userId])
   @@index([productReleaseId])
-  @@unique([userId, productReleaseId])
 }
 
 model User {

@@ -7,6 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 
 import { CreateOwnedFigureDto } from './dto/create-owned-figure.dto';
 import { UpdateOwnedFigureDto } from './dto/update-owned-figure.dto';
+import { buildPaginatedResponse, PaginationQueryDto } from '../common/pagination';
 
 @Injectable()
 export class OwnedFiguresService {
@@ -42,20 +43,44 @@ export class OwnedFiguresService {
     }
   }
 
-  findAll() {
-    return this.prisma.ownedFigure.findMany({
-      where: {
-        deletedAt: null,
-      },
-      include: {
-        user: true,
-        productRelease: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-  }
+  async findAll(
+  pagination: PaginationQueryDto,
+) {
+  const { page, limit } = pagination;
+
+  const skip = (page - 1) * limit;
+
+  const [ownedFigures, total] =
+    await this.prisma.$transaction([
+      this.prisma.ownedFigure.findMany({
+        where: {
+          deletedAt: null,
+        },
+        include: {
+          user: true,
+          productRelease: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        skip,
+        take: limit,
+      }),
+
+      this.prisma.ownedFigure.count({
+        where: {
+          deletedAt: null,
+        },
+      }),
+    ]);
+
+  return buildPaginatedResponse(
+    ownedFigures,
+    page,
+    limit,
+    total,
+  );
+}
 
   findOne(id: string) {
     return this.prisma.ownedFigure.findFirst({

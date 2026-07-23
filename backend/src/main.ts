@@ -24,12 +24,15 @@ async function bootstrap() {
     .setTitle('Figure Archive API')
     .setDescription('REST API for Figure Archive')
     .setVersion('1.0')
-    .addBearerAuth({
-  type: 'http',
-  scheme: 'bearer',
-  bearerFormat: 'JWT',
-  description: 'Paste the Access Token here',
-})
+    .addBearerAuth(
+  {
+    type: 'http',
+    scheme: 'bearer',
+    bearerFormat: 'JWT',
+    description: 'Paste the Access Token here',
+  },
+  'access-token',
+)
     .build();
 
   const document = SwaggerModule.createDocument(

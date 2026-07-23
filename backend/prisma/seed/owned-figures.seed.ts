@@ -7,6 +7,8 @@ export const ownedFigures = [
     userUsername: 'isaacnegrie',
     productReleaseName: 'VC13 US Release',
 
+    quantity: 1,
+
     condition: 'Mint',
     completeness: 'Complete',
 
@@ -29,6 +31,8 @@ export const ownedFigures = [
     userUsername: 'isaacnegrie',
     productReleaseName: 'VC08 US Release',
 
+    quantity: 1,
+
     condition: 'Near Mint',
     completeness: 'Complete',
 
@@ -50,6 +54,8 @@ export const ownedFigures = [
   {
     userUsername: 'isaacnegrie',
     productReleaseName: 'Grogu Retro',
+
+    quantity: 1,
 
     condition: 'Mint',
     completeness: 'Complete',
@@ -77,6 +83,8 @@ export const ownedFigures = [
     userUsername: 'johndoe',
     productReleaseName: 'Luke Skywalker 1978',
 
+    quantity: 1,
+
     condition: 'Good',
     completeness: 'Loose',
 
@@ -98,6 +106,8 @@ export const ownedFigures = [
   {
     userUsername: 'johndoe',
     productReleaseName: 'R2-D2 1978',
+
+    quantity: 0,
 
     condition: 'Very Good',
     completeness: 'Loose',
@@ -124,6 +134,8 @@ export const ownedFigures = [
   {
     userUsername: 'lukecollector',
     productReleaseName: 'Luke Skywalker POTF2',
+
+    quantity: 2,
 
     condition: 'Mint',
 
@@ -153,6 +165,8 @@ export const ownedFigures = [
   {
     userUsername: 'retrofan',
     productReleaseName: 'The Mandalorian Retro',
+
+    quantity: 1,
 
     condition: 'Mint',
 

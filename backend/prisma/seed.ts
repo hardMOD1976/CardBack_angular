@@ -309,44 +309,27 @@ for (const ownedFigure of ownedFigures) {
     },
   });
 
-  await prisma.ownedFigure.upsert({
-    where: {
-      userId_productReleaseId: {
-      userId: user.id,
-        productReleaseId: productRelease.id,
-      },
-    },
-    update: {
-      condition: ownedFigure.condition,
-      completeness: ownedFigure.completeness,
-      packagingState: ownedFigure.packagingState,
-      purchaseDate: ownedFigure.purchaseDate
-        ? new Date(ownedFigure.purchaseDate)
-        : null,
-      purchasePrice: ownedFigure.purchasePrice,
-      currency: ownedFigure.currency,
-      purchaseLocation: ownedFigure.purchaseLocation,
-      estimatedMarketValue: ownedFigure.estimatedMarketValue,
-      storageLocation: ownedFigure.storageLocation,
-      notes: ownedFigure.notes,
-    },
-    create: {
-      userId: user.id,
-      productReleaseId: productRelease.id,
-      condition: ownedFigure.condition,
-      completeness: ownedFigure.completeness,
-      packagingState: ownedFigure.packagingState,
-      purchaseDate: ownedFigure.purchaseDate
-        ? new Date(ownedFigure.purchaseDate)
-        : null,
-      purchasePrice: ownedFigure.purchasePrice,
-      currency: ownedFigure.currency,
-      purchaseLocation: ownedFigure.purchaseLocation,
-      estimatedMarketValue: ownedFigure.estimatedMarketValue,
-      storageLocation: ownedFigure.storageLocation,
-      notes: ownedFigure.notes,
-    },
-  });
+  await prisma.ownedFigure.create({
+  data: {
+    userId: user.id,
+    productReleaseId: productRelease.id,
+
+    quantity: ownedFigure.quantity,
+
+    condition: ownedFigure.condition,
+    completeness: ownedFigure.completeness,
+    packagingState: ownedFigure.packagingState,
+    purchaseDate: ownedFigure.purchaseDate
+      ? new Date(ownedFigure.purchaseDate)
+      : null,
+    purchasePrice: ownedFigure.purchasePrice,
+    currency: ownedFigure.currency,
+    purchaseLocation: ownedFigure.purchaseLocation,
+    estimatedMarketValue: ownedFigure.estimatedMarketValue,
+    storageLocation: ownedFigure.storageLocation,
+    notes: ownedFigure.notes,
+  },
+});
 }
 
 console.log(`✅ Seeded ${ownedFigures.length} owned figures`);

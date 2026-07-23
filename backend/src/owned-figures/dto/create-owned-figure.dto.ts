@@ -4,6 +4,8 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsInt,
+  Min,
 } from 'class-validator';
 
 import {
@@ -95,4 +97,14 @@ export class CreateOwnedFigureDto {
   @IsOptional()
   @IsString()
   notes?: string;
+
+  @ApiPropertyOptional({
+  example: 1,
+  description: 'Number of identical copies owned.',
+})
+@IsOptional()
+@IsInt()
+@Min(1)
+quantity?: number;
+
 }

@@ -3,32 +3,61 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateFigureDto } from './dto/create-figure.dto';
 import { UpdateFigureDto } from './dto/update-figure.dto';
 
+import {
+  PaginationQueryDto,
+  buildPaginatedResponse,
+} from '../common/pagination';
+
 @Injectable()
 export class FiguresService {
   constructor(private prisma: PrismaService) {}
 
-  findAll() {
-  return this.prisma.figure.findMany({
-    where: {
-      deletedAt: null,
-    },
-    include: {
-      character: {
-        include: {
-          franchise: true,
+async findAll(
+  pagination: PaginationQueryDto,
+) {
+  const { page, limit } = pagination;
+
+  const skip = (page - 1) * limit;
+
+  const [figures, total] =
+    await this.prisma.$transaction([
+      this.prisma.figure.findMany({
+        where: {
+          deletedAt: null,
         },
-      },
-      line: {
         include: {
-          manufacturer: true,
-          franchise: true,
+          character: {
+            include: {
+              franchise: true,
+            },
+          },
+          line: {
+            include: {
+              manufacturer: true,
+              franchise: true,
+            },
+          },
         },
-      },
-    },
-    orderBy: {
-      name: 'asc',
-    },
-  });
+        orderBy: {
+          name: 'asc',
+        },
+        skip,
+        take: limit,
+      }),
+
+      this.prisma.figure.count({
+        where: {
+          deletedAt: null,
+        },
+      }),
+    ]);
+
+  return buildPaginatedResponse(
+    figures,
+    page,
+    limit,
+    total,
+  );
 }
 
 findOne(id: string) {

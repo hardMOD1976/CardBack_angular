@@ -5,7 +5,9 @@ import {
   Get,
   Param,
   Post,
+  Query,
   Put,
+  UseGuards
 } from '@nestjs/common';
 
 import {
@@ -24,6 +26,12 @@ import {
 import { FiguresService } from './figures.service';
 import { CreateFigureDto } from './dto/create-figure.dto';
 import { UpdateFigureDto } from './dto/update-figure.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Public } from '../auth/decorators/public.decorator';
+import { Role } from '@prisma/client';
+import { PaginationQueryDto } from '../common/pagination';
 
 @ApiTags('Figures')
 @ApiBearerAuth('access-token')
@@ -43,10 +51,20 @@ export class FiguresController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
-  @Get()
-  findAll() {
-    return this.figuresService.findAll();
-  }
+  @Public()
+@Get()
+findAll(
+   @Query('page') page = 1,
+  @Query('limit') limit = 20,
+) {
+  const pagination: PaginationQueryDto = {
+    page: Number(page),
+    limit: Number(limit),
+  };
+  return this.figuresService.findAll(
+    pagination,
+  );
+}
 
   @ApiOperation({
     summary: 'Get figure by id',
@@ -67,6 +85,7 @@ export class FiguresController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.figuresService.findOne(id);
@@ -93,6 +112,9 @@ export class FiguresController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+  @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Post()
   create(@Body() createFigureDto: CreateFigureDto) {
     return this.figuresService.create(createFigureDto);
@@ -122,6 +144,9 @@ export class FiguresController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+  @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Put(':id')
   update(
     @Param('id') id: string,
@@ -149,6 +174,9 @@ export class FiguresController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+  @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.figuresService.remove(id);

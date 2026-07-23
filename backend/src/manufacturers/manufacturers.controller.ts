@@ -24,13 +24,14 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { Public } from '../auth/decorators/public.decorator';
+
 import { Role } from '@prisma/client';
 
 import { PaginationQueryDto } from '../common/pagination';
@@ -42,36 +43,38 @@ export class ManufacturersController {
     private readonly manufacturersService: ManufacturersService,
   ) {}
 
-@ApiOperation({
-  summary: 'Get all manufacturers',
-  description:
-    'Returns all active manufacturers ordered alphabetically.',
-  operationId: 'findAllManufacturers',
-})
-@ApiQuery({
-  name: 'page',
-  required: false,
-  example: 1,
-})
-@ApiQuery({
-  name: 'limit',
-  required: false,
-  example: 20,
-})
-@ApiOkResponse({
-  description: 'Manufacturers retrieved successfully.',
-})
-@ApiInternalServerErrorResponse({
-  description: 'Internal server error.',
-})
-@Get()
+  @ApiOperation({
+    summary: 'Get all manufacturers',
+    description:
+      'Returns all active manufacturers ordered alphabetically.',
+    operationId: 'findAllManufacturers',
+  })
+  @ApiOkResponse({
+    description: 'Manufacturers retrieved successfully.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
+  })
+  @Public()
+  // @Get()
+  // findAll(
+  //   @Query()
+  //   pagination: PaginationQueryDto,
+  // ) {
+  //   return this.manufacturersService.findAll(
+  //     pagination,
+  //   );
+  // }
+
+  @Get()
 findAll(
-  @Query()
-  pagination: PaginationQueryDto,
+  @Query('page') page = 1,
+  @Query('limit') limit = 20,
 ) {
-  return this.manufacturersService.findAll(
-    pagination,
-  );
+  return this.manufacturersService.findAll({
+    page: Number(page),
+    limit: Number(limit),
+  });
 }
 
   @ApiOperation({
@@ -93,6 +96,7 @@ findAll(
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.manufacturersService.findOne(id);

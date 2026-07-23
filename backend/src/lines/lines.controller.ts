@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards
 } from '@nestjs/common';
 
@@ -19,7 +20,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiTags,
+  ApiTags
 } from '@nestjs/swagger';
 
 import { LinesService } from './lines.service';
@@ -29,6 +30,8 @@ import { Role } from '@prisma/client';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { PaginationQueryDto } from '../common/pagination';
+import { Public } from '../auth/decorators/public.decorator';
 
 @ApiTags('Lines')
 @Controller('lines')
@@ -36,21 +39,28 @@ export class LinesController {
   constructor(private readonly linesService: LinesService) {}
 
   @ApiOperation({
-    summary: 'Get all lines',
-    description:
-      'Returns all active figure lines ordered alphabetically, including their manufacturer and franchise.',
-    operationId: 'findAllLines',
-  })
-  @ApiOkResponse({
-    description: 'Lines retrieved successfully.',
-  })
-  @ApiInternalServerErrorResponse({
-    description: 'Internal server error.',
-  })
-  @Get()
-  findAll() {
-    return this.linesService.findAll();
-  }
+  summary: 'Get all lines',
+  description:
+    'Returns all active lines ordered alphabetically.',
+  operationId: 'findAllLines',
+})
+@ApiOkResponse({
+  description: 'Lines retrieved successfully.',
+})
+@ApiInternalServerErrorResponse({
+  description: 'Internal server error.',
+})
+@Public()
+@Get()
+findAll(
+  @Query('page') page = 1,
+  @Query('limit') limit = 20,
+) {
+  return this.linesService.findAll({
+    page: Number(page),
+    limit: Number(limit),
+  });
+}
 
   @ApiOperation({
     summary: 'Get line by id',
@@ -71,6 +81,7 @@ export class LinesController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.linesService.findOne(id);

@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 
@@ -29,6 +30,8 @@ import { Role } from '@prisma/client';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { PaginationQueryDto } from '../common/pagination';
+import { Public } from '../auth/decorators/public.decorator';
 
 @ApiTags('Franchises')
 @Controller('franchises')
@@ -37,22 +40,29 @@ export class FranchisesController {
     private readonly franchisesService: FranchisesService,
   ) {}
 
-  @ApiOperation({
-    summary: 'Get all franchises',
-    description:
-      'Returns all active franchises ordered alphabetically.',
-    operationId: 'findAllFranchises',
-  })
-  @ApiOkResponse({
-    description: 'Franchises retrieved successfully.',
-  })
-  @ApiInternalServerErrorResponse({
-    description: 'Internal server error.',
-  })
-  @Get()
-  findAll() {
-    return this.franchisesService.findAll();
-  }
+ @ApiOperation({
+  summary: 'Get all franchises',
+  description:
+    'Returns all active franchises ordered alphabetically.',
+  operationId: 'findAllFranchises',
+})
+@ApiOkResponse({
+  description: 'Franchises retrieved successfully.',
+})
+@ApiInternalServerErrorResponse({
+  description: 'Internal server error.',
+})
+@Get()
+@Public()
+findAll(
+  @Query('page') page = 1,
+  @Query('limit') limit = 20,
+) {
+  return this.franchisesService.findAll({
+    page: Number(page),
+    limit: Number(limit),
+  });
+}
 
   @ApiOperation({
     summary: 'Get franchise by id',
@@ -73,6 +83,7 @@ export class FranchisesController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.franchisesService.findOne(id);

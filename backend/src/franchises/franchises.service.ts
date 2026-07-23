@@ -1,21 +1,45 @@
 import { Injectable } from '@nestjs/common';
+
 import { PrismaService } from '../prisma/prisma.service';
+
 import { CreateFranchiseDto } from './dto/create-franchise.dto';
 import { UpdateFranchiseDto } from './dto/update-franchise.dto';
+
+import {
+  PaginationQueryDto,
+  paginate,
+} from '../common/pagination';
 
 @Injectable()
 export class FranchisesService {
   constructor(private prisma: PrismaService) {}
 
-  findAll() {
-    return this.prisma.franchise.findMany({
-      where: {
-        deletedAt: null,
-      },
-      orderBy: {
-        name: 'asc',
-      },
-    });
+  async findAll(
+    pagination: PaginationQueryDto,
+  ) {
+    return paginate(
+      this.prisma,
+      pagination,
+
+      (skip: number, take: number) =>
+        this.prisma.franchise.findMany({
+          where: {
+            deletedAt: null,
+          },
+          orderBy: {
+            name: 'asc',
+          },
+          skip,
+          take,
+        }),
+
+      () =>
+        this.prisma.franchise.count({
+          where: {
+            deletedAt: null,
+          },
+        }),
+    );
   }
 
   findOne(id: string) {
@@ -27,13 +51,15 @@ export class FranchisesService {
     });
   }
 
-  create(createFranchiseDto: CreateFranchiseDto) {
+  async create(
+    createFranchiseDto: CreateFranchiseDto,
+  ) {
     return this.prisma.franchise.create({
       data: createFranchiseDto,
     });
   }
 
-  update(
+  async update(
     id: string,
     updateFranchiseDto: UpdateFranchiseDto,
   ) {
@@ -45,7 +71,7 @@ export class FranchisesService {
     });
   }
 
-  remove(id: string) {
+  async remove(id: string) {
     return this.prisma.franchise.update({
       where: {
         id,

@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards
 } from '@nestjs/common';
 
@@ -29,6 +30,8 @@ import { Role } from '@prisma/client';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { Public } from '../auth/decorators/public.decorator';
+import { PaginationQueryDto } from '../common/pagination';
 
 @ApiTags('Variants')
 @Controller('variants')
@@ -47,8 +50,16 @@ export class VariantsController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
-  @Get()
-  findAll() {
+  @Public()
+ @Get()
+ findAll(
+    @Query('page') page = 1,
+   @Query('limit') limit = 20,
+ ) {
+   const pagination: PaginationQueryDto = {
+     page: Number(page),
+     limit: Number(limit),
+   };
     return this.variantsService.findAll();
   }
 
@@ -71,6 +82,7 @@ export class VariantsController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.variantsService.findOne(id);

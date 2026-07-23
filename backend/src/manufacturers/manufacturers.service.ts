@@ -7,8 +7,7 @@ import { UpdateManufacturerDto } from './dto/update-manufacturer.dto';
 
 import {
   PaginationQueryDto,
-  PaginationMetaDto,
-  PaginatedResponseDto,
+  paginate,
 } from '../common/pagination';
 
 @Injectable()
@@ -18,12 +17,11 @@ export class ManufacturersService {
   async findAll(
     pagination: PaginationQueryDto,
   ) {
-    const { page, limit } = pagination;
+    return paginate(
+      this.prisma,
+      pagination,
 
-    const skip = (page - 1) * limit;
-
-    const [manufacturers, total] =
-      await this.prisma.$transaction([
+      (skip: number, take: number) =>
         this.prisma.manufacturer.findMany({
           where: {
             deletedAt: null,
@@ -32,28 +30,15 @@ export class ManufacturersService {
             name: 'asc',
           },
           skip,
-          take: limit,
+          take,
         }),
 
+      () =>
         this.prisma.manufacturer.count({
           where: {
             deletedAt: null,
           },
         }),
-      ]);
-
-    const meta = new PaginationMetaDto();
-
-    meta.page = page;
-    meta.limit = limit;
-    meta.total = total;
-    meta.totalPages = Math.ceil(
-      total / limit,
-    );
-
-    return new PaginatedResponseDto(
-      manufacturers,
-      meta,
     );
   }
 

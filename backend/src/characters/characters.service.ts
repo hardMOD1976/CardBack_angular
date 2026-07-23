@@ -2,24 +2,54 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCharacterDto } from './dto/create-character.dto';
 import { UpdateCharacterDto } from './dto/update-character.dto';
+import {
+  PaginationQueryDto,
+  buildPaginatedResponse,
+} from '../common/pagination';
 
 @Injectable()
 export class CharactersService {
   constructor(private prisma: PrismaService) { }
 
-  findAll() {
-    return this.prisma.character.findMany({
-      where: {
-        deletedAt: null,
-      },
-      include: {
-        franchise: true,
-      },
-      orderBy: {
-        name: 'asc',
-      },
-    });
-  }
+  async findAll(
+  pagination: PaginationQueryDto,
+) {
+  console.log('Characters findAll');
+  console.log(pagination);
+  const { page, limit } = pagination;
+
+  const skip = (page - 1) * limit;
+
+  const [characters, total] =
+    await this.prisma.$transaction([
+      this.prisma.character.findMany({
+        where: {
+          deletedAt: null,
+        },
+        include: {
+          franchise: true,
+        },
+        orderBy: {
+          name: 'asc',
+        },
+        skip,
+        take: limit,
+      }),
+
+      this.prisma.character.count({
+        where: {
+          deletedAt: null,
+        },
+      }),
+    ]);
+
+  return buildPaginatedResponse(
+    characters,
+    page,
+    limit,
+    total,
+  );
+}
 
   findOne(id: string) {
     return this.prisma.character.findFirst({

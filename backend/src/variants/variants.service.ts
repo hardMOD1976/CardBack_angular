@@ -8,37 +8,83 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateVariantDto } from './dto/create-variant.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto';
 
+import {
+  PaginationQueryDto,
+  buildPaginatedResponse,
+} from '../common/pagination';
+
 @Injectable()
 export class VariantsService {
   constructor(private prisma: PrismaService) {}
 
-  findAll() {
-    return this.prisma.variant.findMany({
-      where: {
-        deletedAt: null,
+async findAll(
+  pagination: PaginationQueryDto,
+) {
+  const { page, limit } = pagination;
+
+  const skip = (page - 1) * limit;
+
+  const where = {
+  deletedAt: null,
+
+  ...(pagination.search && {
+    OR: [
+      {
+        name: {
+          contains: pagination.search,
+          mode: 'insensitive' as const,
+        },
       },
-      include: {
-        figure: {
-          include: {
-            character: {
-              include: {
-                franchise: true,
+      {
+        description: {
+          contains: pagination.search,
+          mode: 'insensitive' as const,
+        },
+      },
+    ],
+  }),
+};
+
+  const [variants, total] =
+    await this.prisma.$transaction([
+      this.prisma.variant.findMany({
+        where,
+        include: {
+          figure: {
+            include: {
+              character: {
+                include: {
+                  franchise: true,
+                },
               },
-            },
-            line: {
-              include: {
-                manufacturer: true,
-                franchise: true,
+              line: {
+                include: {
+                  manufacturer: true,
+                  franchise: true,
+                },
               },
             },
           },
         },
-      },
-      orderBy: {
-        name: 'asc',
-      },
-    });
-  }
+        orderBy: {
+          name: 'asc',
+        },
+        skip,
+        take: limit,
+      }),
+
+      this.prisma.variant.count({
+        where,
+      }),
+    ]);
+
+  return buildPaginatedResponse(
+    variants,
+    page,
+    limit,
+    total,
+  );
+}
 
   findOne(id: string) {
     return this.prisma.variant.findFirst({

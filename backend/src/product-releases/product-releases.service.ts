@@ -8,38 +8,147 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductReleaseDto } from './dto/create-product-release.dto';
 import { UpdateProductReleaseDto } from './dto/update-product-release.dto';
 
+import {
+  PaginationQueryDto,
+  buildPaginatedResponse,
+} from '../common/pagination';
+
 @Injectable()
 export class ProductReleasesService {
   constructor(private prisma: PrismaService) {}
 
-  async ensureVariantExists(id: string) {
-    const variant = await this.prisma.variant.findFirst({
-      where: {
-        id,
-        deletedAt: null,
-      },
-    });
+async findAll(
+  pagination: PaginationQueryDto,
+) {
+  const { page, limit } = pagination;
 
-    if (!variant) {
-      throw new NotFoundException(
-        `Variant with id '${id}' not found.`,
-      );
-    }
-  }
+  const skip = (page - 1) * limit;
 
-  findAll() {
-    return this.prisma.productRelease.findMany({
-      where: {
-        deletedAt: null,
-      },
-      include: {
-        variant: true,
-      },
-      orderBy: {
-        name: 'asc',
-      },
-    });
-  }
+  const where = {
+    deletedAt: null,
+
+    ...(pagination.search && {
+      OR: [
+        {
+          name: {
+            contains: pagination.search,
+            mode: 'insensitive' as const,
+          },
+        },
+        {
+          barcode: {
+            contains: pagination.search,
+            mode: 'insensitive' as const,
+          },
+        },
+        {
+          packagingType: {
+            contains: pagination.search,
+            mode: 'insensitive' as const,
+          },
+        },
+        {
+          region: {
+            contains: pagination.search,
+            mode: 'insensitive' as const,
+          },
+        },
+        {
+          language: {
+            contains: pagination.search,
+            mode: 'insensitive' as const,
+          },
+        },
+        {
+          retailer: {
+            contains: pagination.search,
+            mode: 'insensitive' as const,
+          },
+        },
+        {
+          notes: {
+            contains: pagination.search,
+            mode: 'insensitive' as const,
+          },
+        },
+
+        // Variant
+        {
+          variant: {
+            name: {
+              contains: pagination.search,
+              mode: 'insensitive' as const,
+            },
+          },
+        },
+
+        // Figure
+        {
+          variant: {
+            figure: {
+              name: {
+                contains: pagination.search,
+                mode: 'insensitive' as const,
+              },
+            },
+          },
+        },
+
+        // Character
+        {
+          variant: {
+            figure: {
+              character: {
+                name: {
+                  contains: pagination.search,
+                  mode: 'insensitive' as const,
+                },
+              },
+            },
+          },
+        },
+      ],
+    }),
+  };
+
+  const [productReleases, total] =
+    await this.prisma.$transaction([
+      this.prisma.productRelease.findMany({
+        where,
+
+        include: {
+          variant: {
+            include: {
+              figure: {
+                include: {
+                  character: true,
+                  line: true,
+                },
+              },
+            },
+          },
+        },
+
+        orderBy: {
+          name: 'asc',
+        },
+
+        skip,
+        take: limit,
+      }),
+
+      this.prisma.productRelease.count({
+        where,
+      }),
+    ]);
+
+  return buildPaginatedResponse(
+    productReleases,
+    page,
+    limit,
+    total,
+  );
+}
 
   findOne(id: string) {
     return this.prisma.productRelease.findFirst({
@@ -86,5 +195,20 @@ export class ProductReleasesService {
         deletedAt: new Date(),
       },
     });
+  }
+
+  private async ensureVariantExists(id: string) {
+    const variant = await this.prisma.variant.findFirst({
+      where: {
+        id,
+        deletedAt: null,
+      },
+    });
+
+    if (!variant) {
+      throw new NotFoundException(
+        `Variant with id '${id}' not found.`,
+      );
+    }
   }
 }

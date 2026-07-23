@@ -50,18 +50,21 @@ export class VariantsController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
-  @Public()
  @Get()
- findAll(
-    @Query('page') page = 1,
-   @Query('limit') limit = 20,
- ) {
-   const pagination: PaginationQueryDto = {
-     page: Number(page),
-     limit: Number(limit),
-   };
-    return this.variantsService.findAll();
-  }
+@Public()
+findAll(
+  @Query('page') page = 1,
+  @Query('limit') limit = 20,
+  @Query('search') search?: string,
+) {
+  const pagination: PaginationQueryDto = {
+    page: Number(page),
+    limit: Number(limit),
+    search,
+  };
+
+  return this.variantsService.findAll(pagination);
+}
 
   @ApiOperation({
     summary: 'Get variant by id',

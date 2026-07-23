@@ -272,3 +272,91 @@ Security layer completed.
 Next milestone
 
 Apply reusable pagination to all catalog endpoints before implementing search and filtering.
+
+---
+
+## 2026-07-23
+
+### Pagination & Search Completed
+
+The reusable pagination infrastructure has now been fully adopted across the catalog modules.
+
+Implemented
+
+- buildPaginatedResponse()
+- Consistent pagination pattern
+- Removal of the previous paginate() helper
+- Standardized services across the backend
+
+Catalog search completed
+
+Manufacturer
+
+- Pagination
+- Search
+
+Franchise
+
+- Pagination
+- Search
+
+Line
+
+- Pagination
+- Search
+
+Character
+
+- Pagination
+- Search
+
+Figure
+
+- Pagination
+- Search
+
+Variant
+
+- Pagination
+- Multi-field search
+- Search by variant description
+
+Product Release
+
+- Pagination
+- Multi-field search
+- Search by:
+  - name
+  - barcode
+  - retailer
+  - region
+  - language
+  - packagingType
+  - notes
+  - related Variant name
+
+Architecture improvements
+
+- Services now follow a common implementation pattern.
+- Generic paginated responses are used consistently.
+- Search logic standardized using OR clauses and case-insensitive matching.
+
+Security review
+
+A design issue was identified in the OwnedFigure module.
+
+Current implementation allows clients to provide userId inside the CreateOwnedFigureDto.
+
+This will be redesigned.
+
+Next milestone
+
+OwnedFigure security refactor
+
+Planned work
+
+- Remove userId from DTOs
+- Read authenticated user from JWT
+- Restrict CRUD operations to the collection owner
+- Prevent access to collections owned by other users
+- Add search after ownership restrictions are completed

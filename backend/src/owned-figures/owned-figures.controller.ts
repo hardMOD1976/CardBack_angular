@@ -51,19 +51,22 @@ export class OwnedFiguresController {
     description: 'Internal server error.',
   })
   @Get()
-  @ApiBearerAuth('access-token')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.ADMIN)
-  findAll(
-    @Query('page') page = 1,
-    @Query('limit') limit = 20,
-  ) {
-    const pagination: PaginationQueryDto = {
-      page: Number(page),
-      limit: Number(limit),
-    };
-    return this.ownedFiguresService.findAll(pagination);
-  }
+@ApiBearerAuth('access-token')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.ADMIN)
+findAll(
+  @Query('page') page = 1,
+  @Query('limit') limit = 20,
+) {
+  const pagination: PaginationQueryDto = {
+    page: Number(page),
+    limit: Number(limit),
+  };
+
+  return this.ownedFiguresService.findAll(
+    pagination,
+  );
+}
 
   @ApiOperation({
     summary: 'Get owned figure by id',

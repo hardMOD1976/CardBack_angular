@@ -11,21 +11,27 @@ import {
 export class CharactersService {
   constructor(private prisma: PrismaService) { }
 
-  async findAll(
+async findAll(
   pagination: PaginationQueryDto,
 ) {
-  console.log('Characters findAll');
-  console.log(pagination);
-  const { page, limit } = pagination;
+  const { page, limit, search } = pagination;
 
   const skip = (page - 1) * limit;
+
+  const where = {
+    deletedAt: null,
+    ...(search && {
+      name: {
+        contains: search,
+        mode: 'insensitive' as const,
+      },
+    }),
+  };
 
   const [characters, total] =
     await this.prisma.$transaction([
       this.prisma.character.findMany({
-        where: {
-          deletedAt: null,
-        },
+        where,
         include: {
           franchise: true,
         },
@@ -37,9 +43,7 @@ export class CharactersService {
       }),
 
       this.prisma.character.count({
-        where: {
-          deletedAt: null,
-        },
+        where,
       }),
     ]);
 

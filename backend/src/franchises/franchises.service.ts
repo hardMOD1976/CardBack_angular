@@ -6,41 +6,54 @@ import { CreateFranchiseDto } from './dto/create-franchise.dto';
 import { UpdateFranchiseDto } from './dto/update-franchise.dto';
 
 import {
-  PaginationQueryDto,
-  paginate,
+   PaginationQueryDto,
+  buildPaginatedResponse,
 } from '../common/pagination';
 
 @Injectable()
 export class FranchisesService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(
-    pagination: PaginationQueryDto,
-  ) {
-    return paginate(
-      this.prisma,
-      pagination,
+ async findAll(
+  pagination: PaginationQueryDto,
+) {
+  const { page, limit, search } = pagination;
 
-      (skip: number, take: number) =>
-        this.prisma.franchise.findMany({
-          where: {
-            deletedAt: null,
-          },
-          orderBy: {
-            name: 'asc',
-          },
-          skip,
-          take,
-        }),
+  const skip = (page - 1) * limit;
 
-      () =>
-        this.prisma.franchise.count({
-          where: {
-            deletedAt: null,
-          },
-        }),
-    );
-  }
+  const where = {
+    deletedAt: null,
+    ...(search && {
+      name: {
+        contains: search,
+        mode: 'insensitive' as const,
+      },
+    }),
+  };
+
+  const [franchises, total] =
+    await this.prisma.$transaction([
+      this.prisma.franchise.findMany({
+        where,
+        orderBy: {
+          name: 'asc',
+        },
+        skip,
+        take: limit,
+      }),
+
+      this.prisma.franchise.count({
+        where,
+      }),
+    ]);
+
+  return buildPaginatedResponse(
+    franchises,
+    page,
+    limit,
+    total,
+  );
+}
 
   findOne(id: string) {
     return this.prisma.franchise.findFirst({

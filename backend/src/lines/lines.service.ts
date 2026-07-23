@@ -7,44 +7,57 @@ import { UpdateLineDto } from './dto/update-lines.dto';
 
 import {
   PaginationQueryDto,
-  paginate,
+  buildPaginatedResponse,
 } from '../common/pagination';
 
 @Injectable()
 export class LinesService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(
-    pagination: PaginationQueryDto,
-  ) {
-    return paginate(
-      this.prisma,
-      pagination,
+async findAll(
+  pagination: PaginationQueryDto,
+) {
+  const { page, limit, search } = pagination;
 
-      (skip: number, take: number) =>
-        this.prisma.line.findMany({
-          where: {
-            deletedAt: null,
-          },
-          include: {
-            manufacturer: true,
-            franchise: true,
-          },
-          orderBy: {
-            name: 'asc',
-          },
-          skip,
-          take,
-        }),
+  const skip = (page - 1) * limit;
 
-      () =>
-        this.prisma.line.count({
-          where: {
-            deletedAt: null,
-          },
-        }),
-    );
-  }
+  const where = {
+    deletedAt: null,
+    ...(search && {
+      name: {
+        contains: search,
+        mode: 'insensitive' as const,
+      },
+    }),
+  };
+
+  const [lines, total] =
+    await this.prisma.$transaction([
+      this.prisma.line.findMany({
+        where,
+        include: {
+          manufacturer: true,
+          franchise: true,
+        },
+        orderBy: {
+          name: 'asc',
+        },
+        skip,
+        take: limit,
+      }),
+
+      this.prisma.line.count({
+        where,
+      }),
+    ]);
+
+  return buildPaginatedResponse(
+    lines,
+    page,
+    limit,
+    total,
+  );
+}
 
   findOne(id: string) {
     return this.prisma.line.findFirst({

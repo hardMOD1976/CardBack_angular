@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Pagination infrastructure
+Owned Figure security refactor
 
 ---
 
@@ -40,25 +40,24 @@ Pagination infrastructure
 - Prisma Exception Filter
 - Soft Delete infrastructure
 - Relational validation infrastructure
+- Generic Pagination
+- Generic Paginated Response
 
 ### Backend
 
-- Manufacturer
-- Franchise
-- Line
-- Character
-- Figure
-- Variant
-- Product Release
-- User
-- Owned Figure
-
-All modules include
+All catalog modules
 
 - CRUD
 - DTO validation
 - Soft Delete
-- Relational validation where applicable
+- Relational validation
+- Pagination
+- Search
+
+Product Release
+
+- Multi-field search
+- Relational search
 
 ### Authentication & Authorization
 
@@ -112,11 +111,15 @@ Validated
 
 ## In Progress
 
-### Pagination
+### Owned Figure
 
-- Generic Pagination DTO
-- Generic Pagination Response
-- Manufacturers endpoint migration
+Pending redesign
+
+- Ownership enforcement
+- JWT user extraction
+- Remove userId from DTOs
+- Owner-only CRUD
+- Search
 
 ---
 
@@ -124,11 +127,10 @@ Validated
 
 ### Backend
 
-- Apply pagination to remaining modules
-- Global Search
-- Filtering
-- Testing
+- Owned Figure security
+- Advanced filtering
 - Image upload
+- Testing
 
 ### Frontend
 
@@ -142,8 +144,8 @@ Validated
 
 ## Current Milestone
 
-Implement reusable pagination across the REST API.
+Secure personal collections.
 
 Next objective
 
-Complete pagination and filtering before starting the Angular frontend.
+Implement owner-only access for OwnedFigure before starting the Angular frontend.

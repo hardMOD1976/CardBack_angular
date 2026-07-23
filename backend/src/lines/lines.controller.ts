@@ -50,15 +50,17 @@ export class LinesController {
 @ApiInternalServerErrorResponse({
   description: 'Internal server error.',
 })
-@Public()
 @Get()
+@Public()
 findAll(
   @Query('page') page = 1,
   @Query('limit') limit = 20,
+  @Query('search') search?: string,
 ) {
   return this.linesService.findAll({
     page: Number(page),
     limit: Number(limit),
+    search,
   });
 }
 

@@ -6,8 +6,8 @@ import { CreateManufacturerDto } from './dto/create-manufacturer.dto';
 import { UpdateManufacturerDto } from './dto/update-manufacturer.dto';
 
 import {
-  PaginationQueryDto,
-  paginate,
+   PaginationQueryDto,
+  buildPaginatedResponse,
 } from '../common/pagination';
 
 @Injectable()
@@ -15,32 +15,45 @@ export class ManufacturersService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(
-    pagination: PaginationQueryDto,
-  ) {
-    return paginate(
-      this.prisma,
-      pagination,
+  pagination: PaginationQueryDto,
+) {
+  const { page, limit, search } = pagination;
 
-      (skip: number, take: number) =>
-        this.prisma.manufacturer.findMany({
-          where: {
-            deletedAt: null,
-          },
-          orderBy: {
-            name: 'asc',
-          },
-          skip,
-          take,
-        }),
+  const skip = (page - 1) * limit;
 
-      () =>
-        this.prisma.manufacturer.count({
-          where: {
-            deletedAt: null,
-          },
-        }),
-    );
-  }
+  const where = {
+    deletedAt: null,
+    ...(search && {
+      name: {
+        contains: search,
+        mode: 'insensitive' as const,
+      },
+    }),
+  };
+
+  const [manufacturers, total] =
+    await this.prisma.$transaction([
+      this.prisma.manufacturer.findMany({
+        where,
+        orderBy: {
+          name: 'asc',
+        },
+        skip,
+        take: limit,
+      }),
+
+      this.prisma.manufacturer.count({
+        where,
+      }),
+    ]);
+
+  return buildPaginatedResponse(
+    manufacturers,
+    page,
+    limit,
+    total,
+  );
+}
 
   findOne(id: string) {
     return this.prisma.manufacturer.findFirst({

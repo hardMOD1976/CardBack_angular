@@ -55,25 +55,17 @@ export class ManufacturersController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
-  @Public()
-  // @Get()
-  // findAll(
-  //   @Query()
-  //   pagination: PaginationQueryDto,
-  // ) {
-  //   return this.manufacturersService.findAll(
-  //     pagination,
-  //   );
-  // }
-
   @Get()
+@Public()
 findAll(
   @Query('page') page = 1,
   @Query('limit') limit = 20,
+  @Query('search') search?: string,
 ) {
   return this.manufacturersService.findAll({
     page: Number(page),
     limit: Number(limit),
+    search,
   });
 }
 

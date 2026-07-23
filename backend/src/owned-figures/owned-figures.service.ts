@@ -43,34 +43,37 @@ export class OwnedFiguresService {
     }
   }
 
-  async findAll(
+async findAll(
   pagination: PaginationQueryDto,
 ) {
   const { page, limit } = pagination;
 
   const skip = (page - 1) * limit;
 
+  const where = {
+    deletedAt: null,
+  };
+
   const [ownedFigures, total] =
     await this.prisma.$transaction([
       this.prisma.ownedFigure.findMany({
-        where: {
-          deletedAt: null,
-        },
+        where,
+
         include: {
           user: true,
           productRelease: true,
         },
+
         orderBy: {
           createdAt: 'desc',
         },
+
         skip,
         take: limit,
       }),
 
       this.prisma.ownedFigure.count({
-        where: {
-          deletedAt: null,
-        },
+        where,
       }),
     ]);
 

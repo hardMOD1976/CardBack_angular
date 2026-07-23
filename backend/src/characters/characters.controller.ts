@@ -68,13 +68,17 @@ export class CharactersController {
 findAll(
   @Query('page') page = 1,
   @Query('limit') limit = 20,
+  @Query('search') search?: string,
 ) {
   const pagination: PaginationQueryDto = {
     page: Number(page),
     limit: Number(limit),
+    search,
   };
 
-  return this.charactersService.findAll(pagination);
+  return this.charactersService.findAll(
+    pagination,
+  );
 }
 
   @ApiOperation({

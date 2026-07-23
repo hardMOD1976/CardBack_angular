@@ -10,8 +10,8 @@ The platform separates immutable catalog data from personal collection data, pro
 
 ## Current Phase
 
-Authentication & Authorization completed
-Pagination infrastructure started
+Pagination & Search completed for catalog modules
+OwnedFigure security refactor pending
 
 ---
 
@@ -58,13 +58,13 @@ Repository
 
 Completed modules
 
-- Manufacturer (CRUD + Soft Delete)
-- Franchise (CRUD + Soft Delete)
-- Line (CRUD + Soft Delete + relational validation)
-- Character (CRUD + Soft Delete + relational validation)
-- Figure (CRUD + Soft Delete + relational validation)
-- Variant (CRUD + Soft Delete + relational validation)
-- Product Release (CRUD + Soft Delete + relational validation)
+- Manufacturer (CRUD + Soft Delete + Pagination + Search)
+- Franchise (CRUD + Soft Delete + Pagination + Search)
+- Line (CRUD + Soft Delete + relational validation + Pagination + Search)
+- Character (CRUD + Soft Delete + relational validation + Pagination + Search)
+- Figure (CRUD + Soft Delete + relational validation + Pagination + Search)
+- Variant (CRUD + Soft Delete + relational validation + Pagination + Search)
+- Product Release (CRUD + Soft Delete + relational validation + Pagination + Multi-field Search)
 - User (CRUD + Soft Delete)
 - Owned Figure (CRUD + Soft Delete + relational validation)
 
@@ -76,6 +76,8 @@ Shared infrastructure
 - Soft Delete pattern
 - Relational validation
 - Prisma Studio workflow
+- Generic Pagination
+- Generic Paginated Response
 
 Documentation
 
@@ -122,27 +124,53 @@ Current authorization model
 
 Pagination
 
-Started
+Completed
 
 - PaginationQueryDto
 - PaginationMetaDto
 - PaginatedResponseDto
+- buildPaginatedResponse()
+- Applied to every catalog endpoint
+
+Search
+
+Completed for catalog entities
+
+Implemented
+
+- Case-insensitive search
+- Multi-field search where appropriate
+- Relational search
+- Consistent OR filtering
+
+Product Release search includes
+
+- name
+- barcode
+- notes
+- retailer
+- region
+- language
+- packagingType
+- variant.name
 
 ---
 
 ## Current Next Step
 
-Finish reusable pagination infrastructure.
+Owned Figure security redesign.
 
 Immediate milestone
 
-- Paginated responses
-- Apply pagination to Manufacturers
-- Roll out pagination to remaining catalog endpoints
+- Remove userId from DTOs
+- Obtain authenticated user from JWT
+- Restrict CRUD operations to the collection owner
+- Prevent access to other users' collections
+- Add search to OwnedFigure after security refactor
 
-After pagination
+After Owned Figure
 
-- Global Search
-- Filtering
+- Angular frontend
 - Collection management
-- Angular frontend integration
+- Images
+- Advanced filtering

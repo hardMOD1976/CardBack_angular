@@ -53,18 +53,23 @@ export class ProductReleasesController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
-   @Public()
-  @Get()
-  findAll(
-     @Query('page') page = 1,
-    @Query('limit') limit = 20,
-  ) {
-    const pagination: PaginationQueryDto = {
-      page: Number(page),
-      limit: Number(limit),
-    };
-    return this.productReleasesService.findAll();
-  }
+  @Public()
+@Get()
+findAll(
+  @Query('page') page = 1,
+  @Query('limit') limit = 20,
+  @Query('search') search?: string,
+) {
+  const pagination: PaginationQueryDto = {
+    page: Number(page),
+    limit: Number(limit),
+    search,
+  };
+
+  return this.productReleasesService.findAll(
+    pagination,
+  );
+}
 
   @ApiOperation({
     summary: 'Get product release by id',

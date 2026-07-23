@@ -21,6 +21,7 @@ import {
   ApiOperation,
   ApiParam,
   ApiTags,
+  ApiQuery
 } from '@nestjs/swagger';
 
 import { FiguresService } from './figures.service';
@@ -51,20 +52,37 @@ export class FiguresController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
+  @ApiQuery({
+  name: 'page',
+  required: false,
+  example: 1,
+})
+@ApiQuery({
+  name: 'limit',
+  required: false,
+  example: 20,
+})
+@ApiQuery({
+  name: 'search',
+  required: false,
+  example: 'vader',
+})
   @Public()
 @Get()
 findAll(
-   @Query('page') page = 1,
+  @Query('page') page = 1,
   @Query('limit') limit = 20,
+  @Query('search') search?: string,
 ) {
   const pagination: PaginationQueryDto = {
     page: Number(page),
     limit: Number(limit),
+    search,
   };
-  return this.figuresService.findAll(
-    pagination,
-  );
+
+  return this.figuresService.findAll(pagination);
 }
+
 
   @ApiOperation({
     summary: 'Get figure by id',

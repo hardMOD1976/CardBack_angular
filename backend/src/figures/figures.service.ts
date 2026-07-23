@@ -12,144 +12,164 @@ import {
 export class FiguresService {
   constructor(private prisma: PrismaService) {}
 
-async findAll(
-  pagination: PaginationQueryDto,
-) {
-  const { page, limit } = pagination;
+  async findAll(
+    pagination: PaginationQueryDto,
+  ) {
+    const { page, limit, search } = pagination;
 
-  const skip = (page - 1) * limit;
+    const skip = (page - 1) * limit;
 
-  const [figures, total] =
-    await this.prisma.$transaction([
-      this.prisma.figure.findMany({
-        where: {
-          deletedAt: null,
-        },
-        include: {
-          character: {
-            include: {
-              franchise: true,
-            },
-          },
-          line: {
-            include: {
-              manufacturer: true,
-              franchise: true,
-            },
-          },
-        },
-        orderBy: {
-          name: 'asc',
-        },
-        skip,
-        take: limit,
-      }),
-
-      this.prisma.figure.count({
-        where: {
-          deletedAt: null,
+    const where = {
+      deletedAt: null,
+      ...(search && {
+        name: {
+          contains: search,
+          mode: 'insensitive' as const,
         },
       }),
-    ]);
+    };
 
-  return buildPaginatedResponse(
-    figures,
-    page,
-    limit,
-    total,
-  );
-}
+    const [figures, total] =
+      await this.prisma.$transaction([
+        this.prisma.figure.findMany({
+          where,
+          include: {
+            character: {
+              include: {
+                franchise: true,
+              },
+            },
+            line: {
+              include: {
+                manufacturer: true,
+                franchise: true,
+              },
+            },
+          },
+          orderBy: {
+            name: 'asc',
+          },
+          skip,
+          take: limit,
+        }),
 
-findOne(id: string) {
-  return this.prisma.figure.findFirst({
-    where: {
-      id,
-      deletedAt: null,
-    },
-    include: {
-      character: {
-        include: {
-          franchise: true,
-        },
-      },
-      line: {
-        include: {
-          manufacturer: true,
-          franchise: true,
-        },
-      },
-    },
-  });
-}
+        this.prisma.figure.count({
+          where,
+        }),
+      ]);
 
-async create(createFigureDto: CreateFigureDto) {
-  await this.ensureCharacterExists(createFigureDto.characterId);
-  await this.ensureLineExists(createFigureDto.lineId);
-
-  return this.prisma.figure.create({
-    data: createFigureDto,
-  });
-}
-
-async update(
-  id: string,
-  updateFigureDto: UpdateFigureDto,
-) {
-  if (updateFigureDto.characterId) {
-    await this.ensureCharacterExists(updateFigureDto.characterId);
-  }
-
-  if (updateFigureDto.lineId) {
-    await this.ensureLineExists(updateFigureDto.lineId);
-  }
-
-  return this.prisma.figure.update({
-    where: {
-      id,
-    },
-    data: updateFigureDto,
-  });
-}
-
-remove(id: string) {
-  return this.prisma.figure.update({
-    where: {
-      id,
-    },
-    data: {
-      deletedAt: new Date(),
-    },
-  });
-}
-
-  private async ensureCharacterExists(characterId: string) {
-  const character = await this.prisma.character.findFirst({
-    where: {
-      id: characterId,
-      deletedAt: null,
-    },
-  });
-
-  if (!character) {
-    throw new NotFoundException(
-      `Character with id '${characterId}' not found.`,
+    return buildPaginatedResponse(
+      figures,
+      page,
+      limit,
+      total,
     );
   }
-}
 
-private async ensureLineExists(lineId: string) {
-  const line = await this.prisma.line.findFirst({
-    where: {
-      id: lineId,
-      deletedAt: null,
-    },
-  });
-
-  if (!line) {
-    throw new NotFoundException(
-      `Line with id '${lineId}' not found.`,
-    );
+  findOne(id: string) {
+    return this.prisma.figure.findFirst({
+      where: {
+        id,
+        deletedAt: null,
+      },
+      include: {
+        character: {
+          include: {
+            franchise: true,
+          },
+        },
+        line: {
+          include: {
+            manufacturer: true,
+            franchise: true,
+          },
+        },
+      },
+    });
   }
-}
 
+  async create(createFigureDto: CreateFigureDto) {
+    await this.ensureCharacterExists(
+      createFigureDto.characterId,
+    );
+
+    await this.ensureLineExists(
+      createFigureDto.lineId,
+    );
+
+    return this.prisma.figure.create({
+      data: createFigureDto,
+    });
+  }
+
+  async update(
+    id: string,
+    updateFigureDto: UpdateFigureDto,
+  ) {
+    if (updateFigureDto.characterId) {
+      await this.ensureCharacterExists(
+        updateFigureDto.characterId,
+      );
+    }
+
+    if (updateFigureDto.lineId) {
+      await this.ensureLineExists(
+        updateFigureDto.lineId,
+      );
+    }
+
+    return this.prisma.figure.update({
+      where: {
+        id,
+      },
+      data: updateFigureDto,
+    });
+  }
+
+  remove(id: string) {
+    return this.prisma.figure.update({
+      where: {
+        id,
+      },
+      data: {
+        deletedAt: new Date(),
+      },
+    });
+  }
+
+  private async ensureCharacterExists(
+    characterId: string,
+  ) {
+    const character =
+      await this.prisma.character.findFirst({
+        where: {
+          id: characterId,
+          deletedAt: null,
+        },
+      });
+
+    if (!character) {
+      throw new NotFoundException(
+        `Character with id '${characterId}' not found.`,
+      );
+    }
+  }
+
+  private async ensureLineExists(
+    lineId: string,
+  ) {
+    const line =
+      await this.prisma.line.findFirst({
+        where: {
+          id: lineId,
+          deletedAt: null,
+        },
+      });
+
+    if (!line) {
+      throw new NotFoundException(
+        `Line with id '${lineId}' not found.`,
+      );
+    }
+  }
 }

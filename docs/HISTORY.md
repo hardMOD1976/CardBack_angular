@@ -416,3 +416,98 @@ OwnedFigure is now fully secured and follows the same architectural standards as
 Next milestone
 
 Start the Angular frontend.
+
+## 2026-07-24
+
+### Owned Figure Security Completed
+
+The OwnedFigure module has been redesigned to enforce ownership-based authorization.
+
+Implemented
+
+Security
+
+- userId removed from CreateOwnedFigureDto
+- userId removed from UpdateOwnedFigureDto
+- Authenticated user obtained from JWT
+- Owner-only CRUD operations
+- Owner-only pagination
+- Owner-only search
+- Unauthorized access now returns 404
+
+Architecture improvements
+
+- Shared ownership validation through ensureOwnedFigureExists()
+- Service methods simplified through ownership validation
+- Ownership checks centralized
+
+Search
+
+Implemented case-insensitive search by:
+
+- condition
+- completeness
+- packagingState
+- purchaseLocation
+- storageLocation
+- notes
+- Product Release name
+
+Validation
+
+Verified through Swagger
+
+- Pagination
+- Search
+- Create
+- Update
+- Delete
+- JWT Authentication
+- DTOs no longer expose userId
+
+---
+
+### Angular Frontend Started
+
+Created
+
+- Angular workspace
+- Feature-first architecture
+- Shell layout
+- Header component
+- Sidebar component
+- Dashboard page
+- Initial routing
+- Responsive shell foundation
+
+Documentation created
+
+- frontend-architecture.md
+- frontend-information-architecture.md
+- frontend-user-flows.md
+- design-system.md
+- components.md
+
+---
+
+### Branding Started
+
+The project began defining its product identity beyond the technical implementation.
+
+Created
+
+- brand-strategy.md
+- brand-guidelines.md
+- naming.md
+- logo-sketches.md
+- moodboard.md
+
+Current favourite brand candidate
+
+Cardback
+
+Working tagline
+
+Check your collection.
+
+The brand direction focuses on becoming the definitive platform for collectors rather than simply another collection manager.

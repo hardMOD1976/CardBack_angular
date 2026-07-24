@@ -1,8 +1,10 @@
-# Figure Archive - Project Status
+# Figure Archive (working title) - Project Status
 
 ## Current Phase
 
-Frontend preparation
+Frontend foundation
+
+Brand definition
 
 ---
 
@@ -79,6 +81,30 @@ Completed
 - Ownership verification
 - 404 returned when accessing another user's collection
 
+Backend MVP completed.
+
+---
+
+### Frontend
+
+Foundation completed
+
+- Angular workspace
+- Feature-first architecture
+- Shell
+- Header
+- Sidebar
+- Dashboard page
+- Initial Router configuration
+
+Documentation completed
+
+- Frontend Architecture
+- Information Architecture
+- User Flows
+- Design System
+- Components
+
 ---
 
 ### Authentication & Authorization
@@ -120,9 +146,20 @@ Validated
 
 ### Documentation
 
+Backend
+
 - Swagger integrated
 - REST API documented
-- JWT Authorization documented
+
+Frontend
+
+- Architecture documented
+- UX documented
+- Component architecture documented
+
+Brand
+
+Initial branding documentation created.
 
 ---
 
@@ -138,9 +175,18 @@ Validated
 
 ## In Progress
 
-Nothing.
+Frontend
 
-The backend MVP is considered complete.
+- Design System
+- Header
+- Sidebar
+- Authentication UI
+
+Brand
+
+- Naming
+- Visual identity
+- Logo exploration
 
 ---
 
@@ -157,19 +203,22 @@ The backend MVP is considered complete.
 
 ### Frontend
 
-- Angular workspace
-- Authentication
-- Design System
-- Collection management
-- Catalog browser
-- Dashboard
+- Login
+- Collection
+- Databank
+- Figure Detail
+- Wishlist
+- Scanner
+- AI Identify
+- Dashboard widgets
+- Profile
 
 ---
 
 ## Current Milestone
 
-Begin Angular frontend development.
+Build the first functional frontend connected to the secured REST API.
 
-Next objective
+Parallel objective
 
-Connect Angular to the secured REST API and implement the first authenticated collection screens.
+Define the Cardback brand identity before implementing the complete Design System.

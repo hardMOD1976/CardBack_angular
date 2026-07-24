@@ -1,0 +1,23 @@
+.header {
+  height: 72px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 2rem;
+
+  border-bottom: 1px solid #e5e5e5;
+
+  background: #ffffff;
+}
+
+.header__brand {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.header__actions {
+  display: flex;
+  gap: 1rem;
+}

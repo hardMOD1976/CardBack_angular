@@ -1,17 +1,22 @@
-# Figure Archive
+# Figure Archive (working title) / Cardback (brand candidate)
 
 ## Goal
 
-Build the best action figure cataloging platform for collectors.
+Build the definitive platform for action figure collectors.
 
 The platform separates immutable catalog data from personal collection data, providing a scalable foundation for collectors, contributors and future community features.
+
+Long-term ambition:
+
+Become the "Discogs of action figure collecting."
 
 ---
 
 ## Current Phase
 
-Owned Figure secured
-Frontend preparation
+Frontend foundation
+
+Brand definition
 
 ---
 
@@ -50,7 +55,9 @@ Repository
   - PostgreSQL (Neon)
 
 - frontend/
-  - Angular (planned)
+  - Angular 21
+  - Standalone Components
+  - Feature-first architecture
 
 ---
 
@@ -70,6 +77,42 @@ Completed modules
 
 ---
 
+## Frontend Progress
+
+Completed
+
+Project foundation
+
+- Angular workspace
+- Feature-first architecture
+- Documentation
+- Shell layout
+- Router configuration
+- Dashboard route
+- Header component
+- Sidebar component
+- Initial layout structure
+
+Documentation
+
+- frontend-architecture.md
+- frontend-information-architecture.md
+- frontend-user-flows.md
+- design-system.md
+- components.md
+
+Branding
+
+Started
+
+- brand-strategy.md
+- brand-guidelines.md
+- naming.md
+- logo-sketches.md
+- moodboard.md
+
+---
+
 ## Shared Infrastructure
 
 - PrismaModule
@@ -85,10 +128,19 @@ Completed modules
 
 ## Documentation
 
+Backend
+
 - Swagger integrated
 - Complete REST API documentation
 - JWT Authentication documented
 - Protected endpoints documented
+
+Frontend
+
+- Architecture documented
+- Navigation documented
+- User flows documented
+- Component architecture documented
 
 ---
 
@@ -178,20 +230,27 @@ Search is case-insensitive and owner-restricted.
 
 ## Current Next Step
 
-Angular frontend.
+Frontend implementation.
 
 Immediate milestones
 
-- Authentication flow
-- Login screen
+- Design System
+- Header
+- Sidebar
+- Authentication UI
+- Login
 - Collection screens
-- Catalog browser
-- Add figure to collection
+- Databank
+- Figure detail
 
-After frontend
+Brand
+
+Continue defining the Cardback identity.
+
+After frontend MVP
 
 - Image upload
-- Advanced filters
-- Dashboard
+- Dashboard widgets
 - Statistics
+- AI Identification
 - Marketplace features

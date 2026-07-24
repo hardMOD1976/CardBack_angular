@@ -23,25 +23,26 @@ import {
 } from '@nestjs/swagger';
 
 import { OwnedFiguresService } from './owned-figures.service';
-
 import { CreateOwnedFigureDto } from './dto/create-owned-figure.dto';
 import { UpdateOwnedFigureDto } from './dto/update-owned-figure.dto';
-import { Role } from '@prisma/client';
-import { Roles } from '../auth/decorators/roles.decorator';
+
+import { CurrentUserId } from '../auth/decorators/current-user-id.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
 import { PaginationQueryDto } from '../common/pagination';
 
 @ApiTags('Owned Figures')
 @Controller('owned-figures')
+@ApiBearerAuth('access-token')
+@UseGuards(JwtAuthGuard)
 export class OwnedFiguresController {
   constructor(
     private readonly ownedFiguresService: OwnedFiguresService,
   ) {}
 
   @ApiOperation({
-    summary: 'Get all owned figures',
-    description: 'Returns all active owned figures.',
+    summary: 'Get authenticated user owned figures',
+    description:
+      'Returns the authenticated user collection.',
     operationId: 'findAllOwnedFigures',
   })
   @ApiOkResponse({
@@ -51,26 +52,28 @@ export class OwnedFiguresController {
     description: 'Internal server error.',
   })
   @Get()
-@ApiBearerAuth('access-token')
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(Role.ADMIN)
-findAll(
-  @Query('page') page = 1,
-  @Query('limit') limit = 20,
-) {
-  const pagination: PaginationQueryDto = {
-    page: Number(page),
-    limit: Number(limit),
-  };
+  findAll(
+    @CurrentUserId() userId: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
+    @Query('search') search?: string,
+  ) {
+    const pagination: PaginationQueryDto = {
+      page: Number(page),
+      limit: Number(limit),
+      search,
+    };
 
-  return this.ownedFiguresService.findAll(
-    pagination,
-  );
-}
+    return this.ownedFiguresService.findAll(
+      userId,
+      pagination,
+    );
+  }
 
   @ApiOperation({
     summary: 'Get owned figure by id',
-    description: 'Returns an active owned figure by its identifier.',
+    description:
+      'Returns one owned figure belonging to the authenticated user.',
     operationId: 'findOwnedFigureById',
   })
   @ApiParam({
@@ -87,17 +90,20 @@ findAll(
     description: 'Internal server error.',
   })
   @Get(':id')
-  @ApiBearerAuth('access-token')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.ADMIN)
-  findOne(@Param('id') id: string) {
-    return this.ownedFiguresService.findOne(id);
-  }
+  findOne(
+  @CurrentUserId() userId: string,
+  @Param('id') id: string,
+) {
+  return this.ownedFiguresService.findOne(
+    userId,
+    id,
+  );
+}
 
   @ApiOperation({
     summary: 'Create owned figure',
     description:
-      'Adds a product release to a user collection.',
+      'Adds a product release to the authenticated user collection.',
     operationId: 'createOwnedFigure',
   })
   @ApiCreatedResponse({
@@ -107,26 +113,26 @@ findAll(
     description: 'Validation error.',
   })
   @ApiNotFoundResponse({
-    description: 'User or Product Release not found.',
+    description: 'Product Release not found.',
   })
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
-   @ApiBearerAuth('access-token')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.ADMIN)
   @Post()
   create(
-    @Body()
-    dto: CreateOwnedFigureDto,
+    @CurrentUserId() userId: string,
+    @Body() dto: CreateOwnedFigureDto,
   ) {
-    return this.ownedFiguresService.create(dto);
+    return this.ownedFiguresService.create(
+      userId,
+      dto,
+    );
   }
 
   @ApiOperation({
     summary: 'Update owned figure',
     description:
-      'Updates user-specific information for an owned figure.',
+      'Updates an owned figure belonging to the authenticated user.',
     operationId: 'updateOwnedFigure',
   })
   @ApiParam({
@@ -145,22 +151,24 @@ findAll(
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
-   @ApiBearerAuth('access-token')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
   @Put(':id')
   update(
-    @Param('id') id: string,
-    @Body()
-    dto: UpdateOwnedFigureDto,
-  ) {
-    return this.ownedFiguresService.update(id, dto);
-  }
+  @CurrentUserId() userId: string,
+  @Param('id') id: string,
+  @Body()
+  dto: UpdateOwnedFigureDto,
+) {
+  return this.ownedFiguresService.update(
+    userId,
+    id,
+    dto,
+  );
+}
 
   @ApiOperation({
     summary: 'Soft delete owned figure',
     description:
-      'Soft deletes an owned figure by setting its deletedAt timestamp.',
+      'Soft deletes an owned figure belonging to the authenticated user.',
     operationId: 'deleteOwnedFigure',
   })
   @ApiParam({
@@ -176,11 +184,14 @@ findAll(
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
-   @ApiBearerAuth('access-token')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ownedFiguresService.remove(id);
-  }
+  remove(
+  @CurrentUserId() userId: string,
+  @Param('id') id: string,
+) {
+  return this.ownedFiguresService.remove(
+    userId,
+    id,
+  );
+}
 }

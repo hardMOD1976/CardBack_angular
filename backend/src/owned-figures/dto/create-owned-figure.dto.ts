@@ -15,13 +15,6 @@ import {
 
 export class CreateOwnedFigureDto {
   @ApiProperty({
-    example: 'cmf9jb1ms0001efgh87654321',
-  })
-  @IsString()
-  @IsNotEmpty()
-  userId!: string;
-
-  @ApiProperty({
     example: 'cmf9jb1ms0002efgh87654321',
   })
   @IsString()
@@ -99,12 +92,11 @@ export class CreateOwnedFigureDto {
   notes?: string;
 
   @ApiPropertyOptional({
-  example: 1,
-  description: 'Number of identical copies owned.',
-})
-@IsOptional()
-@IsInt()
-@Min(1)
-quantity?: number;
-
+    example: 1,
+    description: 'Number of identical copies owned.',
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  quantity?: number;
 }

@@ -13,21 +13,6 @@ import { buildPaginatedResponse, PaginationQueryDto } from '../common/pagination
 export class OwnedFiguresService {
   constructor(private prisma: PrismaService) {}
 
-  async ensureUserExists(id: string) {
-    const user = await this.prisma.user.findFirst({
-      where: {
-        id,
-        deletedAt: null,
-      },
-    });
-
-    if (!user) {
-      throw new NotFoundException(
-        `User with id '${id}' not found.`,
-      );
-    }
-  }
-
   async ensureProductReleaseExists(id: string) {
     const release = await this.prisma.productRelease.findFirst({
       where: {
@@ -43,16 +28,80 @@ export class OwnedFiguresService {
     }
   }
 
-async findAll(
+async findAll( userId: string,
   pagination: PaginationQueryDto,
 ) {
-  const { page, limit } = pagination;
+  const { page, limit, search } = pagination;
 
   const skip = (page - 1) * limit;
 
   const where = {
-    deletedAt: null,
-  };
+  userId,
+  deletedAt: null,
+
+  ...(search && {
+    OR: [
+      {
+        condition: {
+          contains: search,
+          mode: 'insensitive' as const,
+        },
+      },
+      {
+        completeness: {
+          contains: search,
+          mode: 'insensitive' as const,
+        },
+      },
+      {
+        packagingState: {
+          contains: search,
+          mode: 'insensitive' as const,
+        },
+      },
+      {
+        purchaseLocation: {
+          contains: search,
+          mode: 'insensitive' as const,
+        },
+      },
+      {
+        storageLocation: {
+          contains: search,
+          mode: 'insensitive' as const,
+        },
+      },
+      {
+        notes: {
+          contains: search,
+          mode: 'insensitive' as const,
+        },
+      },
+      {
+        currency: {
+          contains: search,
+          mode: 'insensitive' as const,
+        },
+      },
+      {
+        productRelease: {
+          name: {
+            contains: search,
+            mode: 'insensitive' as const,
+          },
+        },
+      },
+      {
+        productRelease: {
+          barcode: {
+            contains: search,
+            mode: 'insensitive' as const,
+          },
+        },
+      },
+    ],
+  }),
+};
 
   const [ownedFigures, total] =
     await this.prisma.$transaction([
@@ -85,56 +134,99 @@ async findAll(
   );
 }
 
-  findOne(id: string) {
-    return this.prisma.ownedFigure.findFirst({
-      where: {
-        id,
-        deletedAt: null,
-      },
-      include: {
-        user: true,
-        productRelease: true,
-      },
-    });
-  }
+async findOne(
+  userId: string,
+  id: string,
+) {
+  await this.ensureOwnedFigureExists(
+    userId,
+    id,
+  );
 
-  async create(dto: CreateOwnedFigureDto) {
-    await this.ensureUserExists(dto.userId);
+  return this.prisma.ownedFigure.findFirst({
+    where: {
+      id,
+      userId,
+    },
+    include: {
+      user: true,
+      productRelease: true,
+    },
+  });
+}
+
+  async create(userId: string, dto: CreateOwnedFigureDto) {
     await this.ensureProductReleaseExists(dto.productReleaseId);
 
-    return this.prisma.ownedFigure.create({
-      data: dto,
-    });
+   return this.prisma.ownedFigure.create({
+  data: {
+    ...dto,
+    userId,
+  },
+});
   }
 
-  async update(
-    id: string,
-    dto: UpdateOwnedFigureDto,
-  ) {
-    if (dto.userId) {
-      await this.ensureUserExists(dto.userId);
-    }
+async update(
+  userId: string,
+  id: string,
+  dto: UpdateOwnedFigureDto,
+) {
+  await this.ensureOwnedFigureExists(
+    userId,
+    id,
+  );
 
-    if (dto.productReleaseId) {
-      await this.ensureProductReleaseExists(dto.productReleaseId);
-    }
+  if (dto.productReleaseId) {
+    await this.ensureProductReleaseExists(
+      dto.productReleaseId,
+    );
+  }
 
-    return this.prisma.ownedFigure.update({
+  return this.prisma.ownedFigure.update({
+    where: {
+      id,
+    },
+    data: dto,
+  });
+}
+
+async remove(
+  userId: string,
+  id: string,
+) {
+  await this.ensureOwnedFigureExists(
+    userId,
+    id,
+  );
+
+  return this.prisma.ownedFigure.update({
+    where: {
+      id,
+    },
+    data: {
+      deletedAt: new Date(),
+    },
+  });
+}
+
+private async ensureOwnedFigureExists(
+  userId: string,
+  id: string,
+) {
+  const ownedFigure =
+    await this.prisma.ownedFigure.findFirst({
       where: {
         id,
+        userId,
+        deletedAt: null,
       },
-      data: dto,
     });
-  }
 
-  remove(id: string) {
-    return this.prisma.ownedFigure.update({
-      where: {
-        id,
-      },
-      data: {
-        deletedAt: new Date(),
-      },
-    });
+  if (!ownedFigure) {
+    throw new NotFoundException(
+      `Owned Figure with id '${id}' not found.`,
+    );
   }
+}
+
 }

@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Owned Figure security refactor
+Frontend preparation
 
 ---
 
@@ -13,6 +13,8 @@ Owned Figure security refactor
 - Project Vision
 - MVP Scope
 - Architecture Decision Records (ADR)
+
+---
 
 ### Domain
 
@@ -25,6 +27,8 @@ Owned Figure security refactor
 - Product Release
 - User
 - Owned Figure
+
+---
 
 ### Infrastructure
 
@@ -43,21 +47,39 @@ Owned Figure security refactor
 - Generic Pagination
 - Generic Paginated Response
 
+---
+
 ### Backend
 
-All catalog modules
+Catalog modules
 
 - CRUD
 - DTO validation
 - Soft Delete
-- Relational validation
 - Pagination
 - Search
+- Relational validation
 
 Product Release
 
 - Multi-field search
-- Relational search
+- Variant relational search
+
+Owned Figure
+
+Completed
+
+- Owner-only CRUD
+- userId removed from DTOs
+- JWT-based ownership
+- CurrentUserId decorator
+- Pagination
+- Search
+- Soft Delete
+- Ownership verification
+- 404 returned when accessing another user's collection
+
+---
 
 ### Authentication & Authorization
 
@@ -68,8 +90,8 @@ Completed
 - AuthService
 - JWT configuration
 - ConfigModule integration
-- Login endpoint
-- Refresh endpoint
+- Login
+- Refresh
 - Password hashing
 - Refresh Token hashing
 - Access Token generation
@@ -80,8 +102,9 @@ Completed
 - Public decorator
 - Roles decorator
 - RolesGuard
+- CurrentUser decorator
+- CurrentUserId decorator
 - Swagger Authorize integration
-- Role-based authorization
 
 Validated
 
@@ -89,15 +112,19 @@ Validated
 - Refresh
 - JWT validation
 - Protected endpoints
-- ADMIN-only write operations
-- Public catalog access
+- ADMIN-only catalog writes
+- Public catalog
+- Private collections
+
+---
 
 ### Documentation
 
 - Swagger integrated
-- REST API fully documented
-- Authentication documented
+- REST API documented
 - JWT Authorization documented
+
+---
 
 ### Database
 
@@ -111,15 +138,9 @@ Validated
 
 ## In Progress
 
-### Owned Figure
+Nothing.
 
-Pending redesign
-
-- Ownership enforcement
-- JWT user extraction
-- Remove userId from DTOs
-- Owner-only CRUD
-- Search
+The backend MVP is considered complete.
 
 ---
 
@@ -127,25 +148,28 @@ Pending redesign
 
 ### Backend
 
-- Owned Figure security
-- Advanced filtering
 - Image upload
-- Testing
+- Advanced filtering
+- Automated testing
+- Performance improvements
+
+---
 
 ### Frontend
 
 - Angular workspace
-- Design System
 - Authentication
-- UI Foundation
+- Design System
 - Collection management
+- Catalog browser
+- Dashboard
 
 ---
 
 ## Current Milestone
 
-Secure personal collections.
+Begin Angular frontend development.
 
 Next objective
 
-Implement owner-only access for OwnedFigure before starting the Angular frontend.
+Connect Angular to the secured REST API and implement the first authenticated collection screens.

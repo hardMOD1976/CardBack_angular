@@ -360,3 +360,59 @@ Planned work
 - Restrict CRUD operations to the collection owner
 - Prevent access to collections owned by other users
 - Add search after ownership restrictions are completed
+
+## 2026-07-24
+
+### Owned Figure Security Completed
+
+The OwnedFigure module has been redesigned to enforce ownership-based authorization.
+
+Implemented
+
+Security
+
+- userId removed from CreateOwnedFigureDto
+- userId removed from UpdateOwnedFigureDto
+- Authenticated user obtained from JWT
+- Owner-only CRUD operations
+- Owner-only pagination
+- Owner-only search
+- Unauthorized access now returns 404
+
+Architecture improvements
+
+- Shared ownership validation through ensureOwnedFigureExists()
+- Service methods simplified by reusing ownership validation
+- Ownership checks centralized in a single method
+
+Search
+
+Implemented case-insensitive search by:
+
+- condition
+- completeness
+- packagingState
+- purchaseLocation
+- storageLocation
+- notes
+- related Product Release name
+
+Validation
+
+Verified through Swagger
+
+- Pagination
+- Search
+- Create
+- Update
+- Delete
+- JWT authentication
+- DTOs no longer expose userId
+
+Current milestone
+
+OwnedFigure is now fully secured and follows the same architectural standards as the catalog modules.
+
+Next milestone
+
+Start the Angular frontend.

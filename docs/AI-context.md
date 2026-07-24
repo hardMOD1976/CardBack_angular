@@ -10,8 +10,8 @@ The platform separates immutable catalog data from personal collection data, pro
 
 ## Current Phase
 
-Pagination & Search completed for catalog modules
-OwnedFigure security refactor pending
+Owned Figure secured
+Frontend preparation
 
 ---
 
@@ -60,15 +60,17 @@ Completed modules
 
 - Manufacturer (CRUD + Soft Delete + Pagination + Search)
 - Franchise (CRUD + Soft Delete + Pagination + Search)
-- Line (CRUD + Soft Delete + relational validation + Pagination + Search)
-- Character (CRUD + Soft Delete + relational validation + Pagination + Search)
-- Figure (CRUD + Soft Delete + relational validation + Pagination + Search)
-- Variant (CRUD + Soft Delete + relational validation + Pagination + Search)
-- Product Release (CRUD + Soft Delete + relational validation + Pagination + Multi-field Search)
+- Line (CRUD + Soft Delete + Relational Validation + Pagination + Search)
+- Character (CRUD + Soft Delete + Relational Validation + Pagination + Search)
+- Figure (CRUD + Soft Delete + Relational Validation + Pagination + Search)
+- Variant (CRUD + Soft Delete + Relational Validation + Pagination + Search)
+- Product Release (CRUD + Soft Delete + Relational Validation + Pagination + Multi-field Search)
 - User (CRUD + Soft Delete)
-- Owned Figure (CRUD + Soft Delete + relational validation)
+- Owned Figure (Owner-only CRUD + Pagination + Search + Soft Delete)
 
-Shared infrastructure
+---
+
+## Shared Infrastructure
 
 - PrismaModule
 - ValidationPipe
@@ -79,98 +81,117 @@ Shared infrastructure
 - Generic Pagination
 - Generic Paginated Response
 
-Documentation
+---
+
+## Documentation
 
 - Swagger integrated
 - Complete REST API documentation
-- Swagger JWT authentication
+- JWT Authentication documented
 - Protected endpoints documented
 
-Database
+---
+
+## Database
 
 - Golden Dataset implemented
-- Robust seed with upsert()
+- Robust seed using upsert()
 - Referential integrity verified
-- Unique constraints reviewed
+- Composite unique constraints reviewed
 
-Authentication & Authorization
+---
+
+## Authentication & Authorization
 
 Implemented
 
 - JWT Access Token
 - JWT Refresh Token
-- Login endpoint
+- Login
+- Refresh Token Rotation
+- Refresh Token Revocation
 - Password hashing (bcrypt)
-- Refresh token hashing
-- Refresh token rotation
-- Refresh token persistence
-- Token revocation support
-- ConfigModule integration
-- JwtModule configured through environment variables
 - Passport JWT Strategy
 - JwtAuthGuard
-- Public decorator
-- Roles decorator
 - RolesGuard
-- Role-based authorization
+- Roles decorator
+- CurrentUser decorator
+- CurrentUserId decorator
 - Swagger Authorize integration
-- Protected endpoints validated
 
 Current authorization model
 
-- Public catalog (GET endpoints)
-- Authenticated users can browse catalog
-- Only ADMIN users can create, update or delete catalog entities
+Catalog
 
-Pagination
+- Public GET endpoints
+- ADMIN creates, updates and deletes
+
+Collections
+
+- Authenticated users only
+- Every Owned Figure belongs to exactly one user
+- Ownership enforced at service level
+- Users cannot access another user's collection
+- userId is never accepted from the client
+- userId always comes from the authenticated JWT
+
+---
+
+## Pagination
 
 Completed
 
-- PaginationQueryDto
-- PaginationMetaDto
-- PaginatedResponseDto
+- Generic Pagination DTO
+- Generic Pagination Response
 - buildPaginatedResponse()
-- Applied to every catalog endpoint
+- Applied consistently across all modules
 
-Search
+---
 
-Completed for catalog entities
+## Search
 
-Implemented
+Completed
 
-- Case-insensitive search
-- Multi-field search where appropriate
-- Relational search
-- Consistent OR filtering
+Catalog
 
-Product Release search includes
+- Manufacturer
+- Franchise
+- Line
+- Character
+- Figure
+- Variant
+- Product Release
 
-- name
-- barcode
+Owned Figure
+
+- Search by condition
+- completeness
+- packagingState
+- purchaseLocation
+- storageLocation
 - notes
-- retailer
-- region
-- language
-- packagingType
-- variant.name
+- Product Release name
+
+Search is case-insensitive and owner-restricted.
 
 ---
 
 ## Current Next Step
 
-Owned Figure security redesign.
+Angular frontend.
 
-Immediate milestone
+Immediate milestones
 
-- Remove userId from DTOs
-- Obtain authenticated user from JWT
-- Restrict CRUD operations to the collection owner
-- Prevent access to other users' collections
-- Add search to OwnedFigure after security refactor
+- Authentication flow
+- Login screen
+- Collection screens
+- Catalog browser
+- Add figure to collection
 
-After Owned Figure
+After frontend
 
-- Angular frontend
-- Collection management
-- Images
-- Advanced filtering
+- Image upload
+- Advanced filters
+- Dashboard
+- Statistics
+- Marketplace features

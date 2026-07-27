@@ -14,9 +14,9 @@ Become the "Discogs of action figure collecting."
 
 ## Current Phase
 
-Frontend foundation
+Frontend architecture
 
-Brand definition
+Authentication foundation
 
 ---
 
@@ -65,15 +65,17 @@ Repository
 
 Completed modules
 
-- Manufacturer (CRUD + Soft Delete + Pagination + Search)
-- Franchise (CRUD + Soft Delete + Pagination + Search)
-- Line (CRUD + Soft Delete + Relational Validation + Pagination + Search)
-- Character (CRUD + Soft Delete + Relational Validation + Pagination + Search)
-- Figure (CRUD + Soft Delete + Relational Validation + Pagination + Search)
-- Variant (CRUD + Soft Delete + Relational Validation + Pagination + Search)
-- Product Release (CRUD + Soft Delete + Relational Validation + Pagination + Multi-field Search)
-- User (CRUD + Soft Delete)
-- Owned Figure (Owner-only CRUD + Pagination + Search + Soft Delete)
+- Manufacturer
+- Franchise
+- Line
+- Character
+- Figure
+- Variant
+- Product Release
+- User
+- Owned Figure
+
+(All CRUD + Soft Delete + Pagination + Search)
 
 ---
 
@@ -85,13 +87,30 @@ Project foundation
 
 - Angular workspace
 - Feature-first architecture
-- Documentation
 - Shell layout
-- Router configuration
+- Nested routing
 - Dashboard route
-- Header component
-- Sidebar component
-- Initial layout structure
+- Header
+- Sidebar
+- Shared UI components
+    - cb-button
+    - cb-input
+    - cb-card
+- Design Tokens foundation
+- Global SCSS structure
+- Theme variables
+- Router refactored to use Shell as authenticated layout
+- AppComponent simplified to RouterOutlet
+
+Authentication
+
+Started
+
+- Auth feature
+- Login models
+- AuthService
+- Login page structure
+- Environment-based API URL
 
 Documentation
 
@@ -101,7 +120,7 @@ Documentation
 - design-system.md
 - components.md
 
-Branding
+Brand
 
 Started
 
@@ -118,9 +137,9 @@ Started
 - PrismaModule
 - ValidationPipe
 - Prisma Exception Filter
-- Soft Delete pattern
+- Soft Delete
 - Relational validation
-- Prisma Studio workflow
+- Prisma Studio
 - Generic Pagination
 - Generic Paginated Response
 
@@ -130,62 +149,42 @@ Started
 
 Backend
 
-- Swagger integrated
-- Complete REST API documentation
-- JWT Authentication documented
-- Protected endpoints documented
+- Swagger
+- JWT documented
 
 Frontend
 
-- Architecture documented
-- Navigation documented
-- User flows documented
-- Component architecture documented
+- Architecture
+- Navigation
+- User flows
+- Component architecture
+- Design System
 
 ---
 
 ## Database
 
-- Golden Dataset implemented
-- Robust seed using upsert()
-- Referential integrity verified
-- Composite unique constraints reviewed
+- Golden Dataset
+- Robust Seed
+- Referential integrity
+- Composite constraints
 
 ---
 
 ## Authentication & Authorization
 
-Implemented
+Backend completed
 
-- JWT Access Token
-- JWT Refresh Token
-- Login
-- Refresh Token Rotation
-- Refresh Token Revocation
-- Password hashing (bcrypt)
-- Passport JWT Strategy
-- JwtAuthGuard
-- RolesGuard
-- Roles decorator
-- CurrentUser decorator
-- CurrentUserId decorator
-- Swagger Authorize integration
+Frontend started
 
-Current authorization model
+Next frontend steps
 
-Catalog
-
-- Public GET endpoints
-- ADMIN creates, updates and deletes
-
-Collections
-
-- Authenticated users only
-- Every Owned Figure belongs to exactly one user
-- Ownership enforced at service level
-- Users cannot access another user's collection
-- userId is never accepted from the client
-- userId always comes from the authenticated JWT
+- TokenService
+- Login flow
+- LocalStorage
+- AuthGuard
+- HTTP Interceptor
+- Current authenticated user
 
 ---
 
@@ -193,64 +192,30 @@ Collections
 
 Completed
 
-- Generic Pagination DTO
-- Generic Pagination Response
-- buildPaginatedResponse()
-- Applied consistently across all modules
-
 ---
 
 ## Search
 
 Completed
 
-Catalog
-
-- Manufacturer
-- Franchise
-- Line
-- Character
-- Figure
-- Variant
-- Product Release
-
-Owned Figure
-
-- Search by condition
-- completeness
-- packagingState
-- purchaseLocation
-- storageLocation
-- notes
-- Product Release name
-
-Search is case-insensitive and owner-restricted.
-
 ---
 
 ## Current Next Step
 
-Frontend implementation.
+Implement the first working Login connected to the backend.
 
 Immediate milestones
 
-- Design System
-- Header
-- Sidebar
-- Authentication UI
-- Login
-- Collection screens
+- Login page
+- Token persistence
+- AuthGuard
+- HTTP Interceptor
+- First authenticated Dashboard
+
+After authentication
+
+- Collection
 - Databank
-- Figure detail
-
-Brand
-
-Continue defining the Cardback identity.
-
-After frontend MVP
-
-- Image upload
-- Dashboard widgets
-- Statistics
+- Figure Detail
+- Scanner
 - AI Identification
-- Marketplace features

@@ -511,3 +511,62 @@ Working tagline
 Check your collection.
 
 The brand direction focuses on becoming the definitive platform for collectors rather than simply another collection manager.
+
+# History
+
+## 2026-07-27
+
+### Frontend Architecture Consolidation
+
+The Angular frontend architecture was refactored to better separate public and authenticated areas.
+
+Implemented
+
+Architecture
+
+- AppComponent simplified to a single RouterOutlet
+- Shell converted into the authenticated application layout
+- Nested routing introduced
+- Login route prepared outside the Shell
+- Dashboard and feature pages moved under Shell children routes
+
+Design System
+
+Created the first reusable UI components
+
+- cb-button
+- cb-input
+- cb-card
+
+Project structure
+
+- Shared UI folder consolidated
+- Global SCSS organization completed
+- Design Tokens introduced
+- Base styles prepared
+
+Authentication
+
+Frontend authentication started
+
+Created
+
+- Auth feature
+- Login models
+- AuthService
+- Environment-based API configuration
+- Login page scaffold
+
+Current milestone
+
+The frontend architecture is now ready to connect with the secured NestJS backend without requiring structural changes.
+
+Next milestone
+
+Implement the complete Login flow:
+
+- TokenService
+- JWT persistence
+- Dashboard redirection
+- AuthGuard
+- HTTP Interceptor

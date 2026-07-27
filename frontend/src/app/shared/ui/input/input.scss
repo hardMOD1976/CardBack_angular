@@ -1,0 +1,37 @@
+.cb-input {
+
+    width: 100%;
+
+    padding: .75rem 1rem;
+
+    font: inherit;
+
+    color: var(--text-primary);
+
+    background: var(--surface-primary);
+
+    border: 1px solid var(--border-primary);
+
+    border-radius: .75rem;
+
+    outline: none;
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+
+}
+
+.cb-input::placeholder {
+
+    color: var(--text-secondary);
+
+}
+
+.cb-input:focus {
+
+    border-color: #3b82f6;
+
+    box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+
+}

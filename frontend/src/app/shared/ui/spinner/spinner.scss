@@ -1,0 +1,24 @@
+.cb-spinner {
+
+    width: 24px;
+    height: 24px;
+
+    border-radius: 50%;
+
+    border: 3px solid #d1d5db;
+
+    border-top-color: var(--color-primary);
+
+    animation: spin .8s linear infinite;
+
+}
+
+@keyframes spin {
+
+    to {
+
+        transform: rotate(360deg);
+
+    }
+
+}

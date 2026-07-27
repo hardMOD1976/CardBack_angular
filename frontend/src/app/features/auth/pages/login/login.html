@@ -1,0 +1,33 @@
+<div class="login-page">
+
+    <cb-card>
+
+        <h1>Cardback</h1>
+
+        <p>Welcome back.</p>
+
+        <div class="login-form">
+
+            <input
+                class="cb-input"
+                type="email"
+                placeholder="Email"
+                [(ngModel)]="email">
+
+            <input
+                class="cb-input"
+                type="password"
+                placeholder="Password"
+                [(ngModel)]="password">
+
+            <cb-button (click)="login()">
+
+                Login
+
+            </cb-button>
+
+        </div>
+
+    </cb-card>
+
+</div>

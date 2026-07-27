@@ -1,0 +1,21 @@
+.cb-avatar {
+
+    width: 40px;
+    height: 40px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: var(--color-primary);
+
+    color: white;
+
+    font-weight: 600;
+
+    user-select: none;
+
+}

@@ -1,31 +1,27 @@
-<nav class="sidebar">
+<div class="sidebar__brand">
 
-  <a routerLink="">
-    Dashboard
-  </a>
+  <h1 class="sidebar__logo">
+    Cardback
+  </h1>
 
-  <a routerLink="/collection">
-    My Collection
-  </a>
+  <p class="sidebar__tagline">
+    Check your collection.
+  </p>
 
-  <a routerLink="/databank">
-    Databank
-  </a>
+</div>
 
-  <a routerLink="/wishlist">
-    Wishlist
-  </a>
+<nav class="sidebar__navigation">
 
-  <a routerLink="/identify">
-    AI Identify
-  </a>
+  @for (item of navigation; track item.route) {
 
-  <a routerLink="/scan">
-    Scan Barcode
-  </a>
+    <a
+      [routerLink]="item.route"
+      routerLinkActive="active">
 
-  <a routerLink="/profile">
-    Profile
-  </a>
+      {{ item.label }}
+
+    </a>
+
+  }
 
 </nav>

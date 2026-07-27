@@ -2,9 +2,9 @@
 
 ## Current Phase
 
-Frontend foundation
+Frontend architecture
 
-Brand definition
+Authentication foundation
 
 ---
 
@@ -14,11 +14,13 @@ Brand definition
 
 - Project Vision
 - MVP Scope
-- Architecture Decision Records (ADR)
+- ADRs
 
 ---
 
 ### Domain
+
+Completed
 
 - Manufacturer
 - Franchise
@@ -34,142 +36,113 @@ Brand definition
 
 ### Infrastructure
 
-- Repository restructured
-- backend/ and frontend/ separation
-- PostgreSQL (Neon)
-- Prisma ORM
-- Prisma schema completed
-- Database migrations
-- Prisma Client
-- NestJS application
-- ValidationPipe
-- Prisma Exception Filter
-- Soft Delete infrastructure
-- Relational validation infrastructure
-- Generic Pagination
-- Generic Paginated Response
+Completed
+
+Backend
+
+- NestJS
+- Prisma
+- PostgreSQL
+
+Frontend
+
+- Angular workspace
+- Feature-first architecture
+- Nested routing
+- Shell layout
+- Shared UI
+- Design Tokens
+- SCSS architecture
 
 ---
 
 ### Backend
 
-Catalog modules
+Backend MVP completed.
+
+Catalog
 
 - CRUD
-- DTO validation
-- Soft Delete
-- Pagination
 - Search
+- Pagination
+- Soft Delete
 - Relational validation
-
-Product Release
-
-- Multi-field search
-- Variant relational search
 
 Owned Figure
 
-Completed
-
 - Owner-only CRUD
-- userId removed from DTOs
-- JWT-based ownership
-- CurrentUserId decorator
-- Pagination
+- JWT ownership
 - Search
+- Pagination
 - Soft Delete
-- Ownership verification
-- 404 returned when accessing another user's collection
-
-Backend MVP completed.
 
 ---
 
 ### Frontend
 
-Foundation completed
+Completed
 
-- Angular workspace
-- Feature-first architecture
+Foundation
+
 - Shell
-- Header
 - Sidebar
-- Dashboard page
-- Initial Router configuration
+- Header
+- Nested Router
+- Dashboard
+- Shared Components
+    - cb-button
+    - cb-input
+    - cb-card
 
-Documentation completed
+Authentication
 
-- Frontend Architecture
-- Information Architecture
-- User Flows
-- Design System
-- Components
+Started
+
+- Auth feature
+- Login models
+- AuthService
+- Login page
 
 ---
 
-### Authentication & Authorization
+### Authentication
+
+Backend
 
 Completed
 
-- AuthModule
-- AuthController
-- AuthService
-- JWT configuration
-- ConfigModule integration
-- Login
-- Refresh
-- Password hashing
-- Refresh Token hashing
-- Access Token generation
-- Refresh Token rotation
-- Token revocation
-- Passport JWT Strategy
-- JwtAuthGuard
-- Public decorator
-- Roles decorator
-- RolesGuard
-- CurrentUser decorator
-- CurrentUserId decorator
-- Swagger Authorize integration
+Frontend
 
-Validated
+In progress
 
-- Login
-- Refresh
-- JWT validation
-- Protected endpoints
-- ADMIN-only catalog writes
-- Public catalog
-- Private collections
+Pending
+
+- TokenService
+- Login flow
+- AuthGuard
+- HTTP Interceptor
+- Current User
 
 ---
 
 ### Documentation
 
+Completed
+
 Backend
 
-- Swagger integrated
-- REST API documented
+- Swagger
 
 Frontend
 
-- Architecture documented
-- UX documented
-- Component architecture documented
+- Architecture
+- UX
+- Components
+- Design System
 
 Brand
 
-Initial branding documentation created.
-
----
-
-### Database
-
-- Golden Dataset
-- Idempotent seed
-- Robust upsert strategy
-- Composite unique constraints
-- Referential integrity verified
+Initial documentation completed.
 
 ---
 
@@ -177,16 +150,9 @@ Initial branding documentation created.
 
 Frontend
 
+- Login
+- Authentication
 - Design System
-- Header
-- Sidebar
-- Authentication UI
-
-Brand
-
-- Naming
-- Visual identity
-- Logo exploration
 
 ---
 
@@ -195,8 +161,8 @@ Brand
 ### Backend
 
 - Image upload
-- Advanced filtering
-- Automated testing
+- Advanced filters
+- Testing
 - Performance improvements
 
 ---
@@ -217,8 +183,4 @@ Brand
 
 ## Current Milestone
 
-Build the first functional frontend connected to the secured REST API.
-
-Parallel objective
-
-Define the Cardback brand identity before implementing the complete Design System.
+Complete the authentication flow and establish the first communication between the Angular frontend and the secured NestJS backend.

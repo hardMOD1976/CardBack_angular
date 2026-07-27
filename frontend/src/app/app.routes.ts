@@ -1,45 +1,78 @@
 import { Routes } from '@angular/router';
 
+import { Shell } from './shell/components/shell/shell';
+
+import { Login } from './features/auth/pages/login/login';
+
 import { Dashboard } from './features/dashboard/pages/dashboard/dashboard';
+import { Collection } from './features/collection/pages/collection/collection';
+import { Databank } from './features/databank/pages/databank/databank';
+import { Wishlist } from './features/wishlist/pages/wishlist/wishlist';
+import { Identify } from './features/ai-identify/pages/identify/identify';
+import { Scan } from './features/barcode-scan/pages/scan/scan';
+import { Profile } from './features/profile/pages/profile/profile';
 
 export const routes: Routes = [
+
+  {
+    path: 'login',
+    component: Login,
+  },
+
   {
     path: '',
-    component: Dashboard,
-  },
+    component: Shell,
 
-  {
-    path: 'collection',
-    component: Dashboard,
-  },
+    children: [
 
-  {
-    path: 'databank',
-    component: Dashboard,
-  },
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full',
+      },
 
-  {
-    path: 'wishlist',
-    component: Dashboard,
-  },
+      {
+        path: 'dashboard',
+        component: Dashboard,
+      },
 
-  {
-    path: 'identify',
-    component: Dashboard,
-  },
+      {
+        path: 'collection',
+        component: Collection,
+      },
 
-  {
-    path: 'scan',
-    component: Dashboard,
-  },
+      {
+        path: 'databank',
+        component: Databank,
+      },
 
-  {
-    path: 'profile',
-    component: Dashboard,
+      {
+        path: 'wishlist',
+        component: Wishlist,
+      },
+
+      {
+        path: 'identify',
+        component: Identify,
+      },
+
+      {
+        path: 'scan',
+        component: Scan,
+      },
+
+      {
+        path: 'profile',
+        component: Profile,
+      },
+
+    ],
+
   },
 
   {
     path: '**',
     redirectTo: '',
   },
+
 ];

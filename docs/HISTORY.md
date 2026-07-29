@@ -570,3 +570,48 @@ Implement the complete Login flow:
 - Dashboard redirection
 - AuthGuard
 - HTTP Interceptor
+
+## 2026-07-29
+
+### Authentication Completed
+
+Frontend authentication has been fully connected to the secured NestJS backend.
+
+Implemented
+
+Authentication
+
+- Login using username OR email
+- JWT persistence
+- Refresh Token persistence
+- TokenService
+- CurrentUserService
+- AuthGuard
+- HTTP Interceptor
+- Logout
+- Protected Angular routes
+- Protected backend communication
+
+Backend
+
+Authentication improved to support login using either username or email while maintaining JWT-based authorization.
+
+Brand
+
+The project officially adopts Cardback as the product name.
+
+Business Components
+
+Started
+
+- FigureCard reusable component
+- CollectionService
+- First authenticated communication with Owned Figures endpoint
+
+UI
+
+Header evolution started.
+
+Next milestone
+
+Implement the Collection page using real backend data and reusable FigureCard components.

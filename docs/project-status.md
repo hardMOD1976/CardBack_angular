@@ -1,10 +1,16 @@
 # Figure Archive (working title) - Project Status
 
+## Product Name
+
+Cardback
+
+---
+
 ## Current Phase
 
-Frontend architecture
+Frontend business components
 
-Authentication foundation
+Authentication completed
 
 ---
 
@@ -36,92 +42,67 @@ Completed
 
 ### Infrastructure
 
-Completed
-
 Backend
+
+Completed
 
 - NestJS
 - Prisma
 - PostgreSQL
+- JWT Authentication
+- Refresh Tokens
 
 Frontend
+
+Completed
 
 - Angular workspace
 - Feature-first architecture
 - Nested routing
-- Shell layout
+- Shell
 - Shared UI
 - Design Tokens
 - SCSS architecture
 
 ---
 
-### Backend
-
-Backend MVP completed.
-
-Catalog
-
-- CRUD
-- Search
-- Pagination
-- Soft Delete
-- Relational validation
-
-Owned Figure
-
-- Owner-only CRUD
-- JWT ownership
-- Search
-- Pagination
-- Soft Delete
-
----
-
-### Frontend
+### Authentication
 
 Completed
-
-Foundation
-
-- Shell
-- Sidebar
-- Header
-- Nested Router
-- Dashboard
-- Shared Components
-    - cb-button
-    - cb-input
-    - cb-card
-
-Authentication
-
-Started
-
-- Auth feature
-- Login models
-- AuthService
-- Login page
-
----
-
-### Authentication
 
 Backend
 
-Completed
+- JWT
+- Refresh Tokens
+- Login
+- Logout
+- Username or Email login
 
 Frontend
 
-In progress
-
-Pending
-
+- Login
+- Logout
 - TokenService
-- Login flow
+- CurrentUserService
 - AuthGuard
 - HTTP Interceptor
-- Current User
+- LocalStorage persistence
+- Protected routes
+
+---
+
+### Business Components
+
+Started
+
+- FigureCard
+
+Collection
+
+Started
+
+- CollectionService
+- Backend integration
 
 ---
 
@@ -136,8 +117,8 @@ Backend
 Frontend
 
 - Architecture
-- UX
 - Components
+- UX
 - Design System
 
 Brand
@@ -148,28 +129,23 @@ Initial documentation completed.
 
 ## In Progress
 
-Frontend
-
-- Login
-- Authentication
-- Design System
+- FigureCard
+- Collection
+- Header redesign
 
 ---
 
 ## Pending
 
-### Backend
+Backend
 
 - Image upload
 - Advanced filters
 - Testing
-- Performance improvements
+- Performance
 
----
+Frontend
 
-### Frontend
-
-- Login
 - Collection
 - Databank
 - Figure Detail
@@ -178,9 +154,11 @@ Frontend
 - AI Identify
 - Dashboard widgets
 - Profile
+- Theme switch
+- Notifications
 
 ---
 
 ## Current Milestone
 
-Complete the authentication flow and establish the first communication between the Angular frontend and the secured NestJS backend.
+Build the first fully functional collection experience using authenticated backend data and reusable business components.

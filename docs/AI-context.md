@@ -1,22 +1,32 @@
 # Figure Archive (working title) / Cardback (brand candidate)
 
+## Brand
+
+Cardback
+
+(Figure Archive remains the internal project name.)
+
+---
+
 ## Goal
 
 Build the definitive platform for action figure collectors.
 
 The platform separates immutable catalog data from personal collection data, providing a scalable foundation for collectors, contributors and future community features.
 
-Long-term ambition:
+Long-term ambition
 
-Become the "Discogs of action figure collecting."
+Become the Discogs of action figure collecting.
 
 ---
 
 ## Current Phase
 
-Frontend architecture
+Frontend development
 
-Authentication foundation
+Authentication completed
+
+First business components
 
 ---
 
@@ -49,15 +59,17 @@ Authentication foundation
 
 Repository
 
-- backend/
-  - NestJS 11
-  - Prisma ORM
-  - PostgreSQL (Neon)
+backend/
 
-- frontend/
-  - Angular 21
-  - Standalone Components
-  - Feature-first architecture
+- NestJS 11
+- Prisma ORM
+- PostgreSQL (Neon)
+
+frontend/
+
+- Angular 21
+- Standalone Components
+- Feature-first architecture
 
 ---
 
@@ -75,7 +87,15 @@ Completed modules
 - User
 - Owned Figure
 
-(All CRUD + Soft Delete + Pagination + Search)
+Features
+
+- CRUD
+- Search
+- Pagination
+- Soft Delete
+- JWT Authentication
+- Refresh Token
+- Ownership validation
 
 ---
 
@@ -83,36 +103,54 @@ Completed modules
 
 Completed
 
-Project foundation
+Foundation
 
 - Angular workspace
 - Feature-first architecture
 - Shell layout
 - Nested routing
-- Dashboard route
 - Header
 - Sidebar
-- Shared UI components
+- Dashboard
+- Shared UI
     - cb-button
     - cb-input
     - cb-card
-- Design Tokens foundation
-- Global SCSS structure
+- Design Tokens
 - Theme variables
-- Router refactored to use Shell as authenticated layout
-- AppComponent simplified to RouterOutlet
 
 Authentication
 
+Completed
+
+- Login
+- Logout
+- TokenService
+- CurrentUserService
+- AuthGuard
+- HTTP Interceptor
+- JWT persistence
+- Backend integration
+- Login using username OR email
+
+Business components
+
 Started
 
-- Auth feature
-- Login models
-- AuthService
-- Login page structure
-- Environment-based API URL
+- FigureCard component
 
-Documentation
+Collection
+
+Started
+
+- CollectionService
+- First authenticated endpoint (/owned-figures)
+
+---
+
+## Documentation
+
+Frontend
 
 - frontend-architecture.md
 - frontend-information-architecture.md
@@ -121,8 +159,6 @@ Documentation
 - components.md
 
 Brand
-
-Started
 
 - brand-strategy.md
 - brand-guidelines.md
@@ -138,84 +174,38 @@ Started
 - ValidationPipe
 - Prisma Exception Filter
 - Soft Delete
-- Relational validation
-- Prisma Studio
 - Generic Pagination
-- Generic Paginated Response
-
----
-
-## Documentation
-
-Backend
-
-- Swagger
-- JWT documented
-
-Frontend
-
-- Architecture
-- Navigation
-- User flows
-- Component architecture
-- Design System
+- JWT
+- Refresh Tokens
 
 ---
 
 ## Database
 
 - Golden Dataset
-- Robust Seed
+- Seed
 - Referential integrity
 - Composite constraints
 
 ---
 
-## Authentication & Authorization
-
-Backend completed
-
-Frontend started
-
-Next frontend steps
-
-- TokenService
-- Login flow
-- LocalStorage
-- AuthGuard
-- HTTP Interceptor
-- Current authenticated user
-
----
-
-## Pagination
-
-Completed
-
----
-
-## Search
-
-Completed
-
----
-
 ## Current Next Step
 
-Implement the first working Login connected to the backend.
+Continue building reusable business components.
 
-Immediate milestones
+Immediate roadmap
 
-- Login page
-- Token persistence
-- AuthGuard
-- HTTP Interceptor
-- First authenticated Dashboard
-
-After authentication
-
-- Collection
+- Finish FigureCard
+- Collection page
+- Header UX
+- User menu
 - Databank
 - Figure Detail
+
+Later
+
 - Scanner
 - AI Identification
+- Notifications
+- User Profile
+- Marketplace

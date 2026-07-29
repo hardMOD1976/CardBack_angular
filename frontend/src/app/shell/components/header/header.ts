@@ -1,23 +1,48 @@
-import { Component } from '@angular/core';
-import { HeaderService } from '../../services/header.service';
-import { User } from '../../../core/models/user.model';
+import { Component, inject } from '@angular/core';
+
+import { CurrentUserService } from '../../../core/auth/current-user.service';
+import { CurrentUser } from '../../../features/auth/models/current-user.model';
+
 import { Input } from '../../../shared/ui/input/input';
+import { Button } from "../../../shared/ui/button/button";
+import { AuthService } from '../../../features/auth/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
-  imports: [Input],
+  imports: [Input, Button],
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })
 export class Header {
 
-  readonly user: User;
+  private readonly currentUserService =
+    inject(CurrentUserService);
 
-  constructor(
-    private readonly headerService: HeaderService,
-  ) {
+  private readonly authService =
+    inject(AuthService);
 
-    this.user = this.headerService.getCurrentUser();
+  private readonly router =
+    inject(Router);
+
+  readonly user: CurrentUser | null =
+    this.currentUserService.getCurrentUser();
+
+  logout(): void {
+
+    this.authService.logout()
+
+      .subscribe({
+
+        next: () => {
+
+          this.router.navigateByUrl('/login');
+
+        },
+
+        error: console.error,
+
+      });
 
   }
 

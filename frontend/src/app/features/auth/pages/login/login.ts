@@ -1,21 +1,25 @@
 import { Component, inject } from '@angular/core';
 
-import { FormsModule } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  Validators,
+} from '@angular/forms';
 
 import { Router } from '@angular/router';
 
 import { AuthService } from '../../services/auth.service';
 
 import { Card } from '../../../../shared/ui/card/card';
-import { Input } from '../../../../shared/ui/input/input';
 import { Button } from '../../../../shared/ui/button/button';
+
+import { TokenService } from '../../../../core/auth/token.service';
 
 @Component({
   selector: 'app-login',
   imports: [
-    FormsModule,
+    ReactiveFormsModule,
     Card,
-    Input,
     Button,
   ],
   templateUrl: './login.html',
@@ -25,37 +29,53 @@ export class Login {
 
   private readonly authService = inject(AuthService);
 
+  private readonly tokenService = inject(TokenService);
+
   private readonly router = inject(Router);
 
-  email = '';
+  private readonly fb = inject(FormBuilder);
 
-  password = '';
+  readonly loginForm = this.fb.nonNullable.group({
+
+    identifier: ['', [
+      Validators.required,
+    ]],
+
+    password: ['', [
+      Validators.required,
+    ]],
+
+  });
 
   login(): void {
 
-    this.authService.login({
+    if (this.loginForm.invalid) {
 
-      email: this.email,
+      this.loginForm.markAllAsTouched();
 
-      password: this.password,
+      return;
 
-    }).subscribe({
+    }
+
+    const credentials = this.loginForm.getRawValue();
+
+    this.authService.login(credentials).subscribe({
 
       next: response => {
 
-        console.log(response);
+  this.tokenService.setAccessToken(response.accessToken);
 
-        // El següent pas serà guardar el JWT.
+  this.tokenService.setRefreshToken(response.refreshToken);
 
-        this.router.navigateByUrl('/');
+  this.router.navigateByUrl('/dashboard');
 
-      },
+},
 
       error: error => {
 
         console.error(error);
 
-      }
+      },
 
     });
 

@@ -6,27 +6,30 @@
 
         <p>Welcome back.</p>
 
-        <div class="login-form">
+        <form
+            class="login-form"
+            [formGroup]="loginForm"
+            (ngSubmit)="login()">
 
             <input
                 class="cb-input"
-                type="email"
-                placeholder="Email"
-                [(ngModel)]="email">
+                type="text"
+                placeholder="Username or email"
+                formControlName="identifier">
 
             <input
                 class="cb-input"
                 type="password"
                 placeholder="Password"
-                [(ngModel)]="password">
+                formControlName="password">
 
-            <cb-button (click)="login()">
+            <cb-button type="submit">
 
                 Login
 
             </cb-button>
 
-        </div>
+        </form>
 
     </cb-card>
 

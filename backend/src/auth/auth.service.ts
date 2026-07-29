@@ -16,6 +16,7 @@ import { LoginDto } from './dto';
 
 @Injectable()
 export class AuthService {
+
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
@@ -23,16 +24,21 @@ export class AuthService {
   ) {}
 
   async validateUser(
-    username: string,
+    identifier: string,
     password: string,
   ) {
+
     const user =
-      await this.usersService.findByUsername(username);
+      await this.usersService.findByIdentifier(
+        identifier,
+      );
 
     if (!user) {
+
       throw new UnauthorizedException(
         'Invalid credentials',
       );
+
     }
 
     const passwordMatches = await bcrypt.compare(
@@ -41,150 +47,204 @@ export class AuthService {
     );
 
     if (!passwordMatches) {
+
       throw new UnauthorizedException(
         'Invalid credentials',
       );
+
     }
 
     return user;
+
   }
 
- async login(loginDto: LoginDto) {
-  const user = await this.validateUser(
-    loginDto.username,
-    loginDto.password,
-  );
+  async login(loginDto: LoginDto) {
 
-  const payload = {
-    sub: user.id,
-    username: user.username,
-    role: user.role,
-  };
+    const user = await this.validateUser(
 
-  const accessToken =
-    await this.jwtService.signAsync(payload);
+      loginDto.identifier,
 
-  const refreshToken =
-    await this.jwtService.signAsync(payload, {
-      secret:
-        this.configService.getOrThrow<string>(
-          'JWT_REFRESH_SECRET',
-        ),
-      expiresIn:
-        this.configService.getOrThrow<string>(
-          'JWT_REFRESH_EXPIRES_IN',
-        ) as StringValue,
-    });
+      loginDto.password,
 
-  const refreshTokenHash =
-    await bcrypt.hash(refreshToken, 10);
-
-  await this.usersService.updateRefreshToken(
-    user.id,
-    refreshTokenHash,
-  );
-
-  return {
-    accessToken,
-    refreshToken,
-  };
-}
-
-async refresh(refreshToken: string) {
-  try {
-    const payload =
-      await this.jwtService.verifyAsync(
-        refreshToken,
-        {
-          secret:
-            this.configService.getOrThrow<string>(
-              'JWT_REFRESH_SECRET',
-            ),
-        },
-      );
-
-    const user = await this.usersService.findOne(
-      payload.sub,
     );
 
-    if (
-      !user ||
-      !user.refreshTokenHash
-    ) {
-      throw new UnauthorizedException(
-        'Invalid refresh token',
-      );
-    }
+    const payload = {
 
-    const tokenMatches =
-      await bcrypt.compare(
-        refreshToken,
-        user.refreshTokenHash,
-      );
-
-    if (!tokenMatches) {
-      throw new UnauthorizedException(
-        'Invalid refresh token',
-      );
-    }
-
-    const newPayload = {
       sub: user.id,
+
       username: user.username,
+
       role: user.role,
+
     };
 
     const accessToken =
-      await this.jwtService.signAsync(
-        newPayload,
-      );
+      await this.jwtService.signAsync(payload);
 
-    const newRefreshToken =
-      await this.jwtService.signAsync(
-        newPayload,
-        {
-          secret:
-            this.configService.getOrThrow<string>(
-              'JWT_REFRESH_SECRET',
-            ),
-          expiresIn:
-            this.configService.getOrThrow<string>(
-              'JWT_REFRESH_EXPIRES_IN',
-            ) as StringValue,
-        },
-      );
+    const refreshToken =
+      await this.jwtService.signAsync(payload, {
+
+        secret:
+          this.configService.getOrThrow<string>(
+            'JWT_REFRESH_SECRET',
+          ),
+
+        expiresIn:
+          this.configService.getOrThrow<string>(
+            'JWT_REFRESH_EXPIRES_IN',
+          ) as StringValue,
+
+      });
 
     const refreshTokenHash =
-      await bcrypt.hash(
-        newRefreshToken,
-        10,
-      );
+      await bcrypt.hash(refreshToken, 10);
 
     await this.usersService.updateRefreshToken(
+
       user.id,
+
       refreshTokenHash,
+
     );
 
     return {
+
       accessToken,
-      refreshToken: newRefreshToken,
+
+      refreshToken,
+
     };
-  } catch {
-    throw new UnauthorizedException(
-      'Invalid refresh token',
-    );
+
   }
-}
 
-async logout(userId: string) {
-  await this.usersService.updateRefreshToken(
-    userId,
-    null,
-  );
+  async refresh(refreshToken: string) {
 
-  return {
-    message: 'Logged out successfully',
-  };
-}
+    try {
+
+      const payload =
+        await this.jwtService.verifyAsync(
+          refreshToken,
+          {
+
+            secret:
+              this.configService.getOrThrow<string>(
+                'JWT_REFRESH_SECRET',
+              ),
+
+          },
+        );
+
+      const user =
+        await this.usersService.findOne(
+          payload.sub,
+        );
+
+      if (
+        !user ||
+        !user.refreshTokenHash
+      ) {
+
+        throw new UnauthorizedException(
+          'Invalid refresh token',
+        );
+
+      }
+
+      const tokenMatches =
+        await bcrypt.compare(
+          refreshToken,
+          user.refreshTokenHash,
+        );
+
+      if (!tokenMatches) {
+
+        throw new UnauthorizedException(
+          'Invalid refresh token',
+        );
+
+      }
+
+      const newPayload = {
+
+        sub: user.id,
+
+        username: user.username,
+
+        role: user.role,
+
+      };
+
+      const accessToken =
+        await this.jwtService.signAsync(
+          newPayload,
+        );
+
+      const newRefreshToken =
+        await this.jwtService.signAsync(
+          newPayload,
+          {
+
+            secret:
+              this.configService.getOrThrow<string>(
+                'JWT_REFRESH_SECRET',
+              ),
+
+            expiresIn:
+              this.configService.getOrThrow<string>(
+                'JWT_REFRESH_EXPIRES_IN',
+              ) as StringValue,
+
+          },
+        );
+
+      const refreshTokenHash =
+        await bcrypt.hash(
+          newRefreshToken,
+          10,
+        );
+
+      await this.usersService.updateRefreshToken(
+
+        user.id,
+
+        refreshTokenHash,
+
+      );
+
+      return {
+
+        accessToken,
+
+        refreshToken: newRefreshToken,
+
+      };
+
+    } catch {
+
+      throw new UnauthorizedException(
+        'Invalid refresh token',
+      );
+
+    }
+
+  }
+
+  async logout(userId: string) {
+
+    await this.usersService.updateRefreshToken(
+
+      userId,
+
+      null,
+
+    );
+
+    return {
+
+      message: 'Logged out successfully',
+
+    };
+
+  }
 
 }

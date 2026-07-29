@@ -14,19 +14,25 @@
 
   <div class="header__center">
 
-    <cb-input
-    type="search"
-    placeholder="Search figures..."
-/>
+    <cb-input type="search" placeholder="Search figures..." />
 
   </div>
 
   <div class="header__right">
 
     <span class="header__user">
-      {{ user.username }}
+
+        {{ user?.username }}
+
     </span>
 
-  </div>
+    <cb-button
+        (click)="logout()">
+
+        Logout
+
+    </cb-button>
+
+</div>
 
 </header>

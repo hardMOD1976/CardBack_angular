@@ -1,16 +1,20 @@
 import { Component, inject } from '@angular/core';
 
+import { Router } from '@angular/router';
+
 import { CurrentUserService } from '../../../core/auth/current-user.service';
+
 import { CurrentUser } from '../../../features/auth/models/current-user.model';
 
-import { Input } from '../../../shared/ui/input/input';
-import { Button } from "../../../shared/ui/button/button";
 import { AuthService } from '../../../features/auth/services/auth.service';
-import { Router } from '@angular/router';
+
+import { Input } from '../../../shared/ui/input/input';
 
 @Component({
   selector: 'app-header',
-  imports: [Input, Button],
+  imports: [
+    Input,
+  ],
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })
@@ -27,6 +31,23 @@ export class Header {
 
   readonly user: CurrentUser | null =
     this.currentUserService.getCurrentUser();
+
+  get welcomeMessage(): string {
+
+    // Quan tinguem la col·lecció carregada,
+    // aquí decidirem entre "Welcome" i "Welcome back"
+
+    return 'Welcome back';
+
+  }
+
+  get userInitial(): string {
+
+    return this.user?.username
+      ?.charAt(0)
+      .toUpperCase() ?? '?';
+
+  }
 
   logout(): void {
 

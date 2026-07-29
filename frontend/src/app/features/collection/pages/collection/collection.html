@@ -1,1 +1,38 @@
-<p>collection works!</p>
+<section class="collection-page">
+
+    <header class="page-header">
+
+        <h1>My Collection</h1>
+
+        <p>{{ figures.length }} figures</p>
+
+    </header>
+
+    <section
+        class="collection-grid"
+        *ngIf="figures.length; else emptyState">
+
+        <cb-figure-card
+            *ngFor="let figure of figures"
+            [figure]="figure">
+        </cb-figure-card>
+
+    </section>
+
+    <ng-template #emptyState>
+
+        <section class="empty-state">
+
+            <h2>Your collection is empty</h2>
+
+            <p>
+
+                Start building your collection.
+
+            </p>
+
+        </section>
+
+    </ng-template>
+
+</section>

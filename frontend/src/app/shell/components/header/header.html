@@ -2,37 +2,59 @@
 
   <div class="header__left">
 
-    <h2 class="header__title">
-      Dashboard
-    </h2>
+    <span class="header__welcome">
 
-    <p class="header__subtitle">
-      Your collection starts here.
-    </p>
+      {{ welcomeMessage }}
+
+    </span>
+
+    <h2 class="header__username">
+
+      {{ user?.username }}
+
+    </h2>
 
   </div>
 
   <div class="header__center">
 
-    <cb-input type="search" placeholder="Search figures..." />
+    <cb-input
+      type="search"
+      placeholder="Search figures...">
+    </cb-input>
 
   </div>
 
   <div class="header__right">
 
-    <span class="header__user">
+    <button
+      class="header__icon"
+      type="button"
+      aria-label="Toggle theme">
 
-        {{ user?.username }}
+      🌙
 
-    </span>
+    </button>
 
-    <cb-button
-        (click)="logout()">
+    <button
+      class="header__icon"
+      type="button"
+      aria-label="Notifications">
 
-        Logout
+      🔔
 
-    </cb-button>
+    </button>
 
-</div>
+    <button
+      class="header__avatar"
+      type="button"
+      (click)="logout()"
+      title="Logout">
+
+      {{ userInitial }}
+
+    </button>
+
+  </div>
 
 </header>

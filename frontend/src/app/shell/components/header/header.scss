@@ -2,10 +2,10 @@
 
   display: flex;
 
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 
-  height: 72px;
+  height: 88px;
 
   padding: 0 2rem;
 
@@ -18,6 +18,7 @@
 .header__left {
 
   display: flex;
+
   flex-direction: column;
 
   justify-content: center;
@@ -26,24 +27,27 @@
 
 }
 
-.header__title {
+.header__welcome {
 
-  margin: 0;
+  margin-bottom: .25rem;
 
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-size: .85rem;
 
-  color: var(--text-primary);
+  font-weight: 500;
+
+  color: var(--primary);
 
 }
 
-.header__subtitle {
+.header__username {
 
-  margin: .2rem 0 0;
+  margin: 0;
 
-  font-size: .9rem;
+  font-size: 2rem;
 
-  color: var(--text-secondary);
+  font-weight: 700;
+
+  color: var(--text-primary);
 
 }
 
@@ -55,38 +59,90 @@
 
   flex: 1;
 
+  padding: 0 2rem;
+
 }
 
-.header__search {
+.header__center cb-input {
 
   width: 100%;
   max-width: 520px;
-
-  padding: .75rem 1rem;
-
-  border: 1px solid var(--border-primary);
-
-  border-radius: 999px;
-
-  background: var(--surface-secondary);
 
 }
 
 .header__right {
 
   display: flex;
+
   align-items: center;
 
-  justify-content: flex-end;
-
-  min-width: 180px;
+  gap: .75rem;
 
 }
 
-.header__user {
+.header__icon {
 
-  font-weight: 600;
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: var(--surface-secondary);
+
+  color: var(--text-secondary);
+
+  cursor: pointer;
+
+  transition: .2s ease;
+
+}
+
+.header__icon:hover {
+
+  background: var(--surface-hover);
 
   color: var(--text-primary);
+
+}
+
+.header__avatar {
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 46px;
+  height: 46px;
+
+  border: 2px solid var(--primary);
+
+  border-radius: 50%;
+
+  background: var(--surface-secondary);
+
+  color: var(--text-primary);
+
+  font-size: 1rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: .2s ease;
+
+}
+
+.header__avatar:hover {
+
+  transform: scale(1.05);
+
+  background: var(--surface-hover);
 
 }

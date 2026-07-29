@@ -1,0 +1,41 @@
+<article class="figure-card">
+
+  <div class="image">
+
+    <img
+      [src]="figure.imageUrl"
+      [alt]="figure.character">
+
+  </div>
+
+  <div class="content">
+
+    <span
+      class="status"
+      [class.in-collection]="figure.inCollection">
+
+      {{ figure.inCollection ? 'In collection' : 'Missing' }}
+
+    </span>
+
+    <h3>
+
+      {{ figure.character }}
+
+    </h3>
+
+    <p class="line">
+
+      {{ figure.line }}
+
+    </p>
+
+    <p class="manufacturer">
+
+      {{ figure.manufacturer }}
+
+    </p>
+
+  </div>
+
+</article>

@@ -8,8 +8,12 @@ export interface FigureCardModel {
 
   manufacturer: string;
 
-  imageUrl: string;
+  imageUrl?: string | null;
 
   inCollection: boolean;
+
+  condition?: string;
+
+  carded?: boolean;
 
 }

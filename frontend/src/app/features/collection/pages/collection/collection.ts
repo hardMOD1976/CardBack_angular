@@ -1,18 +1,19 @@
 import { Component, inject, OnInit } from '@angular/core';
-
 import { CommonModule } from '@angular/common';
 
 import { CollectionService } from '../../services/collection.service';
 
 import { FigureCard } from '../../components/figure-card/figure-card';
-
 import { FigureCardModel } from '../../models/figure-card.model';
+
+import { CollectionHeader } from '../../components/cb-collection-header/cb-collection-header';
 
 @Component({
   selector: 'app-collection',
   imports: [
     CommonModule,
     FigureCard,
+    CollectionHeader,
   ],
   templateUrl: './collection.html',
   styleUrl: './collection.scss',
@@ -23,6 +24,10 @@ export class Collection implements OnInit {
     inject(CollectionService);
 
   figures: FigureCardModel[] = [];
+
+  loading = true;
+
+  error = false;
 
   ngOnInit(): void {
 
@@ -39,19 +44,26 @@ export class Collection implements OnInit {
 
             line: ownedFigure.figure.line.name,
 
-            manufacturer: ownedFigure.figure.line.manufacturer.name,
+            manufacturer:
+              ownedFigure.figure.line.manufacturer.name,
 
-            imageUrl: '',
+            imageUrl: ownedFigure.figure.imageUrl,
 
             inCollection: true,
 
           }));
+
+          this.loading = false;
 
         },
 
         error: error => {
 
           console.error(error);
+
+          this.error = true;
+
+          this.loading = false;
 
         },
 

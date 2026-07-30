@@ -3,8 +3,10 @@
   <div class="image">
 
     <img
-      [src]="figure.imageUrl"
+      [src]="figure.imageUrl || 'assets/cardback_placeholder.jpeg'"
       [alt]="figure.character">
+
+    <div class="image-overlay"></div>
 
   </div>
 
@@ -14,7 +16,7 @@
       class="status"
       [class.in-collection]="figure.inCollection">
 
-      {{ figure.inCollection ? 'In collection' : 'Missing' }}
+      {{ figure.inCollection ? 'In Collection' : 'Missing' }}
 
     </span>
 

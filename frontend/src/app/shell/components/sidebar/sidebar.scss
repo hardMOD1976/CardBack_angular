@@ -5,7 +5,7 @@
 
   height: 100%;
 
-  padding: 2rem 1rem;
+  padding: 1.25rem;
 
   background: var(--surface-secondary);
 
@@ -13,10 +13,10 @@
 
 }
 
-.sidebar__brand {
-
-  margin-bottom: 2.5rem;
-
+.sidebar__brand{
+    margin-bottom: 2rem;
+    margin-top: 23px;
+    margin-left: 23px;
 }
 
 .sidebar__logo {
@@ -53,13 +53,13 @@
 
   padding: .85rem 1rem;
 
-  border-radius: .75rem;
-
   color: var(--text-primary);
 
   text-decoration: none;
 
-  transition: .2s;
+  transition: var(--transition-fast);
+
+  border-radius: var(--radius-md);
 
 }
 

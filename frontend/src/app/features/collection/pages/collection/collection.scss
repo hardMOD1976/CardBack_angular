@@ -10,28 +10,6 @@
 
 }
 
-.page-header {
-
-  display: flex;
-
-  justify-content: space-between;
-
-  align-items: center;
-
-}
-
-.page-header h1 {
-
-  margin: 0;
-
-}
-
-.page-header p {
-
-  color: var(--text-secondary);
-
-}
-
 .collection-grid {
 
   display: grid;
@@ -45,6 +23,8 @@
 
 }
 
+.loading-state,
+.error-state,
 .empty-state {
 
   display: flex;
@@ -55,10 +35,19 @@
 
   align-items: center;
 
-  min-height: 50vh;
+  min-height: 45vh;
 
   text-align: center;
 
   color: var(--text-secondary);
+
+}
+
+.error-state h2,
+.empty-state h2 {
+
+  margin-bottom: .75rem;
+
+  color: var(--text-primary);
 
 }

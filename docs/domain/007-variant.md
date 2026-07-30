@@ -56,7 +56,7 @@ A Variant is NOT:
 | figureId | Yes | Parent Figure |
 | name | Yes | Variant name |
 | description | No | Description of the physical differences |
-| defaultImage | No | Representative image |
+| imageUrl | No | Representative image |
 | confidence | No | Official / Community Verified / Unconfirmed |
 
 ---
@@ -208,7 +208,7 @@ A Variant is NOT:
 | figureId | Yes | Parent Figure |
 | name | Yes | Variant name |
 | description | No | Description of the physical differences |
-| defaultImage | No | Representative image |
+| imageUrl | No | Representative image |
 
 ---
 

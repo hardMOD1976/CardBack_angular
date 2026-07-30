@@ -59,7 +59,7 @@ A Product Release is NOT:
 | releaseDate | No | Official release date |
 | barcode | No | UPC / EAN |
 | notes | No | Additional release information |
-| defaultImage | No | Representative packaging image |
+| imageUrl | No | Representative packaging image |
 
 ---
 

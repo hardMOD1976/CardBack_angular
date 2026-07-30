@@ -12,19 +12,33 @@
 
   <div class="content">
 
-    <span
-      class="status"
-      [class.in-collection]="figure.inCollection">
+    @if (figure.showStatus !== false) {
 
-      {{ figure.inCollection ? 'In Collection' : 'Missing' }}
+      <span
+        class="status"
+        [class.in-collection]="figure.inCollection">
 
-    </span>
+        {{ figure.inCollection ? 'In Collection' : 'Missing' }}
+
+      </span>
+
+    }
 
     <h3>
 
       {{ figure.character }}
 
     </h3>
+
+    @if (figure.releaseName) {
+
+      <p class="release">
+
+        {{ figure.releaseName }}
+
+      </p>
+
+    }
 
     <p class="line">
 
@@ -36,7 +50,23 @@
 
       {{ figure.manufacturer }}
 
+      @if (figure.releaseYear) {
+
+        · {{ figure.releaseYear }}
+
+      }
+
     </p>
+
+    @if (figure.packagingType) {
+
+      <p class="packaging">
+
+        {{ figure.packagingType }}
+
+      </p>
+
+    }
 
   </div>
 

@@ -36,22 +36,40 @@ export class Collection implements OnInit {
 
         next: response => {
 
-          this.figures = response.map((ownedFigure: any) => ({
+          this.figures = response.data.map((ownedFigure: any) => ({
 
-            id: ownedFigure.id,
+  id: ownedFigure.id,
 
-            character: ownedFigure.figure.character.name,
+  character:
+    ownedFigure.productRelease.variant.figure.character.name,
 
-            line: ownedFigure.figure.line.name,
+  line:
+    ownedFigure.productRelease.variant.figure.line.name,
 
-            manufacturer:
-              ownedFigure.figure.line.manufacturer.name,
+  manufacturer:
+    ownedFigure.productRelease.variant.figure.line.manufacturer.name,
 
-            imageUrl: ownedFigure.figure.imageUrl,
+  imageUrl:
+    ownedFigure.productRelease.imageUrl,
 
-            inCollection: true,
+  inCollection: true,
 
-          }));
+  showStatus: true,
+
+  releaseName:
+    ownedFigure.productRelease.name,
+
+  releaseYear:
+    ownedFigure.productRelease.releaseDate
+      ? new Date(
+          ownedFigure.productRelease.releaseDate,
+        ).getFullYear()
+      : null,
+
+  packagingType:
+    ownedFigure.productRelease.packagingType,
+
+}));
 
           this.loading = false;
 

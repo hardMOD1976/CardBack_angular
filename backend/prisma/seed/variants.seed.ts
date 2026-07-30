@@ -6,14 +6,14 @@ export const variants = [
   {
     name: 'Standard',
     description: 'Standard release.',
-    defaultImage: null,
+    imageUrl: null,
     figureName: 'Luke Skywalker',
     lineName: 'The Vintage Collection',
   },
   {
     name: 'Long Lightsaber',
     description: 'Variant with long lightsaber.',
-    defaultImage: null,
+    imageUrl: null,
     figureName: 'Luke Skywalker',
     lineName: 'The Vintage Collection',
   },
@@ -25,7 +25,7 @@ export const variants = [
   {
     name: 'Green Lightsaber',
     description: 'Green lightsaber version.',
-    defaultImage: null,
+    imageUrl: null,
     figureName: 'Luke Skywalker',
     lineName: 'The Power of the Force II',
   },
@@ -37,7 +37,7 @@ export const variants = [
   {
     name: 'Standard',
     description: 'Standard release.',
-    defaultImage: null,
+    imageUrl: null,
     figureName: 'Darth Vader',
     lineName: 'The Vintage Collection',
   },
@@ -49,7 +49,7 @@ export const variants = [
   {
     name: 'Standard',
     description: 'Standard release.',
-    defaultImage: null,
+    imageUrl: null,
     figureName: 'Stormtrooper',
     lineName: 'The Vintage Collection',
   },
@@ -61,7 +61,7 @@ export const variants = [
   {
     name: 'Standard',
     description: 'Bespin Outfit.',
-    defaultImage: null,
+    imageUrl: null,
     figureName: 'Princess Leia Organa',
     lineName: 'The Vintage Collection',
   },
@@ -73,7 +73,7 @@ export const variants = [
   {
     name: 'Standard',
     description: 'Standard release.',
-    defaultImage: null,
+    imageUrl: null,
     figureName: 'Han Solo',
     lineName: 'The Vintage Collection',
   },
@@ -85,7 +85,7 @@ export const variants = [
   {
     name: 'Brown Hair',
     description: 'Original brown hair version.',
-    defaultImage: null,
+    imageUrl: null,
     figureName: 'Luke Skywalker',
     lineName: 'The Original Collection',
   },
@@ -93,7 +93,7 @@ export const variants = [
   {
     name: 'Solid Dome',
     description: 'Original R2-D2 solid dome.',
-    defaultImage: null,
+    imageUrl: null,
     figureName: 'R2-D2',
     lineName: 'The Original Collection',
   },
@@ -101,7 +101,7 @@ export const variants = [
   {
     name: 'Standard',
     description: 'Original Princess Leia.',
-    defaultImage: null,
+    imageUrl: null,
     figureName: 'Princess Leia Organa',
     lineName: 'The Original Collection',
   },
@@ -109,7 +109,7 @@ export const variants = [
   {
     name: 'Small Head',
     description: 'Original small head sculpt.',
-    defaultImage: null,
+    imageUrl: null,
     figureName: 'Han Solo',
     lineName: 'The Original Collection',
   },
@@ -117,7 +117,7 @@ export const variants = [
   {
     name: 'Standard',
     description: 'Original Darth Vader.',
-    defaultImage: null,
+    imageUrl: null,
     figureName: 'Darth Vader',
     lineName: 'The Original Collection',
   },
@@ -129,7 +129,7 @@ export const variants = [
   {
     name: 'Standard',
     description: 'Retro Collection release.',
-    defaultImage: null,
+    imageUrl: null,
     figureName: 'The Mandalorian',
     lineName: 'Retro Collection',
   },
@@ -137,7 +137,7 @@ export const variants = [
   {
     name: 'Pram',
     description: 'Grogu with hover pram.',
-    defaultImage: null,
+    imageUrl: null,
     figureName: 'Grogu',
     lineName: 'Retro Collection',
   },

@@ -72,7 +72,7 @@ export class CreateProductReleaseDto {
   })
   @IsOptional()
   @IsString()
-  defaultImage?: string;
+  imageUrl?: string;
 
   @ApiProperty({
     example: 'cmf9jb1ms0001efgh87654321',

@@ -36,7 +36,7 @@ export class CreateFigureDto {
   })
   @IsOptional()
   @IsString()
-  defaultImage?: string;
+  imageUrl?: string;
 
   @ApiProperty({
     example: 'cmf9ja8oq0000efgh12345678',

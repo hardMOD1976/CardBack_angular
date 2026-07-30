@@ -1,25 +1,59 @@
 <section class="databank-page">
 
-    <header class="page-header">
+  <header class="page-header">
 
-        <div>
+    <div>
 
-            <h1>Databank</h1>
+      <h1>Databank</h1>
 
-            <p>
+      <p>
 
-                Browse every figure in the Cardback database.
+        Browse every figure in the Cardback database.
 
-            </p>
+      </p>
 
-        </div>
+    </div>
 
-    </header>
+  </header>
+
+  @if (loading) {
+
+    <section class="loading-state">
+
+      Loading database...
+
+    </section>
+
+  }
+
+  @else if (error) {
+
+    <section class="error-state">
+
+      <h2>
+
+        Unable to load databank.
+
+      </h2>
+
+    </section>
+
+  }
+
+  @else {
 
     <section class="databank-grid">
 
-        <!-- Figure Cards aquí -->
+      @for (figure of figures; track figure.id) {
+
+        <cb-figure-card
+          [figure]="figure">
+        </cb-figure-card>
+
+      }
 
     </section>
+
+  }
 
 </section>

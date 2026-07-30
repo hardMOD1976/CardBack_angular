@@ -58,7 +58,7 @@ A Figure is NOT:
 | name | Yes | Official catalog name |
 | code | No | Manufacturer catalog code (e.g. VC13) |
 | description | No | Short catalog description |
-| defaultImage | No | Primary catalog image |
+| imageUrl | No | Primary catalog image |
 
 ---
 

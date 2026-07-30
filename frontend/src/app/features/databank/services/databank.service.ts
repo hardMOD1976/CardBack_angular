@@ -8,6 +8,20 @@ import { environment } from '../../../../environments/environment';
 
 import { ProductReleaseModel } from '../models/product-release.model';
 
+export interface PaginatedResponse<T> {
+
+  data: T[];
+
+  page: number;
+
+  limit: number;
+
+  total: number;
+
+  totalPages: number;
+
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -16,24 +30,21 @@ export class DatabankService {
   private readonly http =
     inject(HttpClient);
 
-  getProductReleases():
+  getProductReleases(
+    page = 1,
+    limit = 20,
+    search = '',
+  ): Observable<PaginatedResponse<ProductReleaseModel>> {
 
-    Observable<{
-
-      data: ProductReleaseModel[];
-
-      page: number;
-
-      limit: number;
-
-      total: number;
-
-      totalPages: number;
-
-    }> {
-
-    return this.http.get<any>(
+    return this.http.get<PaginatedResponse<ProductReleaseModel>>(
       `${environment.apiUrl}/product-releases`,
+      {
+        params: {
+          page,
+          limit,
+          search,
+        },
+      },
     );
 
   }

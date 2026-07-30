@@ -44,6 +44,14 @@ export interface ProductReleaseModel {
 
         name: string;
 
+        manufacturer: {
+
+          id: string;
+
+          name: string;
+
+        };
+
       };
 
     };

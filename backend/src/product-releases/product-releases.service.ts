@@ -117,17 +117,22 @@ async findAll(
         where,
 
         include: {
-          variant: {
+  variant: {
+    include: {
+      figure: {
+        include: {
+          character: true,
+
+          line: {
             include: {
-              figure: {
-                include: {
-                  character: true,
-                  line: true,
-                },
-              },
+              manufacturer: true,
             },
           },
         },
+      },
+    },
+  },
+},
 
         orderBy: {
           name: 'asc',
@@ -151,16 +156,29 @@ async findAll(
 }
 
   findOne(id: string) {
-    return this.prisma.productRelease.findFirst({
-      where: {
-        id,
-        deletedAt: null,
+  return this.prisma.productRelease.findFirst({
+    where: {
+      id,
+      deletedAt: null,
+    },
+    include: {
+      variant: {
+        include: {
+          figure: {
+            include: {
+              character: true,
+              line: {
+                include: {
+                  manufacturer: true,
+                },
+              },
+            },
+          },
+        },
       },
-      include: {
-        variant: true,
-      },
-    });
-  }
+    },
+  });
+}
 
   async create(createDto: CreateProductReleaseDto) {
     await this.ensureVariantExists(createDto.variantId);

@@ -120,7 +120,7 @@ model Figure {
   name          String
   code          String?
   description   String?
-  defaultImage  String?
+  imageUrl  String?
 
   characterId   String
   lineId        String
@@ -148,7 +148,7 @@ model Variant {
 
   name            String?
   description     String?
-  defaultImage    String?
+  imageUrl    String?
 
   figureId        String
 
@@ -178,7 +178,7 @@ model ProductRelease {
   releaseDate    DateTime?
   barcode        String?
   notes          String?
-  defaultImage   String?
+  imageUrl   String?
 
   variantId      String
 

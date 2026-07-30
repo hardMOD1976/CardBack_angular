@@ -109,9 +109,35 @@ async findAll( userId: string,
         where,
 
         include: {
-          user: true,
-          productRelease: true,
+  user: true,
+
+  productRelease: {
+    include: {
+
+      variant: {
+        include: {
+
+          figure: {
+            include: {
+
+              character: true,
+
+              line: {
+                include: {
+                  manufacturer: true,
+                },
+              },
+
+            },
+          },
+
         },
+      },
+
+    },
+  },
+
+},
 
         orderBy: {
           createdAt: 'desc',
@@ -149,9 +175,35 @@ async findOne(
       userId,
     },
     include: {
-      user: true,
-      productRelease: true,
+  user: true,
+
+  productRelease: {
+    include: {
+
+      variant: {
+        include: {
+
+          figure: {
+            include: {
+
+              character: true,
+
+              line: {
+                include: {
+                  manufacturer: true,
+                },
+              },
+
+            },
+          },
+
+        },
+      },
+
     },
+  },
+
+},
   });
 }
 

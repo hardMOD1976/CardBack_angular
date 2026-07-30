@@ -1,164 +1,141 @@
-# Figure Archive (working title) - Project Status
-
-## Product Name
-
-Cardback
-
----
-
-## Current Phase
-
-Frontend business components
-
-Authentication completed
-
----
-
-## Completed
-
-### Vision
-
-- Project Vision
-- MVP Scope
-- ADRs
-
----
-
-### Domain
-
-Completed
-
-- Manufacturer
-- Franchise
-- Line
-- Character
-- Figure
-- Variant
-- Product Release
-- User
-- Owned Figure
-
----
-
-### Infrastructure
-
-Backend
-
-Completed
-
-- NestJS
-- Prisma
-- PostgreSQL
-- JWT Authentication
-- Refresh Tokens
-
-Frontend
-
-Completed
-
-- Angular workspace
-- Feature-first architecture
-- Nested routing
-- Shell
-- Shared UI
-- Design Tokens
-- SCSS architecture
-
----
-
-### Authentication
-
-Completed
-
-Backend
-
-- JWT
-- Refresh Tokens
-- Login
-- Logout
-- Username or Email login
-
-Frontend
-
-- Login
-- Logout
-- TokenService
-- CurrentUserService
-- AuthGuard
-- HTTP Interceptor
-- LocalStorage persistence
-- Protected routes
-
----
-
-### Business Components
-
-Started
-
-- FigureCard
-
-Collection
-
-Started
-
-- CollectionService
-- Backend integration
-
----
-
-### Documentation
-
-Completed
-
-Backend
-
-- Swagger
-
-Frontend
-
-- Architecture
-- Components
-- UX
-- Design System
+# Project Status
 
 Brand
 
-Initial documentation completed.
+Cardback
 
----
+Current Phase
 
-## In Progress
+Frontend business features.
 
-- FigureCard
-- Collection
-- Header redesign
-
----
-
-## Pending
+Completed
+---------
 
 Backend
 
-- Image upload
-- Advanced filters
-- Testing
-- Performance
+✔ Manufacturer
+
+✔ Franchise
+
+✔ Line
+
+✔ Character
+
+✔ Figure
+
+✔ Variant
+
+✔ Product Release
+
+✔ User
+
+✔ Owned Figure
+
+✔ JWT
+
+✔ Refresh Tokens
+
+✔ Search
+
+✔ Pagination
+
+✔ Soft Delete
 
 Frontend
+
+✔ Angular architecture
+
+✔ Feature-first structure
+
+✔ Shell
+
+✔ Routing
+
+✔ Authentication
+
+✔ Header
+
+✔ Sidebar
+
+✔ Shared UI
+
+✔ Design Tokens
+
+Business Features
+-----------------
+
+Collection
+
+Status
+
+In Progress
+
+Completed
+
+✔ Authenticated endpoint
+
+✔ Loading state
+
+✔ Error state
+
+✔ FigureCard integration
+
+Pending
+
+- Backend include hierarchy
+
+Databank
+
+Status
+
+In Progress
+
+Completed
+
+✔ ProductReleaseModel
+
+✔ DatabankService
+
+✔ Pagination
+
+✔ FigureCard reuse
+
+✔ Loading state
+
+✔ Error state
+
+Pending
+
+- Finish catalogue rendering
+
+Shared Components
+-----------------
+
+FigureCard
+
+Status
+
+Version 2
+
+Completed
+
+✔ Unified Cardback style
+
+✔ Placeholder
+
+✔ Hover
+
+✔ Overlay
+
+✔ Shared by Collection and Databank
+
+Current Milestone
+-----------------
+
+Complete the catalogue experience.
+
+Next
 
 - Collection
 - Databank
 - Figure Detail
-- Wishlist
-- Scanner
-- AI Identify
-- Dashboard widgets
-- Profile
-- Theme switch
-- Notifications
-
----
-
-## Current Milestone
-
-Build the first fully functional collection experience using authenticated backend data and reusable business components.

@@ -615,3 +615,177 @@ Header evolution started.
 Next milestone
 
 Implement the Collection page using real backend data and reusable FigureCard components.
+# Session 2026-07-30
+
+Summary
+-------
+
+Today marks the transition from infrastructure work to actual product development.
+
+Completed
+---------
+
+Design System
+
+Large SCSS cleanup.
+
+Standardised
+
+- spacing
+- shadows
+- radius
+- cards
+- buttons
+- inputs
+
+Sidebar
+
+- Logo integration
+- Assets configuration fixed
+
+Collection
+
+Implemented
+
+- CollectionService
+- Loading state
+- Error state
+- FigureCard integration
+
+Problem discovered
+
+OwnedFigures API changed because pagination was introduced.
+
+Collection still expects
+
+response.map()
+
+Current API returns
+
+response.data
+
+Databank
+
+Created
+
+- ProductReleaseModel
+- DatabankService
+- Databank page
+
+Integrated
+
+ProductRelease
+
+↓
+
+FigureCardModel
+
+Backend
+
+ProductRelease endpoint expanded.
+
+Now includes
+
+Variant
+
+↓
+
+Figure
+
+↓
+
+Character
+
+↓
+
+Line
+
+↓
+
+Manufacturer
+
+This eliminates future frontend requests.
+
+FigureCard
+
+Large redesign.
+
+Now considered stable.
+
+Supports
+
+- Collection
+- Databank
+
+Current blocker
+---------------
+
+OwnedFigures endpoint still returns
+
+productRelease
+
+without nested Variant -> Figure -> Character -> Line -> Manufacturer.
+
+Collection cannot map
+
+character
+
+line
+
+manufacturer
+
+until backend include is expanded.
+
+Important decision
+------------------
+
+Backend database fields remain
+
+defaultImage
+
+Frontend contract will expose
+
+imageUrl
+
+through mapping.
+
+Never rename Prisma entities to match frontend contracts.
+
+Incident
+--------
+
+A global Replace All changed
+
+defaultImage
+
+to
+
+imageUrl
+
+inside Prisma seed.
+
+Compilation failed.
+
+Issue fixed.
+
+Next Session
+------------
+
+1. Expand OwnedFigures include hierarchy.
+2. Finish Collection.
+3. Finish Databank.
+4. Begin Figure Detail.
+
+Estimated progress
+
+Backend
+
+≈ 90%
+
+Frontend
+
+≈ 35%
+
+General feeling
+
+The project has officially moved from "framework setup" to "building Cardback".

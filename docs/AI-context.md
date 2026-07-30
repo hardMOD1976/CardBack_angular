@@ -1,211 +1,116 @@
-# Figure Archive (working title) / Cardback (brand candidate)
+# AI Context
 
-## Brand
+Project
+-------
 
+Product name:
 Cardback
 
-(Figure Archive remains the internal project name.)
+Repository:
+FigureArchive
 
----
-
-## Goal
+Goal
+----
 
 Build the definitive platform for action figure collectors.
 
-The platform separates immutable catalog data from personal collection data, providing a scalable foundation for collectors, contributors and future community features.
+The platform separates immutable catalogue information from user-owned collection data.
 
-Long-term ambition
+Current Phase
+-------------
 
-Become the Discogs of action figure collecting.
+Frontend business features.
 
----
+Infrastructure is mostly finished.
 
-## Current Phase
+The project is now entering feature development.
 
-Frontend development
+Architecture
+------------
 
-Authentication completed
+Backend
 
-First business components
+- NestJS
+- Prisma
+- PostgreSQL
 
----
-
-## Core Domain
-
-- Manufacturer
-- Franchise
-- Line
-- Character
-- Figure
-- Variant
-- Product Release
-- User
-- Owned Figure
-
----
-
-## Golden Rules
-
-- Packaging never defines a Figure.
-- Variants represent physical differences.
-- Product Releases represent commercial distributions.
-- User data never modifies catalog data.
-- A Figure represents the collectible itself.
-- An Owned Figure represents a user's physical copy.
-
----
-
-## Current Architecture
-
-Repository
-
-backend/
-
-- NestJS 11
-- Prisma ORM
-- PostgreSQL (Neon)
-
-frontend/
+Frontend
 
 - Angular 21
 - Standalone Components
 - Feature-first architecture
 
----
+Current priorities
+------------------
 
-## Backend Progress
+1. Finish Databank
+2. Figure Detail
+3. Connect Collection <-> Figure Detail
+4. Connect Databank <-> Figure Detail
 
-Completed modules
+Current reusable components
+---------------------------
 
-- Manufacturer
-- Franchise
-- Line
-- Character
-- Figure
-- Variant
-- Product Release
-- User
-- Owned Figure
+Shared UI
 
-Features
-
-- CRUD
-- Search
-- Pagination
-- Soft Delete
-- JWT Authentication
-- Refresh Token
-- Ownership validation
-
----
-
-## Frontend Progress
-
-Completed
-
-Foundation
-
-- Angular workspace
-- Feature-first architecture
-- Shell layout
-- Nested routing
-- Header
-- Sidebar
-- Dashboard
-- Shared UI
-    - cb-button
-    - cb-input
-    - cb-card
-- Design Tokens
-- Theme variables
-
-Authentication
-
-Completed
-
-- Login
-- Logout
-- TokenService
-- CurrentUserService
-- AuthGuard
-- HTTP Interceptor
-- JWT persistence
-- Backend integration
-- Login using username OR email
+- cb-button
+- cb-input
+- cb-card
+- spinner
+- badge
 
 Business components
 
-Started
+- FigureCard
+- CollectionHeader
 
-- FigureCard component
+Important architectural decisions
+---------------------------------
 
-Collection
+ProductRelease is the public catalogue entity used by the frontend.
 
-Started
+The backend may internally use fields like
 
-- CollectionService
-- First authenticated endpoint (/owned-figures)
+defaultImage
 
----
+but the frontend contract should expose
 
-## Documentation
+imageUrl
 
-Frontend
+through mapping.
 
-- frontend-architecture.md
-- frontend-information-architecture.md
-- frontend-user-flows.md
-- design-system.md
-- components.md
+Do NOT leak database naming to the frontend.
 
-Brand
+FigureCard
+----------
 
-- brand-strategy.md
-- brand-guidelines.md
-- naming.md
-- logo-sketches.md
-- moodboard.md
+FigureCard is now the common card for
 
----
-
-## Shared Infrastructure
-
-- PrismaModule
-- ValidationPipe
-- Prisma Exception Filter
-- Soft Delete
-- Generic Pagination
-- JWT
-- Refresh Tokens
-
----
-
-## Database
-
-- Golden Dataset
-- Seed
-- Referential integrity
-- Composite constraints
-
----
-
-## Current Next Step
-
-Continue building reusable business components.
-
-Immediate roadmap
-
-- Finish FigureCard
-- Collection page
-- Header UX
-- User menu
+- Collection
 - Databank
-- Figure Detail
 
-Later
+Only behaviour changes.
 
-- Scanner
-- AI Identification
-- Notifications
-- User Profile
-- Marketplace
+Visual appearance remains identical.
+
+Current issue
+-------------
+
+OwnedFigures endpoint still returns ProductRelease without the nested hierarchy
+
+ProductRelease
+ └── Variant
+      └── Figure
+           ├── Character
+           └── Line
+                └── Manufacturer
+
+Collection cannot be completed until this include is added.
+
+Next session
+------------
+
+1. Finish OwnedFigures include hierarchy.
+2. Finish Collection.
+3. Finish Databank.
+4. Start Figure Detail.

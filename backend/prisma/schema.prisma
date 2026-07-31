@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,133 +7,95 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  USER
-  ADMIN
-}
-
 model Manufacturer {
-  id             String   @id @default(cuid())
-
-  name           String   @unique
-
-  foundedYear    Int?
-  dissolvedYear  Int?
-  country        String?
-
-  deletedAt      DateTime?
-
-  lines          Line[]
-
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id            String    @id @default(cuid())
+  name          String    @unique
+  foundedYear   Int?
+  dissolvedYear Int?
+  country       String?
+  deletedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lines         Line[]
 
   @@index([name])
 }
 
 model Franchise {
-  id              String   @id @default(cuid())
-
-  name            String   @unique
-
+  id              String      @id @default(cuid())
+  name            String      @unique
   owner           String?
   firstAppearance Int?
   description     String?
   logo            String?
-
   deletedAt       DateTime?
-
-  lines           Line[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
   characters      Character[]
-
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  lines           Line[]
 
   @@index([name])
 }
 
 model Line {
-  id             String   @id @default(cuid())
-
+  id             String       @id @default(cuid())
   name           String
-
   startYear      Int?
   endYear        Int?
-
   scale          String?
   logo           String?
   description    String?
-
   manufacturerId String
   franchiseId    String
-
-  manufacturer   Manufacturer @relation(fields: [manufacturerId], references: [id])
-  franchise      Franchise    @relation(fields: [franchiseId], references: [id])
-
-  figures        Figure[]
-
   deletedAt      DateTime?
-
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  figures        Figure[]
+  franchise      Franchise    @relation(fields: [franchiseId], references: [id])
+  manufacturer   Manufacturer @relation(fields: [manufacturerId], references: [id])
 
   @@unique([manufacturerId, name])
-
   @@index([name])
   @@index([manufacturerId])
   @@index([franchiseId])
 }
 
 model Character {
-  id            String   @id @default(cuid())
-  name          String
-
-  species       String?
-  homeworld     String?
-  affiliation   String?
-  description   String?
-  image         String?
-
-  franchiseId   String
-
-  franchise     Franchise @relation(fields: [franchiseId], references: [id])
-
-  figures       Figure[]
-
-  deletedAt     DateTime?
-
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id          String    @id @default(cuid())
+  name        String
+  species     String?
+  homeworld   String?
+  affiliation String?
+  description String?
+  image       String?
+  franchiseId String
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  franchise   Franchise @relation(fields: [franchiseId], references: [id])
+  figures     Figure[]
 
   @@unique([franchiseId, name])
-
   @@index([name])
   @@index([franchiseId])
 }
 
 model Figure {
-  id            String   @id @default(cuid())
-
-  name          String
-  code          String?
-  description   String?
-  imageUrl  String?
-
-  characterId   String
-  lineId        String
-
-  character     Character @relation(fields: [characterId], references: [id])
-  line          Line      @relation(fields: [lineId], references: [id])
-
-  variants      Variant[]
-
-  deletedAt     DateTime?
-
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id           String    @id @default(cuid())
+  name         String
+  code         String?
+  description  String?
+  imageUrl String?
+  characterId  String
+  lineId       String
+  deletedAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  character    Character @relation(fields: [characterId], references: [id])
+  line         Line      @relation(fields: [lineId], references: [id])
+  variants     Variant[]
 
   @@unique([lineId, characterId, name])
-
   @@index([name])
   @@index([code])
   @@index([characterId])
@@ -144,124 +103,90 @@ model Figure {
 }
 
 model Variant {
-  id              String   @id @default(cuid())
-
+  id              String           @id @default(cuid())
   name            String?
   description     String?
-  imageUrl    String?
-
+  imageUrl String?
   figureId        String
-
-  figure          Figure @relation(fields: [figureId], references: [id])
-
-  productReleases ProductRelease[]
-
   deletedAt       DateTime?
-
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  productReleases ProductRelease[]
+  figure          Figure           @relation(fields: [figureId], references: [id])
 
   @@unique([figureId, name])
-
   @@index([figureId])
 }
 
 model ProductRelease {
-  id             String   @id @default(cuid())
-
-  name           String
-
-  packagingType  String?
-  region         String?
-  language       String?
-  retailer       String?
-  releaseDate    DateTime?
-  barcode        String?
-  notes          String?
-  imageUrl   String?
-
-  variantId      String
-
-  variant         Variant @relation(fields: [variantId], references: [id])
-
-  ownedFigures    OwnedFigure[]
-
-  deletedAt      DateTime?
-
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id            String        @id @default(cuid())
+  name          String
+  packagingType String?
+  region        String?
+  language      String?
+  retailer      String?
+  releaseDate   DateTime?
+  barcode       String?
+  notes         String?
+  imageUrl String?
+  variantId     String
+  deletedAt     DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  ownedFigures  OwnedFigure[]
+  variant       Variant       @relation(fields: [variantId], references: [id])
 
   @@unique([variantId, name])
-
   @@index([variantId])
   @@index([barcode])
 }
 
 model OwnedFigure {
-  id                   String   @id @default(cuid())
-
+  id                   String         @id @default(cuid())
   userId               String
   productReleaseId     String
-
   condition            String
   completeness         String
-
   packagingState       String?
-
   purchaseDate         DateTime?
   purchasePrice        Decimal?
   currency             String?
-
   purchaseLocation     String?
-
   estimatedMarketValue Decimal?
-
   storageLocation      String?
-
   notes                String?
-
-  user                 User @relation(fields: [userId], references: [id])
-  productRelease       ProductRelease @relation(fields: [productReleaseId], references: [id])
-
   deletedAt            DateTime?
-
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
-
-  quantity Int @default(1)
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  quantity             Int            @default(1)
+  productRelease       ProductRelease @relation(fields: [productReleaseId], references: [id])
+  user                 User           @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([productReleaseId])
 }
 
 model User {
-  id                String   @id @default(cuid())
-
-  username          String   @unique
-  displayName       String?
-
-  role              Role     @default(USER)
-
-  email             String?  @unique
-
-  passwordHash      String
-
-  refreshTokenHash  String?
-
-  lastLoginAt       DateTime?
-
-  emailVerifiedAt   DateTime?
-
-  country           String?
-
-  avatar            String?
-
-  ownedFigures      OwnedFigure[]
-
-  deletedAt         DateTime?
-
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id               String        @id @default(cuid())
+  username         String        @unique
+  displayName      String?
+  email            String?       @unique
+  country          String?
+  avatar           String?
+  deletedAt        DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  emailVerifiedAt  DateTime?
+  lastLoginAt      DateTime?
+  passwordHash     String
+  role             Role          @default(USER)
+  refreshTokenHash String?
+  ownedFigures     OwnedFigure[]
 
   @@index([username])
+}
+
+enum Role {
+  USER
+  ADMIN
 }

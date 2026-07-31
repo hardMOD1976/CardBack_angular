@@ -170,13 +170,13 @@ for (const figure of figures) {
     update: {
       code: figure.code,
       description: figure.description,
-      defaultImage: figure.imageUrl,
+      imageUrl: figure.imageUrl,
     },
     create: {
       name: figure.name,
       code: figure.code,
       description: figure.description,
-      defaultImage: figure.imageUrl,
+      imageUrl: figure.imageUrl,
       characterId: character.id,
       lineId: line.id,
     },
@@ -205,12 +205,12 @@ for (const variant of variants) {
     },
     update: {
       description: variant.description,
-      defaultImage: variant.imageUrl,
+      imageUrl: variant.imageUrl,
     },
     create: {
       name: variant.name,
       description: variant.description,
-      defaultImage: variant.imageUrl,
+      imageUrl: variant.imageUrl,
       figureId: figure.id,
     },
   });
@@ -246,7 +246,7 @@ for (const release of productReleases) {
         : null,
       barcode: release.barcode,
       notes: release.notes,
-      defaultImage: release.imageUrl,
+      imageUrl: release.imageUrl,
     },
     create: {
       name: release.name,
@@ -259,7 +259,7 @@ for (const release of productReleases) {
         : null,
       barcode: release.barcode,
       notes: release.notes,
-      defaultImage: release.imageUrl,
+      imageUrl: release.imageUrl,
       variantId: variant.id,
     },
   });

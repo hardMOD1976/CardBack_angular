@@ -16,7 +16,7 @@
 
   </header>
 
-  @if (loading) {
+  @if (loading()) {
 
     <section class="loading-state">
 
@@ -26,7 +26,7 @@
 
   }
 
-  @else if (error) {
+  @else if (error()) {
 
     <section class="error-state">
 
@@ -44,7 +44,7 @@
 
     <section class="databank-grid">
 
-      @for (figure of figures; track figure.id) {
+      @for (figure of figures(); track figure.id) {
 
         <cb-figure-card
           [figure]="figure">

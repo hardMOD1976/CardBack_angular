@@ -1,4 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  inject,
+  signal,
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 
 import { DatabankService } from '../../services/databank.service';
@@ -22,11 +28,14 @@ export class Databank implements OnInit {
   private readonly databankService =
     inject(DatabankService);
 
-  figures: FigureCardModel[] = [];
+  readonly figures =
+    signal<FigureCardModel[]>([]);
 
-  loading = true;
+  readonly loading =
+    signal(true);
 
-  error = false;
+  readonly error =
+    signal(false);
 
   ngOnInit(): void {
 
@@ -36,57 +45,50 @@ export class Databank implements OnInit {
 
         next: response => {
 
-  try {
+          const figures = response.data.map(release => ({
 
-    this.figures = response.data.map(release => ({
+            id: release.id,
 
-      id: release.id,
+            character:
+              release.variant.figure.character.name,
 
-      character:
-        release.variant.figure.character.name,
+            line:
+              release.variant.figure.line.name,
 
-      line:
-        release.variant.figure.line.name,
+            manufacturer:
+              release.variant.figure.line.manufacturer.name,
 
-      manufacturer:
-        release.variant.figure.line.manufacturer.name,
+            imageUrl:
+              release.imageUrl,
 
-      imageUrl:
-        release.imageUrl,
+            inCollection: false,
 
-      inCollection: false,
+            showStatus: false,
 
-      showStatus: false,
+            releaseName:
+              release.name,
 
-      releaseName:
-        release.name,
+            releaseYear:
+              release.releaseYear,
 
-      releaseYear:
-        release.releaseYear,
+            packagingType:
+              release.packagingType,
 
-      packagingType:
-        release.packagingType,
+          }));
 
-    }));
-    console.log(response.data[0])
+          this.figures.set(figures);
 
-  } catch (e) {
+          this.loading.set(false);
 
-    console.error('MAP ERROR', e);
-
-  }
-
-  this.loading = false;
-
-},
+        },
 
         error: error => {
 
           console.error(error);
 
-          this.error = true;
+          this.error.set(true);
 
-          this.loading = false;
+          this.loading.set(false);
 
         },
 

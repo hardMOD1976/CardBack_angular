@@ -20,9 +20,12 @@ export class ProductReleasesService {
 async findAll(
   pagination: PaginationQueryDto,
 ) {
-  const { page, limit } = pagination;
 
-  const skip = (page - 1) * limit;
+   try {
+
+    const { page, limit } = pagination;
+
+    const skip = (page - 1) * limit;
 
   const where = {
     deletedAt: null,
@@ -153,7 +156,16 @@ async findAll(
     limit,
     total,
   );
+
+  } catch (error) {
+
+    console.error(error);
+
+    throw error;
+
+  }
 }
+
 
   findOne(id: string) {
   return this.prisma.productRelease.findFirst({

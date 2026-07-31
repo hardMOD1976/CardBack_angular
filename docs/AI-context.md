@@ -21,9 +21,9 @@ Current Phase
 
 Frontend business features.
 
-Infrastructure is mostly finished.
+Infrastructure is finished.
 
-The project is now entering feature development.
+The project is now focused on implementing the MVP features.
 
 Architecture
 ------------
@@ -36,17 +36,18 @@ Backend
 
 Frontend
 
-- Angular 21
+- Angular 22
 - Standalone Components
+- Signals
 - Feature-first architecture
 
 Current priorities
 ------------------
 
-1. Finish Databank
+1. Finish Collection
 2. Figure Detail
-3. Connect Collection <-> Figure Detail
-4. Connect Databank <-> Figure Detail
+3. Connect Collection ↔ Figure Detail
+4. Connect Databank ↔ Figure Detail
 
 Current reusable components
 ---------------------------
@@ -67,36 +68,54 @@ Business components
 Important architectural decisions
 ---------------------------------
 
-ProductRelease is the public catalogue entity used by the frontend.
+ProductRelease is the public catalogue entity exposed by the backend.
 
-The backend may internally use fields like
+Database entities may use different internal names, but frontend DTOs must expose a stable public contract.
 
-defaultImage
-
-but the frontend contract should expose
+Current public image field:
 
 imageUrl
 
-through mapping.
+Mapping between database entities and public DTOs is mandatory.
 
-Do NOT leak database naming to the frontend.
+Never expose Prisma entities directly.
 
 FigureCard
 ----------
 
-FigureCard is now the common card for
+FigureCard is the shared business component used by
 
 - Collection
 - Databank
 
-Only behaviour changes.
+Only behaviour changes between pages.
 
-Visual appearance remains identical.
+Visual appearance must remain identical.
 
-Current issue
--------------
+Databank
+--------
 
-OwnedFigures endpoint still returns ProductRelease without the nested hierarchy
+Status
+
+Completed (MVP)
+
+Implemented
+
+- Signals
+- Loading state
+- Search
+- Pagination
+- Shared FigureCard
+- Backend DTO mapping
+- imageUrl contract
+- Angular 22 reactive state
+
+Collection
+----------
+
+Current blocker has been resolved.
+
+OwnedFigure now returns the complete hierarchy
 
 ProductRelease
  └── Variant
@@ -105,12 +124,12 @@ ProductRelease
            └── Line
                 └── Manufacturer
 
-Collection cannot be completed until this include is added.
+Collection is now the next feature to complete.
 
 Next session
 ------------
 
-1. Finish OwnedFigures include hierarchy.
-2. Finish Collection.
-3. Finish Databank.
-4. Start Figure Detail.
+1. Finish Collection.
+2. Implement Figure Detail.
+3. Connect Databank → Figure Detail.
+4. Connect Collection → Figure Detail.

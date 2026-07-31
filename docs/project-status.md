@@ -1,12 +1,18 @@
 # Project Status
 
 Brand
+-----
 
 Cardback
 
 Current Phase
+-------------
 
-Frontend business features.
+Frontend MVP development.
+
+Infrastructure is complete.
+
+The focus is now on delivering the core collector experience.
 
 Completed
 ---------
@@ -31,7 +37,7 @@ Backend
 
 ✔ Owned Figure
 
-✔ JWT
+✔ JWT Authentication
 
 ✔ Refresh Tokens
 
@@ -41,11 +47,19 @@ Backend
 
 ✔ Soft Delete
 
+✔ Public DTO Mapping
+
+✔ imageUrl public contract
+
 Frontend
 
-✔ Angular architecture
+✔ Angular 22
 
-✔ Feature-first structure
+✔ Standalone Components
+
+✔ Signals
+
+✔ Feature-first architecture
 
 ✔ Shell
 
@@ -64,11 +78,41 @@ Frontend
 Business Features
 -----------------
 
+Databank
+
+Status
+
+✔ MVP Completed
+
+Completed
+
+✔ ProductReleaseModel
+
+✔ DatabankService
+
+✔ Signals
+
+✔ Search
+
+✔ Pagination
+
+✔ Loading state
+
+✔ Error state
+
+✔ FigureCard integration
+
+✔ Backend DTO mapping
+
+✔ imageUrl contract
+
+✔ Catalogue rendering
+
 Collection
 
 Status
 
-In Progress
+Next Feature
 
 Completed
 
@@ -80,33 +124,27 @@ Completed
 
 ✔ FigureCard integration
 
+✔ Backend include hierarchy
+
 Pending
 
-- Backend include hierarchy
+- Consume updated backend hierarchy
+- Signals migration
+- Collection rendering
+- Collection actions
 
-Databank
+Figure Detail
 
 Status
 
-In Progress
+Not Started
 
-Completed
+Planned
 
-✔ ProductReleaseModel
-
-✔ DatabankService
-
-✔ Pagination
-
-✔ FigureCard reuse
-
-✔ Loading state
-
-✔ Error state
-
-Pending
-
-- Finish catalogue rendering
+- ProductRelease detail page
+- Complete collector information
+- Navigation from Databank
+- Navigation from Collection
 
 Shared Components
 -----------------
@@ -115,27 +153,60 @@ FigureCard
 
 Status
 
-Version 2
+Stable
 
 Completed
 
-✔ Unified Cardback style
+✔ Shared by Collection and Databank
 
-✔ Placeholder
+✔ Unified Cardback design
 
-✔ Hover
+✔ Placeholder image
 
 ✔ Overlay
 
-✔ Shared by Collection and Databank
+✔ Hover effects
+
+✔ Responsive layout
 
 Current Milestone
 -----------------
 
-Complete the catalogue experience.
+Complete Collection MVP.
 
 Next
+----
 
-- Collection
-- Databank
-- Figure Detail
+1. Finish Collection.
+
+2. Implement Figure Detail.
+
+3. Connect Databank → Figure Detail.
+
+4. Connect Collection → Figure Detail.
+
+Overall Progress
+----------------
+
+Backend
+
+≈ 95%
+
+Frontend
+
+≈ 45%
+
+Overall project
+
+≈ 60%
+
+Architecture Notes
+------------------
+
+Angular Signals are now the standard mechanism for component-local reactive state.
+
+Backend entities are never exposed directly to the frontend.
+
+Public DTOs define the application contract.
+
+FigureCard remains the single reusable business card component across the application.

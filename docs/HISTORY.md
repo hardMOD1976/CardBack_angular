@@ -789,3 +789,121 @@ Frontend
 General feeling
 
 The project has officially moved from "framework setup" to "building Cardback".
+
+# Session 2026-07-31
+
+Summary
+-------
+
+Today the Databank MVP was completed.
+
+This session focused on stabilising the frontend architecture, modernising Angular state management, and cleaning the backend public API contract.
+
+Completed
+---------
+
+Frontend
+
+Databank
+
+- Migrated from imperative state to Angular Signals.
+- Removed manual ChangeDetection usage.
+- Loading state is now fully reactive.
+- Figure catalogue renders correctly.
+- FigureCard reused successfully.
+- Pagination and search working correctly.
+
+Angular
+
+- Confirmed Angular 22 Signals as the project standard.
+- Established Signals as the preferred state management approach for business pages.
+
+Backend
+
+ProductRelease
+
+- Public DTOs now expose imageUrl.
+- Removed defaultImage from the public API contract.
+- Introduced explicit mapping between Prisma entities and frontend DTOs.
+
+Prisma
+
+- Database schema aligned with imageUrl.
+- Prisma Client regenerated.
+- Seed updated.
+- Swagger verified.
+- Prisma Studio verified.
+
+Problem discovered
+------------------
+
+Databank loaded data correctly but the UI never refreshed.
+
+Cause
+
+The page was still using mutable component state under Angular 22.
+
+Solution
+
+Migrated the page to Signals.
+
+The issue disappeared immediately and no manual change detection was required.
+
+Second issue
+------------
+
+A previous schema refactor introduced drift between
+
+- Prisma schema
+- Migration history
+- Neon database
+
+This caused runtime errors such as
+
+ProductRelease.imageUrl does not exist.
+
+Solution
+
+Migration history was repaired.
+
+Database schema and Prisma Client are now aligned again.
+
+Important architectural decision
+--------------------------------
+
+Signals become the default reactive state mechanism for new frontend pages.
+
+Observable streams remain the communication layer with HttpClient.
+
+Component-local UI state should be implemented using Signals whenever appropriate.
+
+Current milestone
+-----------------
+
+Databank MVP completed.
+
+Next Session
+------------
+
+1. Finish Collection.
+2. Implement Figure Detail.
+3. Connect Collection → Figure Detail.
+4. Connect Databank → Figure Detail.
+
+Estimated progress
+------------------
+
+Backend
+
+≈ 95%
+
+Frontend
+
+≈ 45%
+
+General feeling
+---------------
+
+Today marks the completion of the first fully functional business feature of Cardback.
+
+The project now has a stable catalogue experience and is ready to move towards collection management.

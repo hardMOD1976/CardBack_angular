@@ -112,25 +112,30 @@ Collection
 
 Status
 
-Next Feature
+✔ MVP Completed
 
 Completed
 
 ✔ Authenticated endpoint
 
+✔ Backend hierarchy consumption
+
+✔ FigureCard integration
+
+✔ CollectionHeader
+
 ✔ Loading state
 
 ✔ Error state
 
-✔ FigureCard integration
+✔ Empty state
 
-✔ Backend include hierarchy
+✔ Collection rendering
 
 Pending
 
-- Consume updated backend hierarchy
-- Signals migration
-- Collection rendering
+- Sorting
+- Filters
 - Collection actions
 
 Figure Detail
@@ -172,18 +177,20 @@ Completed
 Current Milestone
 -----------------
 
-Complete Collection MVP.
+Collection MVP completed.
 
 Next
 ----
 
-1. Finish Collection.
+1. Collection Sort.
 
-2. Implement Figure Detail.
+2. Collection Filters.
 
-3. Connect Databank → Figure Detail.
+3. Figure Detail.
 
-4. Connect Collection → Figure Detail.
+4. Connect Databank → Figure Detail.
+
+5. Connect Collection → Figure Detail.
 
 Overall Progress
 ----------------
@@ -194,19 +201,21 @@ Backend
 
 Frontend
 
-≈ 45%
+≈ 55%
 
 Overall project
 
-≈ 60%
+≈ 65%
 
 Architecture Notes
 ------------------
 
-Angular Signals are now the standard mechanism for component-local reactive state.
+Angular Signals are the standard mechanism for component-local reactive state.
+
+Observable streams remain the communication layer with HttpClient.
 
 Backend entities are never exposed directly to the frontend.
 
 Public DTOs define the application contract.
 
-FigureCard remains the single reusable business card component across the application.
+FigureCard remains the reusable business component shared between Databank and Collection.

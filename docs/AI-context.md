@@ -113,23 +113,34 @@ Implemented
 Collection
 ----------
 
-Current blocker has been resolved.
+Status
 
-OwnedFigure now returns the complete hierarchy
+MVP completed.
 
-ProductRelease
- └── Variant
-      └── Figure
-           ├── Character
-           └── Line
-                └── Manufacturer
+Implemented
 
-Collection is now the next feature to complete.
+- Authenticated endpoint
+- Complete backend hierarchy consumption
+- Shared FigureCard
+- CollectionHeader
+- Loading state
+- Error state
+- Empty state
+- Mapping from OwnedFigure → FigureCardModel
+
+Lessons learned
+
+A temporary 401 Unauthorized was caused by an expired/invalid JWT stored on the frontend.
+
+The Collection implementation itself was correct.
+
+After obtaining a fresh access token the page rendered correctly without code changes.
 
 Next session
 ------------
 
-1. Finish Collection.
-2. Implement Figure Detail.
-3. Connect Databank → Figure Detail.
-4. Connect Collection → Figure Detail.
+1. Sort.
+2. Filters.
+3. Figure Detail.
+4. Connect Databank → Figure Detail.
+5. Connect Collection → Figure Detail.

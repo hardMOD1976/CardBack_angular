@@ -907,3 +907,105 @@ General feeling
 Today marks the completion of the first fully functional business feature of Cardback.
 
 The project now has a stable catalogue experience and is ready to move towards collection management.
+
+# Session 2026-08-03
+
+Summary
+-------
+
+Today's objective was completing the Collection MVP.
+
+Most of the session was spent debugging what initially appeared to be a frontend rendering issue.
+
+Completed
+---------
+
+Frontend
+
+Collection
+
+- Implemented Collection page.
+- Integrated CollectionHeader.
+- Reused the shared FigureCard component.
+- Added loading state.
+- Added error state.
+- Added empty state.
+- Implemented OwnedFigure → FigureCardModel mapping.
+- Successfully rendered authenticated user collection.
+
+Backend
+
+OwnedFigure
+
+- Verified complete include hierarchy returned by the API.
+- Confirmed ProductRelease → Variant → Figure → Character/Line → Manufacturer mapping.
+
+Debugging
+---------
+
+Several hypotheses were investigated.
+
+Verified
+
+- Backend response structure.
+- Angular template.
+- FigureCard component.
+- Routing.
+- Standalone component configuration.
+- DTO mapping.
+
+Problem discovered
+------------------
+
+The Collection endpoint started returning HTTP 401 Unauthorized.
+
+Initially this looked like a rendering problem because the mapping completed correctly during previous executions.
+
+Cause
+
+The stored JWT had become invalid.
+
+Solution
+
+Removed the stored token and authenticated again.
+
+The authInterceptor immediately started sending a valid access token and Collection rendered correctly without additional code changes.
+
+Important lesson
+----------------
+
+When debugging authenticated pages:
+
+1. Verify the Network tab first.
+2. Confirm the Authorization header.
+3. Confirm the backend response before investigating Angular rendering.
+
+Current milestone
+-----------------
+
+Collection MVP completed.
+
+Next Session
+------------
+
+1. Implement Collection sorting.
+2. Implement Collection filtering.
+3. Figure Detail.
+4. Connect Databank → Figure Detail.
+5. Connect Collection → Figure Detail.
+
+Estimated progress
+------------------
+
+Backend
+
+≈ 95%
+
+Frontend
+
+≈ 55%
+
+General feeling
+---------------
+
+Although much of the session consisted of debugging, it validated the complete Collection architecture and confirmed that backend contracts, reusable components and frontend mapping are now working together correctly.

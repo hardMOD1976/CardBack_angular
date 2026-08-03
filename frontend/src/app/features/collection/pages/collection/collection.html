@@ -1,54 +1,77 @@
 <section class="collection-page">
 
-    <cb-collection-header
-  [totalFigures]="figures.length">
-</cb-collection-header>
+  <cb-collection-header
+    [totalFigures]="figures().length">
+  </cb-collection-header>
 
-    <section
-        class="loading-state"
-        *ngIf="loading">
+  @if (loading()) {
 
-        <p>Loading your collection...</p>
+    <section class="loading-state">
 
-    </section>
+      <p>
 
-    <section
-        class="error-state"
-        *ngIf="error">
+        Loading your collection...
 
-        <h2>Unable to load your collection</h2>
-
-        <p>
-
-            Please try again later.
-
-        </p>
+      </p>
 
     </section>
 
-    <section
-        class="collection-grid"
-        *ngIf="!loading && !error && figures.length">
+  }
+
+  @else if (error()) {
+
+    <section class="error-state">
+
+      <h2>
+
+        Unable to load your collection
+
+      </h2>
+
+      <p>
+
+        Please try again later.
+
+      </p>
+
+    </section>
+
+  }
+
+  @else if (figures().length) {
+
+    <section class="collection-grid">
+
+      @for (figure of figures(); track figure.id) {
 
         <cb-figure-card
-            *ngFor="let figure of figures"
-            [figure]="figure">
+          [figure]="figure">
         </cb-figure-card>
 
-    </section>
-
-    <section
-        class="empty-state"
-        *ngIf="!loading && !error && !figures.length">
-
-        <h2>Your collection is empty</h2>
-
-        <p>
-
-            Start building your collection.
-
-        </p>
+      }
 
     </section>
+
+  }
+
+  @else {
+
+    <section class="empty-state">
+
+      <h2>
+
+        Your collection is empty
+
+      </h2>
+
+      <p>
+
+        Start building your collection.
+
+      </p>
+
+    </section>
+
+  }
 
 </section>

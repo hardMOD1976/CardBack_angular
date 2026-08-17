@@ -7,7 +7,8 @@ import { PrismaService } from '../prisma/prisma.service';
 
 import { CreateOwnedFigureDto } from './dto/create-owned-figure.dto';
 import { UpdateOwnedFigureDto } from './dto/update-owned-figure.dto';
-import { buildPaginatedResponse, PaginationQueryDto } from '../common/pagination';
+import { OwnedFiguresQueryDto } from './dto/owned-figures-query.dto';
+import { buildPaginatedResponse } from '../common/pagination';
 
 @Injectable()
 export class OwnedFiguresService {
@@ -28,257 +29,323 @@ export class OwnedFiguresService {
     }
   }
 
-async findAll( userId: string,
-  pagination: PaginationQueryDto,
-) {
-  const { page, limit, search } = pagination;
+  async findAll(
+    userId: string,
+    pagination: OwnedFiguresQueryDto,
+  ) {
+    const {
+      page,
+      limit,
+      search,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+      condition,
+      completeness,
+      packagingState,
+    } = pagination;
 
-  const skip = (page - 1) * limit;
+    const skip = (page - 1) * limit;
 
-  const where = {
-  userId,
-  deletedAt: null,
-
-  ...(search && {
-    OR: [
-      {
-        condition: {
-          contains: search,
-          mode: 'insensitive' as const,
-        },
-      },
-      {
-        completeness: {
-          contains: search,
-          mode: 'insensitive' as const,
-        },
-      },
-      {
-        packagingState: {
-          contains: search,
-          mode: 'insensitive' as const,
-        },
-      },
-      {
-        purchaseLocation: {
-          contains: search,
-          mode: 'insensitive' as const,
-        },
-      },
-      {
-        storageLocation: {
-          contains: search,
-          mode: 'insensitive' as const,
-        },
-      },
-      {
-        notes: {
-          contains: search,
-          mode: 'insensitive' as const,
-        },
-      },
-      {
-        currency: {
-          contains: search,
-          mode: 'insensitive' as const,
-        },
-      },
-      {
-        productRelease: {
-          name: {
-            contains: search,
-            mode: 'insensitive' as const,
-          },
-        },
-      },
-      {
-        productRelease: {
-          barcode: {
-            contains: search,
-            mode: 'insensitive' as const,
-          },
-        },
-      },
-    ],
-  }),
-};
-
-  const [ownedFigures, total] =
-    await this.prisma.$transaction([
-      this.prisma.ownedFigure.findMany({
-        where,
-
-        include: {
-  user: true,
-
-  productRelease: {
-    include: {
-
-      variant: {
-        include: {
-
-          figure: {
-            include: {
-
-              character: true,
-
-              line: {
-                include: {
-                  manufacturer: true,
-                },
-              },
-
-            },
-          },
-
-        },
-      },
-
-    },
-  },
-
-},
-
-        orderBy: {
-          createdAt: 'desc',
-        },
-
-        skip,
-        take: limit,
-      }),
-
-      this.prisma.ownedFigure.count({
-        where,
-      }),
-    ]);
-
-  return buildPaginatedResponse(
-    ownedFigures,
-    page,
-    limit,
-    total,
-  );
-}
-
-async findOne(
-  userId: string,
-  id: string,
-) {
-  await this.ensureOwnedFigureExists(
-    userId,
-    id,
-  );
-
-  return this.prisma.ownedFigure.findFirst({
-    where: {
-      id,
+    const where = {
       userId,
-    },
-    include: {
-  user: true,
+      deletedAt: null,
 
-  productRelease: {
-    include: {
+      ...(condition && {
+        condition,
+      }),
 
-      variant: {
-        include: {
+      ...(completeness && {
+        completeness,
+      }),
 
-          figure: {
-            include: {
+      ...(packagingState && {
+        packagingState,
+      }),
 
-              character: true,
+      ...(search && {
+        OR: [
+          {
+            condition: {
+              contains: search,
+              mode: 'insensitive' as const,
+            },
+          },
+          {
+            completeness: {
+              contains: search,
+              mode: 'insensitive' as const,
+            },
+          },
+          {
+            packagingState: {
+              contains: search,
+              mode: 'insensitive' as const,
+            },
+          },
+          {
+            purchaseLocation: {
+              contains: search,
+              mode: 'insensitive' as const,
+            },
+          },
+          {
+            storageLocation: {
+              contains: search,
+              mode: 'insensitive' as const,
+            },
+          },
+          {
+            notes: {
+              contains: search,
+              mode: 'insensitive' as const,
+            },
+          },
+          {
+            currency: {
+              contains: search,
+              mode: 'insensitive' as const,
+            },
+          },
+          {
+            productRelease: {
+              name: {
+                contains: search,
+                mode: 'insensitive' as const,
+              },
+            },
+          },
+          {
+            productRelease: {
+              barcode: {
+                contains: search,
+                mode: 'insensitive' as const,
+              },
+            },
+          },
+        ],
+      }),
+    };
 
-              line: {
-                include: {
-                  manufacturer: true,
+    const orderBy = this.buildOrderBy(
+      sortBy,
+      sortOrder,
+    );
+
+    const [ownedFigures, total] =
+      await this.prisma.$transaction([
+        this.prisma.ownedFigure.findMany({
+          where,
+
+          include: {
+            user: true,
+
+            productRelease: {
+              include: {
+                variant: {
+                  include: {
+                    figure: {
+                      include: {
+                        character: true,
+
+                        line: {
+                          include: {
+                            manufacturer: true,
+                          },
+                        },
+                      },
+                    },
+                  },
                 },
               },
-
             },
           },
 
-        },
-      },
+          orderBy,
 
-    },
-  },
+          skip,
+          take: limit,
+        }),
 
-},
-  });
-}
+        this.prisma.ownedFigure.count({
+          where,
+        }),
+      ]);
 
-  async create(userId: string, dto: CreateOwnedFigureDto) {
-    await this.ensureProductReleaseExists(dto.productReleaseId);
-
-   return this.prisma.ownedFigure.create({
-  data: {
-    ...dto,
-    userId,
-  },
-});
-  }
-
-async update(
-  userId: string,
-  id: string,
-  dto: UpdateOwnedFigureDto,
-) {
-  await this.ensureOwnedFigureExists(
-    userId,
-    id,
-  );
-
-  if (dto.productReleaseId) {
-    await this.ensureProductReleaseExists(
-      dto.productReleaseId,
+    return buildPaginatedResponse(
+      ownedFigures,
+      page,
+      limit,
+      total,
     );
   }
 
-  return this.prisma.ownedFigure.update({
-    where: {
+  async findOne(
+    userId: string,
+    id: string,
+  ) {
+    await this.ensureOwnedFigureExists(
+      userId,
       id,
-    },
-    data: dto,
-  });
-}
+    );
 
-async remove(
-  userId: string,
-  id: string,
-) {
-  await this.ensureOwnedFigureExists(
-    userId,
-    id,
-  );
-
-  return this.prisma.ownedFigure.update({
-    where: {
-      id,
-    },
-    data: {
-      deletedAt: new Date(),
-    },
-  });
-}
-
-private async ensureOwnedFigureExists(
-  userId: string,
-  id: string,
-) {
-  const ownedFigure =
-    await this.prisma.ownedFigure.findFirst({
+    return this.prisma.ownedFigure.findFirst({
       where: {
         id,
         userId,
-        deletedAt: null,
+      },
+
+      include: {
+        user: true,
+
+        productRelease: {
+          include: {
+            variant: {
+              include: {
+                figure: {
+                  include: {
+                    character: true,
+
+                    line: {
+                      include: {
+                        manufacturer: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     });
-
-  if (!ownedFigure) {
-    throw new NotFoundException(
-      `Owned Figure with id '${id}' not found.`,
-    );
   }
-}
 
+  async create(
+    userId: string,
+    dto: CreateOwnedFigureDto,
+  ) {
+    await this.ensureProductReleaseExists(
+      dto.productReleaseId,
+    );
+
+    return this.prisma.ownedFigure.create({
+      data: {
+        ...dto,
+        userId,
+      },
+    });
+  }
+
+  async update(
+    userId: string,
+    id: string,
+    dto: UpdateOwnedFigureDto,
+  ) {
+    await this.ensureOwnedFigureExists(
+      userId,
+      id,
+    );
+
+    if (dto.productReleaseId) {
+      await this.ensureProductReleaseExists(
+        dto.productReleaseId,
+      );
+    }
+
+    return this.prisma.ownedFigure.update({
+      where: {
+        id,
+      },
+      data: dto,
+    });
+  }
+
+  async remove(
+    userId: string,
+    id: string,
+  ) {
+    await this.ensureOwnedFigureExists(
+      userId,
+      id,
+    );
+
+    return this.prisma.ownedFigure.update({
+      where: {
+        id,
+      },
+      data: {
+        deletedAt: new Date(),
+      },
+    });
+  }
+
+  private buildOrderBy(
+    sortBy: OwnedFiguresQueryDto['sortBy'],
+    sortOrder: OwnedFiguresQueryDto['sortOrder'],
+  ) {
+    switch (sortBy) {
+      case 'condition':
+        return {
+          condition: sortOrder,
+        };
+
+      case 'completeness':
+        return {
+          completeness: sortOrder,
+        };
+
+      case 'packagingState':
+        return {
+          packagingState: sortOrder,
+        };
+
+      case 'purchasePrice':
+        return {
+          purchasePrice: sortOrder,
+        };
+
+      case 'purchaseDate':
+        return {
+          purchaseDate: sortOrder,
+        };
+
+      case 'estimatedMarketValue':
+        return {
+          estimatedMarketValue: sortOrder,
+        };
+
+      case 'productReleaseName':
+        return {
+          productRelease: {
+            name: sortOrder,
+          },
+        };
+
+      case 'createdAt':
+      default:
+        return {
+          createdAt: sortOrder,
+        };
+    }
+  }
+
+  private async ensureOwnedFigureExists(
+    userId: string,
+    id: string,
+  ) {
+    const ownedFigure =
+      await this.prisma.ownedFigure.findFirst({
+        where: {
+          id,
+          userId,
+          deletedAt: null,
+        },
+      });
+
+    if (!ownedFigure) {
+      throw new NotFoundException(
+        `Owned Figure with id '${id}' not found.`,
+      );
+    }
+  }
 }

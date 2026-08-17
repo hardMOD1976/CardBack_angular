@@ -1,77 +1,58 @@
-<section class="collection-page">
+<cb-collection-header
+  [totalFigures]="totalFigures()"
+  (sortClicked)="onSortClicked()"
+  (filtersClicked)="onFiltersClicked()">
+</cb-collection-header>
 
-  <cb-collection-header
-    [totalFigures]="figures().length">
-  </cb-collection-header>
+@if (loading()) {
 
-  @if (loading()) {
+  <section class="loading-state">
+    <p>
+      Loading your collection...
+    </p>
+  </section>
 
-    <section class="loading-state">
+}
+@else if (error()) {
 
-      <p>
+  <section class="error-state">
+    <h2>
+      Unable to load your collection
+    </h2>
 
-        Loading your collection...
+    <p>
+      Please try again later.
+    </p>
+  </section>
 
-      </p>
+}
+@else if (figures().length) {
 
-    </section>
+  <section class="collection-grid">
 
-  }
+    @for (figure of figures(); track figure.id) {
 
-  @else if (error()) {
+      <cb-figure-card
+        [figure]="figure">
+      </cb-figure-card>
 
-    <section class="error-state">
+    }
 
-      <h2>
+  </section>
 
-        Unable to load your collection
+}
+@else {
 
-      </h2>
+  <section class="empty-state">
 
-      <p>
+    <h2>
+      Your collection is empty
+    </h2>
 
-        Please try again later.
+    <p>
+      Start building your collection.
+    </p>
 
-      </p>
+  </section>
 
-    </section>
-
-  }
-
-  @else if (figures().length) {
-
-    <section class="collection-grid">
-
-      @for (figure of figures(); track figure.id) {
-
-        <cb-figure-card
-          [figure]="figure">
-        </cb-figure-card>
-
-      }
-
-    </section>
-
-  }
-
-  @else {
-
-    <section class="empty-state">
-
-      <h2>
-
-        Your collection is empty
-
-      </h2>
-
-      <p>
-
-        Start building your collection.
-
-      </p>
-
-    </section>
-
-  }
-
-</section>
+}

@@ -1,37 +1,37 @@
 <header class="collection-header">
 
-  <section class="collection-header__titles">
+  <div class="collection-header__titles">
 
     <h1>
-
       My Collection
-
     </h1>
 
     <p>
-
       {{ totalFigures }} figures
-
     </p>
 
-  </section>
+  </div>
 
-  <section class="collection-header__actions">
+  <div class="collection-header__actions">
 
     <button
-      class="collection-header__button">
+      type="button"
+      class="collection-header__button"
+      (click)="sortClicked.emit()">
 
       Sort
 
     </button>
 
     <button
-      class="collection-header__button">
+      type="button"
+      class="collection-header__button"
+      (click)="filtersClicked.emit()">
 
       Filters
 
     </button>
 
-  </section>
+  </div>
 
 </header>

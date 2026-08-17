@@ -7,7 +7,10 @@ import {
 
 import { CommonModule } from '@angular/common';
 
-import { CollectionService } from '../../services/collection.service';
+import {
+  CollectionQuery,
+  CollectionService,
+} from '../../services/collection.service';
 
 import { FigureCard } from '../../components/figure-card/figure-card';
 import { FigureCardModel } from '../../models/figure-card.model';
@@ -26,7 +29,6 @@ import { CollectionHeader } from '../../components/cb-collection-header/cb-colle
   styleUrl: './collection.scss',
 })
 export class Collection implements OnInit {
-
   private readonly collectionService =
     inject(CollectionService);
 
@@ -39,68 +41,115 @@ export class Collection implements OnInit {
   readonly error =
     signal(false);
 
+  readonly totalFigures =
+    signal(0);
+
+  readonly query =
+    signal<CollectionQuery>({
+      page: 1,
+      limit: 20,
+      sortBy: 'createdAt',
+      sortOrder: 'desc',
+    });
+
   ngOnInit(): void {
+    this.loadCollection();
+  }
+
+  private loadCollection(): void {
+    this.loading.set(true);
+    this.error.set(false);
 
     this.collectionService
-      .getMyCollection()
+      .getMyCollection(this.query())
       .subscribe({
-
         next: response => {
+          const figures =
+            response.data.map(
+              (ownedFigure: any) => ({
+                id:
+                  ownedFigure.id,
 
-          const figures = response.data.map((ownedFigure: any) => ({
+                character:
+                  ownedFigure
+                    .productRelease
+                    .variant
+                    .figure
+                    .character
+                    .name,
 
-            id:
-              ownedFigure.id,
+                line:
+                  ownedFigure
+                    .productRelease
+                    .variant
+                    .figure
+                    .line
+                    .name,
 
-            character:
-              ownedFigure.productRelease.variant.figure.character.name,
+                manufacturer:
+                  ownedFigure
+                    .productRelease
+                    .variant
+                    .figure
+                    .line
+                    .manufacturer
+                    .name,
 
-            line:
-              ownedFigure.productRelease.variant.figure.line.name,
+                imageUrl:
+                  ownedFigure
+                    .productRelease
+                    .imageUrl,
 
-            manufacturer:
-              ownedFigure.productRelease.variant.figure.line.manufacturer.name,
+                inCollection: true,
 
-            imageUrl:
-              ownedFigure.productRelease.imageUrl,
+                showStatus: true,
 
-            inCollection: true,
+                releaseName:
+                  ownedFigure
+                    .productRelease
+                    .name,
 
-            showStatus: true,
+                releaseYear:
+                  ownedFigure
+                    .productRelease
+                    .releaseDate
+                    ? new Date(
+                        ownedFigure
+                          .productRelease
+                          .releaseDate,
+                      ).getFullYear()
+                    : null,
 
-            releaseName:
-              ownedFigure.productRelease.name,
-
-            releaseYear:
-              ownedFigure.productRelease.releaseDate
-                ? new Date(
-                    ownedFigure.productRelease.releaseDate,
-                  ).getFullYear()
-                : null,
-
-            packagingType:
-              ownedFigure.productRelease.packagingType,
-
-          }));
+                packagingType:
+                  ownedFigure
+                    .productRelease
+                    .packagingType,
+              }),
+            );
 
           this.figures.set(figures);
 
-          this.loading.set(false);
+          this.totalFigures.set(
+            response.meta.total,
+          );
 
+          this.loading.set(false);
         },
 
         error: error => {
-
           console.error(error);
 
           this.error.set(true);
-
           this.loading.set(false);
-
         },
-
       });
-
   }
 
+  onSortClicked(): void {
+  // Temporary: sort panel will be implemented next.
+}
+
+onFiltersClicked(): void {
+  // Temporary: filters panel will be implemented next.
+}
 }

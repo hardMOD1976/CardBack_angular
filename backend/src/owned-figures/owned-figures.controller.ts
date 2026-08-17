@@ -29,6 +29,7 @@ import { UpdateOwnedFigureDto } from './dto/update-owned-figure.dto';
 import { CurrentUserId } from '../auth/decorators/current-user-id.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PaginationQueryDto } from '../common/pagination';
+import { OwnedFiguresQueryDto } from './dto/owned-figures-query.dto';
 
 @ApiTags('Owned Figures')
 @Controller('owned-figures')
@@ -48,22 +49,17 @@ export class OwnedFiguresController {
   @ApiOkResponse({
     description: 'Owned figures retrieved successfully.',
   })
+  @ApiBadRequestResponse({
+    description: 'Invalid query parameters.',
+  })
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
   @Get()
   findAll(
     @CurrentUserId() userId: string,
-    @Query('page') page = 1,
-    @Query('limit') limit = 20,
-    @Query('search') search?: string,
+    @Query() pagination: OwnedFiguresQueryDto,
   ) {
-    const pagination: PaginationQueryDto = {
-      page: Number(page),
-      limit: Number(limit),
-      search,
-    };
-
     return this.ownedFiguresService.findAll(
       userId,
       pagination,
@@ -91,14 +87,14 @@ export class OwnedFiguresController {
   })
   @Get(':id')
   findOne(
-  @CurrentUserId() userId: string,
-  @Param('id') id: string,
-) {
-  return this.ownedFiguresService.findOne(
-    userId,
-    id,
-  );
-}
+    @CurrentUserId() userId: string,
+    @Param('id') id: string,
+  ) {
+    return this.ownedFiguresService.findOne(
+      userId,
+      id,
+    );
+  }
 
   @ApiOperation({
     summary: 'Create owned figure',
@@ -153,17 +149,16 @@ export class OwnedFiguresController {
   })
   @Put(':id')
   update(
-  @CurrentUserId() userId: string,
-  @Param('id') id: string,
-  @Body()
-  dto: UpdateOwnedFigureDto,
-) {
-  return this.ownedFiguresService.update(
-    userId,
-    id,
-    dto,
-  );
-}
+    @CurrentUserId() userId: string,
+    @Param('id') id: string,
+    @Body() dto: UpdateOwnedFigureDto,
+  ) {
+    return this.ownedFiguresService.update(
+      userId,
+      id,
+      dto,
+    );
+  }
 
   @ApiOperation({
     summary: 'Soft delete owned figure',
@@ -186,12 +181,12 @@ export class OwnedFiguresController {
   })
   @Delete(':id')
   remove(
-  @CurrentUserId() userId: string,
-  @Param('id') id: string,
-) {
-  return this.ownedFiguresService.remove(
-    userId,
-    id,
-  );
-}
+    @CurrentUserId() userId: string,
+    @Param('id') id: string,
+  ) {
+    return this.ownedFiguresService.remove(
+      userId,
+      id,
+    );
+  }
 }

@@ -1,75 +1,44 @@
 .collection-header {
-
   display: flex;
-
   justify-content: space-between;
-
   align-items: flex-end;
-
   gap: var(--space-5);
-
 }
 
 .collection-header__titles {
-
   display: flex;
-
   flex-direction: column;
-
 }
 
 .collection-header__titles h1 {
-
   margin: 0;
-
   font-size: 2.4rem;
-
   font-weight: 700;
-
   color: var(--text-primary);
-
 }
 
 .collection-header__titles p {
-
-  margin-top: .35rem;
-
+  margin-top: 0.35rem;
   color: var(--text-secondary);
-
 }
 
 .collection-header__actions {
-
   display: flex;
-
   gap: var(--space-3);
-
 }
 
 .collection-header__button {
-
-  padding: .7rem 1rem;
-
+  padding: 0.7rem 1rem;
   border: 1px solid var(--border-primary);
-
   border-radius: var(--radius-md);
-
   background: var(--surface-primary);
-
   color: var(--text-primary);
-
   font: inherit;
-
   cursor: pointer;
-
   transition: var(--transition-fast);
-
 }
 
 .collection-header__button:hover {
-
   background: var(--surface-hover);
-
   border-color: var(--accent-primary);
-
 }

@@ -1,4 +1,4 @@
-<header class="collection-header">
+<div class="collection-header">
 
   <div class="collection-header__titles">
 
@@ -17,7 +17,7 @@
     <button
       type="button"
       class="collection-header__button"
-      (click)="sortClicked.emit()">
+      (click)="toggleSort()">
 
       Sort
 
@@ -34,4 +34,91 @@
 
   </div>
 
-</header>
+</div>
+
+@if (sortOpen) {
+
+  <section class="collection-header__sort">
+
+    <div class="collection-header__sort-field">
+
+      <label for="collection-sort-by">
+        Sort by
+      </label>
+
+      <select
+        id="collection-sort-by"
+        [value]="sortBy"
+        (change)="onSortByChange($any($event.target).value)">
+
+        <option value="createdAt">
+          Recently added
+        </option>
+
+        <option value="condition">
+          Condition
+        </option>
+
+        <option value="completeness">
+          Completeness
+        </option>
+
+        <option value="packagingState">
+          Packaging state
+        </option>
+
+        <option value="purchaseDate">
+          Purchase date
+        </option>
+
+        <option value="purchasePrice">
+          Purchase price
+        </option>
+
+        <option value="estimatedMarketValue">
+          Estimated market value
+        </option>
+
+        <option value="productReleaseName">
+          Product release name
+        </option>
+
+      </select>
+
+    </div>
+
+    <div class="collection-header__sort-field">
+
+      <label for="collection-sort-order">
+        Order
+      </label>
+
+      <select
+        id="collection-sort-order"
+        [value]="sortOrder"
+        (change)="onSortOrderChange($any($event.target).value)">
+
+        <option value="asc">
+          Ascending
+        </option>
+
+        <option value="desc">
+          Descending
+        </option>
+
+      </select>
+
+    </div>
+
+    <button
+      type="button"
+      class="collection-header__button"
+      (click)="applySort()">
+
+      Apply
+
+    </button>
+
+  </section>
+
+}

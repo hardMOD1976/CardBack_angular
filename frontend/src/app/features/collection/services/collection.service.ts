@@ -1,4 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+import {
+  Injectable,
+  inject,
+} from '@angular/core';
 
 import {
   HttpClient,
@@ -20,7 +23,7 @@ export interface CollectionQuery {
   packagingState?: string;
 }
 
-export interface CollectionResponse<T> {
+export interface CollectionResponse<T = any> {
   data: T[];
   meta: {
     page: number;
@@ -34,7 +37,8 @@ export interface CollectionResponse<T> {
   providedIn: 'root',
 })
 export class CollectionService {
-  private readonly http = inject(HttpClient);
+  private readonly http =
+    inject(HttpClient);
 
   private readonly apiUrl =
     `${environment.apiUrl}/owned-figures`;

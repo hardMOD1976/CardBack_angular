@@ -42,3 +42,35 @@
   background: var(--surface-hover);
   border-color: var(--accent-primary);
 }
+
+.collection-header__sort {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  background: var(--surface-primary);
+}
+
+.collection-header__sort-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.collection-header__sort-field label {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.collection-header__sort-field select {
+  min-width: 180px;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  font: inherit;
+}

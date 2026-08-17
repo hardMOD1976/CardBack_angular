@@ -1,58 +1,41 @@
 <cb-collection-header
   [totalFigures]="totalFigures()"
-  (sortClicked)="onSortClicked()"
+  (sortChanged)="onSortChanged($event.sortBy, $event.sortOrder)"
   (filtersClicked)="onFiltersClicked()">
 </cb-collection-header>
 
 @if (loading()) {
 
-  <section class="loading-state">
-    <p>
-      Loading your collection...
-    </p>
-  </section>
-
 }
+
 @else if (error()) {
 
-  <section class="error-state">
-    <h2>
-      Unable to load your collection
-    </h2>
-
-    <p>
-      Please try again later.
-    </p>
-  </section>
+  <p>
+    Please try again later.
+  </p>
 
 }
+
 @else if (figures().length) {
 
-  <section class="collection-grid">
+  @for (figure of figures(); track figure.id) {
 
-    @for (figure of figures(); track figure.id) {
+    <cb-figure-card
+      [figure]="figure">
+    </cb-figure-card>
 
-      <cb-figure-card
-        [figure]="figure">
-      </cb-figure-card>
-
-    }
-
-  </section>
+  }
 
 }
+
 @else {
 
-  <section class="empty-state">
+  <h2>
+    Your collection is empty
+  </h2>
 
-    <h2>
-      Your collection is empty
-    </h2>
-
-    <p>
-      Start building your collection.
-    </p>
-
-  </section>
+  <p>
+    Start building your collection.
+  </p>
 
 }

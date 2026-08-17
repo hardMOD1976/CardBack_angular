@@ -145,11 +145,21 @@ export class Collection implements OnInit {
       });
   }
 
-  onSortClicked(): void {
-  // Temporary: sort panel will be implemented next.
-}
+  onSortChanged(
+    sortBy: CollectionQuery['sortBy'],
+    sortOrder: CollectionQuery['sortOrder'],
+  ): void {
+    this.query.update(current => ({
+      ...current,
+      page: 1,
+      sortBy,
+      sortOrder,
+    }));
 
-onFiltersClicked(): void {
-  // Temporary: filters panel will be implemented next.
-}
+    this.loadCollection();
+  }
+
+  onFiltersClicked(): void {
+    // Temporary: filters panel will be implemented next.
+  }
 }

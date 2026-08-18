@@ -18,6 +18,8 @@ import { ProductReleasesModule } from './product-releases/product-releases.modul
 import { UsersModule } from './users/users.module';
 import { OwnedFiguresModule } from './owned-figures/owned-figures.module';
 
+import { GlobalSearchModule } from './global-search/global-search.module';
+
 import { AuthModule } from './auth/auth.module';
 
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
@@ -41,10 +43,14 @@ import { RolesGuard } from './auth/guards/roles.guard';
     UsersModule,
     OwnedFiguresModule,
 
+    GlobalSearchModule,
+
     AuthModule,
   ],
 
-  controllers: [AppController],
+  controllers: [
+    AppController,
+  ],
 
   providers: [
     AppService,

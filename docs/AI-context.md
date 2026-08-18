@@ -1,7 +1,6 @@
 # AI Context
 
-Project
--------
+## Project
 
 Product name:
 Cardback
@@ -9,138 +8,536 @@ Cardback
 Repository:
 FigureArchive
 
-Goal
-----
+## Goal
 
 Build the definitive platform for action figure collectors.
 
 The platform separates immutable catalogue information from user-owned collection data.
 
-Current Phase
--------------
+The product catalogue is the authoritative source for figure information, while collection data represents what each user owns.
+
+---
+
+## Current Phase
 
 Frontend business features.
 
 Infrastructure is finished.
 
-The project is now focused on implementing the MVP features.
+The project is currently focused on implementing and connecting the core MVP business features.
 
-Architecture
-------------
+The following major areas are already functional:
 
-Backend
+* Authentication
+* Shell / application layout
+* Databank
+* Collection
+* Collection sorting
+* Collection filtering
 
-- NestJS
-- Prisma
-- PostgreSQL
+The current active feature is:
 
-Frontend
+* Global Search
 
-- Angular 22
-- Standalone Components
-- Signals
-- Feature-first architecture
+---
 
-Current priorities
-------------------
+## Architecture
 
-1. Finish Collection
-2. Figure Detail
-3. Connect Collection ↔ Figure Detail
-4. Connect Databank ↔ Figure Detail
+### Backend
 
-Current reusable components
----------------------------
+* NestJS
+* Prisma
+* PostgreSQL
+* REST API
+* JWT authentication
+* Refresh tokens
+* Public DTO mapping
+* Server-side pagination
+* Server-side sorting
+* Server-side filtering
 
-Shared UI
+### Frontend
 
-- cb-button
-- cb-input
-- cb-card
-- spinner
-- badge
+* Angular 22
+* Standalone Components
+* Signals
+* Feature-first architecture
+* HttpClient
+* RxJS for HTTP communication
+* ControlValueAccessor for reusable form controls
 
-Business components
+---
 
-- FigureCard
-- CollectionHeader
+## Important Architecture Principles
 
-Important architectural decisions
----------------------------------
+### Backend / Frontend boundary
 
-ProductRelease is the public catalogue entity exposed by the backend.
+Backend entities are never exposed directly to the frontend.
 
-Database entities may use different internal names, but frontend DTOs must expose a stable public contract.
+Public DTOs define the application contract.
 
-Current public image field:
-
-imageUrl
+Database entities may use different internal names, but frontend models must consume the stable public API contract.
 
 Mapping between database entities and public DTOs is mandatory.
 
+Current public image field:
+
+`imageUrl`
+
 Never expose Prisma entities directly.
 
-FigureCard
-----------
+---
 
-FigureCard is the shared business component used by
+## Data Loading Strategy
 
-- Collection
-- Databank
+Cardback must not load entire collections or catalogue datasets into the frontend unnecessarily.
 
-Only behaviour changes between pages.
+Large datasets must use server-side:
 
-Visual appearance must remain identical.
+* Pagination
+* Sorting
+* Filtering
+* Search
 
-Databank
---------
+The frontend sends query parameters to the backend and renders the returned page.
 
-Status
+This principle is especially important for user collections, which may grow substantially.
 
-Completed (MVP)
+---
 
-Implemented
+# Shared UI
 
-- Signals
-- Loading state
-- Search
-- Pagination
-- Shared FigureCard
-- Backend DTO mapping
-- imageUrl contract
-- Angular 22 reactive state
+Current reusable components include:
 
-Collection
-----------
+* `cb-button`
+* `cb-input`
+* `cb-card`
+* spinner
+* badge
 
-Status
+## `cb-input`
 
-MVP completed.
+`cb-input` is a reusable form control implemented through:
 
-Implemented
+* `ControlValueAccessor`
+* `NG_VALUE_ACCESSOR`
 
-- Authenticated endpoint
-- Complete backend hierarchy consumption
-- Shared FigureCard
-- CollectionHeader
-- Loading state
-- Error state
-- Empty state
-- Mapping from OwnedFigure → FigureCardModel
+It supports:
 
-Lessons learned
+* value propagation
+* disabled state
+* touched state
+* configurable input type
+* configurable placeholder
+* Enter key event
 
-A temporary 401 Unauthorized was caused by an expired/invalid JWT stored on the frontend.
+The Enter event is exposed through:
+
+`enter = output<void>()`
+
+The shared input does not know what Enter means semantically.
+
+It only reports that the user pressed Enter.
+
+Consumers decide the behaviour.
+
+Example:
+
+```text
+cb-input
+ ├── ControlValueAccessor
+ │      └── value → ngModel / FormControl
+ │
+ └── enter output
+        ├── Header → search()
+        └── Login form → submit()
+```
+
+For Login, native form submission through `(ngSubmit)` remains preferable to implementing search-like behaviour manually.
+
+---
+
+# Business Components
+
+## FigureCard
+
+`FigureCard` is the shared business component used by:
+
+* Collection
+* Databank
+
+Only page-specific behaviour changes.
+
+The visual appearance must remain identical.
+
+---
+
+## CollectionHeader
+
+`CollectionHeader` is responsible for the collection controls related to:
+
+* sorting
+* filtering
+
+The actual data retrieval remains the responsibility of the Collection page/service.
+
+Sorting and filtering are server-side.
+
+---
+
+# Databank
+
+Status:
+
+**MVP completed**
+
+Implemented:
+
+* Signals
+* Loading state
+* Error state
+* Empty state
+* Search
+* Pagination
+* Shared `FigureCard`
+* Backend DTO mapping
+* `imageUrl` contract
+* Angular 22 reactive state
+
+The Databank consumes catalogue information from the backend and does not load the complete catalogue into the frontend.
+
+---
+
+# Collection
+
+Status:
+
+**MVP completed**
+
+Implemented:
+
+* Authenticated endpoint
+* Complete backend hierarchy consumption
+* Shared `FigureCard`
+* `CollectionHeader`
+* Loading state
+* Error state
+* Empty state
+* Mapping from `OwnedFigure` → `FigureCardModel`
+* Server-side pagination
+* Server-side sorting
+* Server-side filtering
+* Collection query parameters
+* Collection sort controls
+* Collection filter controls
+
+Frontend query model currently supports:
+
+* `page`
+* `limit`
+* `search`
+* `sortBy`
+* `sortOrder`
+* `condition`
+* `completeness`
+* `packagingState`
+
+The frontend `CollectionService` builds `HttpParams` from these values and calls:
+
+`GET /owned-figures`
+
+Backend pagination and query handling are implemented through the corresponding DTO/query contract.
+
+---
+
+# Global Search
+
+Status:
+
+**In progress**
+
+Backend Search is already implemented.
+
+Backend capabilities include:
+
+* Global search endpoint
+* Pagination
+* Public DTO mapping
+
+The frontend Global Search feature has now been started.
+
+## Current frontend implementation
+
+Created:
+
+* `GlobalSearch` page
+* `GlobalSearchService`
+* `global-search.model.ts`
+* `/search` route
+
+The `/search` route is inside the authenticated `Shell` children and therefore protected by the existing `authGuard`.
+
+Current route:
+
+`/search`
+
+The Header navigates to it with:
+
+`/search?q=<query>`
+
+Example:
+
+`/search?q=vader`
+
+## Header integration
+
+The Header search input now uses:
+
+* `cb-input`
+* `[(ngModel)]`
+* `enter` output
+
+Current flow:
+
+```text
+User types "vader"
+        ↓
+[(ngModel)]
+        ↓
+searchQuery = "vader"
+        ↓
+User presses Enter
+        ↓
+cb-input.enter
+        ↓
+Header.search()
+        ↓
+router.navigate()
+        ↓
+/search?q=vader
+        ↓
+GlobalSearch
+```
+
+The Global Search page currently confirms the received query.
+
+## Current Global Search state
+
+`global-search.model.ts` exists but is currently empty.
+
+The next implementation step is to define the frontend models matching the backend public Search response.
+
+After that:
+
+1. Complete `GlobalSearchService`.
+2. Connect `GlobalSearch` to the service.
+3. Call `GET /search`.
+4. Render real search results.
+5. Add result-specific navigation.
+6. Refine the Search UI.
+
+The result model must follow the backend public API contract rather than Prisma entities.
+
+---
+
+# Routing
+
+Current application structure:
+
+```text
+/login
+    ↓
+Login
+
+/
+    ↓
+Shell
+    ↓
+authGuard
+    ↓
+├── dashboard
+├── collection
+├── databank
+├── wishlist
+├── identify
+├── scan
+├── profile
+└── search
+```
+
+Global Search is intentionally a child route of `Shell`, so it shares:
+
+* Header
+* Sidebar
+* application layout
+* authentication protection
+
+---
+
+# Authentication
+
+Implemented:
+
+* Login
+* JWT authentication
+* Refresh tokens
+* Auth interceptor
+* Auth guard
+* Current user handling
+* Logout
+
+Important debugging lesson:
+
+A previous Collection HTTP 401 was caused by an expired/invalid JWT stored on the frontend.
 
 The Collection implementation itself was correct.
 
-After obtaining a fresh access token the page rendered correctly without code changes.
+When debugging authenticated pages:
 
-Next session
-------------
+1. Check the Network tab.
+2. Verify the Authorization header.
+3. Verify the backend response.
+4. Only then investigate Angular rendering.
 
-1. Sort.
-2. Filters.
-3. Figure Detail.
-4. Connect Databank → Figure Detail.
-5. Connect Collection → Figure Detail.
+---
+
+# Important Domain Rules
+
+The following distinction must remain clear:
+
+### Character
+
+The fictional character.
+
+Example:
+
+Luke Skywalker.
+
+### Figure
+
+A physical figure representation associated with a character.
+
+### Product Release
+
+The catalogue product/release being sold.
+
+Different releases can represent the same character.
+
+Examples:
+
+* Luke Skywalker — Kenner 1978
+* Luke Skywalker — POTF2 1995
+* Luke Skywalker — TVC VC13 2010
+* Luke Skywalker — Black Series #01
+
+These are not separate characters.
+
+---
+
+# Current Priorities
+
+## 1. Finish Global Search
+
+* Define `global-search.model.ts`
+* Complete `GlobalSearchService`
+* Connect page to service
+* Consume `GET /search`
+* Render results
+* Handle loading/error/empty states
+* Add result navigation
+
+## 2. Figure Detail
+
+* Product Release detail page
+* Complete catalogue information
+* Collector information
+* Navigation from Databank
+
+## 3. Connect Databank → Figure Detail
+
+Figure cards/results must navigate to the appropriate Product Release detail.
+
+## 4. Connect Collection → Figure Detail
+
+Owned collection entries must navigate to the corresponding catalogue/product detail.
+
+## 5. Collection actions
+
+After the core navigation flow is established:
+
+* collection-specific actions
+* future ownership management interactions
+
+---
+
+# Current Reusable Patterns
+
+For HTTP services:
+
+```text
+inject(HttpClient)
+        ↓
+HttpParams
+        ↓
+Observable<Response>
+```
+
+For component-local reactive state:
+
+```text
+Signals
+```
+
+For HTTP communication:
+
+```text
+Observable
+```
+
+For reusable form controls:
+
+```text
+ControlValueAccessor
+```
+
+For authenticated application pages:
+
+```text
+Shell
+  ↓
+authGuard
+  ↓
+feature route
+```
+
+For large datasets:
+
+```text
+Frontend query
+  ↓
+HTTP query params
+  ↓
+Backend pagination / sorting / filtering
+  ↓
+Paginated response
+  ↓
+Frontend rendering
+```
+
+---
+
+# Project Direction
+
+Cardback remains collector-first.
+
+The architecture should favour:
+
+* clear domain boundaries
+* reusable UI primitives
+* reusable business components
+* server-side data operations
+* stable API contracts
+* predictable Angular state management
+* minimal unnecessary frontend complexity
+
+Avoid introducing abstractions before there is a concrete reuse case.

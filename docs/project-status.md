@@ -1,23 +1,26 @@
 # Project Status
 
-Brand
------
+## Brand
 
 Cardback
 
-Current Phase
--------------
+## Repository
+
+FigureArchive
+
+## Current Phase
 
 Frontend MVP development.
 
 Infrastructure is complete.
 
-The focus is now on delivering the core collector experience.
+The current focus is connecting and completing the core collector-facing business features.
 
-Completed
----------
+---
 
-Backend
+# Completed
+
+## Backend
 
 ✔ Manufacturer
 
@@ -45,13 +48,19 @@ Backend
 
 ✔ Pagination
 
+✔ Server-side sorting
+
+✔ Server-side filtering
+
 ✔ Soft Delete
 
 ✔ Public DTO Mapping
 
-✔ imageUrl public contract
+✔ `imageUrl` public contract
 
-Frontend
+---
+
+## Frontend Foundation
 
 ✔ Angular 22
 
@@ -75,16 +84,21 @@ Frontend
 
 ✔ Design Tokens
 
-Business Features
------------------
+✔ Auth Guard
 
-Databank
+✔ HTTP authentication interceptor
 
-Status
+---
+
+# Business Features
+
+## Databank
+
+Status:
 
 ✔ MVP Completed
 
-Completed
+Completed:
 
 ✔ ProductReleaseModel
 
@@ -100,21 +114,25 @@ Completed
 
 ✔ Error state
 
+✔ Empty state
+
 ✔ FigureCard integration
 
 ✔ Backend DTO mapping
 
-✔ imageUrl contract
+✔ `imageUrl` contract
 
 ✔ Catalogue rendering
 
-Collection
+---
 
-Status
+## Collection
+
+Status:
 
 ✔ MVP Completed
 
-Completed
+Completed:
 
 ✔ Authenticated endpoint
 
@@ -132,35 +150,100 @@ Completed
 
 ✔ Collection rendering
 
-Pending
+✔ Server-side pagination
 
-- Sorting
-- Filters
-- Collection actions
+✔ Server-side sorting
 
-Figure Detail
+✔ Server-side filtering
 
-Status
+✔ Collection query parameters
+
+✔ Sort controls
+
+✔ Filter controls
+
+### Remaining
+
+* Collection actions
+
+---
+
+## Global Search
+
+Status:
+
+🔄 In Progress
+
+Completed:
+
+✔ Backend Search endpoint
+
+✔ Backend pagination
+
+✔ Backend public DTO contract
+
+✔ GlobalSearch page
+
+✔ `/search` route
+
+✔ Route integrated inside Shell
+
+✔ Authentication protection through `authGuard`
+
+✔ Header search input
+
+✔ `cb-input` ControlValueAccessor integration
+
+✔ `cb-input` Enter output
+
+✔ Header `ngModel` search binding
+
+✔ Header navigation to `/search?q=...`
+
+✔ GlobalSearch receives and displays the query
+
+✔ `GlobalSearchService` created
+
+✔ `global-search.model.ts` created
+
+### Current work
+
+* Define frontend Search result models
+* Connect GlobalSearch page to GlobalSearchService
+* Consume `GET /search`
+* Render real results
+* Loading state
+* Error state
+* Empty state
+* Result navigation
+
+---
+
+# Figure Detail
+
+Status:
 
 Not Started
 
-Planned
+Planned:
 
-- ProductRelease detail page
-- Complete collector information
-- Navigation from Databank
-- Navigation from Collection
+* ProductRelease detail page
+* Complete catalogue information
+* Complete collector information
+* Navigation from Databank
+* Navigation from Collection
 
-Shared Components
------------------
+---
 
-FigureCard
+# Shared Components
 
-Status
+## FigureCard
+
+Status:
 
 Stable
 
-Completed
+Completed:
 
 ✔ Shared by Collection and Databank
 
@@ -174,26 +257,97 @@ Completed
 
 ✔ Responsive layout
 
-Current Milestone
------------------
+---
 
-Collection MVP completed.
+## CollectionHeader
 
-Next
-----
+Status:
 
-1. Collection Sort.
+Stable
 
-2. Collection Filters.
+Completed:
 
-3. Figure Detail.
+✔ Collection sorting controls
 
-4. Connect Databank → Figure Detail.
+✔ Collection filtering controls
 
-5. Connect Collection → Figure Detail.
+✔ Integration with Collection query flow
 
-Overall Progress
-----------------
+---
+
+## `cb-input`
+
+Status:
+
+Stable / Extended
+
+Completed:
+
+✔ ControlValueAccessor
+
+✔ `ngModel` compatibility
+
+✔ FormControl compatibility
+
+✔ Disabled state
+
+✔ Touched state
+
+✔ Configurable input type
+
+✔ Configurable placeholder
+
+✔ Enter output
+
+The component remains generic and does not contain search-specific behaviour.
+
+---
+
+# Routing
+
+Current authenticated Shell routes include:
+
+* dashboard
+* collection
+* databank
+* wishlist
+* identify
+* scan
+* profile
+* search
+
+`/login` remains outside the authenticated Shell.
+
+---
+
+# Current Milestone
+
+**Global Search integration in progress.**
+
+The application can now navigate from the Header to:
+
+`/search?q=<query>`
+
+The remaining work is to connect that page to the existing backend Search endpoint and render the returned results.
+
+---
+
+# Next
+
+1. Define Global Search frontend models.
+2. Connect GlobalSearchService to the GlobalSearch page.
+3. Consume backend Search results.
+4. Render Global Search results.
+5. Add Search loading/error/empty states.
+6. Implement result navigation.
+7. Figure Detail.
+8. Connect Databank → Figure Detail.
+9. Connect Collection → Figure Detail.
+10. Collection actions.
+
+---
+
+# Overall Progress
 
 Backend
 
@@ -201,21 +355,28 @@ Backend
 
 Frontend
 
-≈ 55%
+≈ 60%
 
 Overall project
 
-≈ 65%
+≈ 70%
 
-Architecture Notes
-------------------
+---
+
+# Architecture Notes
 
 Angular Signals are the standard mechanism for component-local reactive state.
 
-Observable streams remain the communication layer with HttpClient.
+Observable streams remain the communication layer with `HttpClient`.
 
 Backend entities are never exposed directly to the frontend.
 
 Public DTOs define the application contract.
 
+Frontend models represent the public backend contract independently from NestJS DTO classes.
+
 FigureCard remains the reusable business component shared between Databank and Collection.
+
+Large datasets use server-side pagination, sorting, filtering and search.
+
+Shared UI controls remain generic; feature-specific behaviour belongs to the consuming feature.

@@ -1009,3 +1009,263 @@ General feeling
 ---------------
 
 Although much of the session consisted of debugging, it validated the complete Collection architecture and confirmed that backend contracts, reusable components and frontend mapping are now working together correctly.
+
+## Session 2026-08-18
+
+## Summary
+
+Today's work moved Cardback from the completed Collection MVP into the next phase of frontend business features.
+
+The Collection feature was extended with server-side sorting and filtering, and the first end-to-end structure for Global Search was implemented.
+
+The session also established a reusable Enter-key mechanism for the shared `cb-input` component.
+
+---
+
+## Completed
+
+### Collection
+
+Collection sorting and filtering were implemented.
+
+The frontend `CollectionService` now supports query parameters for:
+
+* page
+* limit
+* search
+* sortBy
+* sortOrder
+* condition
+* completeness
+* packagingState
+
+The service builds the corresponding `HttpParams` and sends them to the authenticated:
+
+`GET /owned-figures`
+
+Sorting and filtering therefore remain server-side.
+
+This preserves the architectural decision not to load large collection datasets into the frontend merely to perform local operations.
+
+---
+
+### Collection Header
+
+`CollectionHeader` is now part of the Collection query flow.
+
+The component provides the UI controls for collection sorting and filtering while the Collection service remains responsible for HTTP communication.
+
+---
+
+### Shared `cb-input`
+
+`cb-input` was extended to work as a reusable form control through `ControlValueAccessor`.
+
+It now supports:
+
+* value propagation
+* disabled state
+* touched state
+* configurable type
+* configurable placeholder
+* Enter key detection
+
+An `enter` output was added.
+
+The component emits the event but does not define its semantic meaning.
+
+This allows the same mechanism to be reused by different consumers.
+
+Example:
+
+```text
+cb-input.enter
+    ├── Header → search()
+    └── other form/action → corresponding behaviour
+```
+
+For Login, native form submission through `(ngSubmit)` remains the preferred implementation.
+
+---
+
+### Header Search
+
+The Header search field is now connected to the shared `cb-input`.
+
+Implemented:
+
+* `FormsModule`
+* `[(ngModel)]="searchQuery"`
+* `(enter)="search()"`
+
+The Header now normalizes the query with `trim()` and navigates to:
+
+`/search?q=<query>`
+
+Example:
+
+`/search?q=vader`
+
+Empty queries are ignored.
+
+---
+
+### Global Search Route
+
+The Global Search page was added to the authenticated Shell route tree.
+
+The route is:
+
+`/search`
+
+It is a child of `Shell` and is therefore protected by the existing `authGuard`.
+
+The resulting navigation flow is:
+
+```text
+Header
+  ↓
+cb-input
+  ↓
+Enter
+  ↓
+Header.search()
+  ↓
+/search?q=vader
+  ↓
+Shell
+  ↓
+authGuard
+  ↓
+GlobalSearch
+```
+
+The route was tested successfully.
+
+The Global Search page currently displays the received query.
+
+---
+
+### Global Search Frontend Structure
+
+The Global Search feature now contains the initial frontend structure for:
+
+* page
+* service
+* models
+
+`GlobalSearchService` has been created/planned following the same HTTP service pattern already established by `CollectionService`.
+
+The service targets:
+
+`GET /search`
+
+and uses `HttpParams` for:
+
+* q
+* page
+* limit
+
+`global-search.model.ts` has also been created.
+
+At the end of this session it is intentionally still empty because the frontend result model has not yet been defined against the backend Search public response.
+
+---
+
+## Backend
+
+The Search backend was already implemented before the current frontend integration.
+
+Existing capabilities include:
+
+* global search endpoint
+* pagination
+* public DTO mapping
+
+The frontend integration must consume the public Search contract rather than backend Prisma entities.
+
+---
+
+## Architecture Decisions Reinforced
+
+### Server-side operations
+
+Collection sorting and filtering remain server-side.
+
+Do not move these operations into the frontend unless there is a specific architectural reason.
+
+### Shared input vs feature behaviour
+
+`cb-input` remains a generic form control.
+
+It emits the Enter action but does not know whether the consumer is performing:
+
+* a search
+* form submission
+* another action
+
+Feature components decide what the event means.
+
+### Search composition
+
+The current Header search is intentionally kept simple.
+
+A future `cb-search` composition may encapsulate:
+
+* `cb-input`
+* clear action
+* search action
+
+without making `cb-input` responsible for search-specific UI.
+
+---
+
+## Current State
+
+### Databank
+
+MVP completed.
+
+### Collection
+
+MVP completed.
+
+Sorting and filtering are now implemented.
+
+### Global Search
+
+In progress.
+
+Navigation and initial frontend structure are working.
+
+The actual API result consumption and result rendering are the next step.
+
+### Figure Detail
+
+Not started.
+
+---
+
+## Next Session
+
+1. Define `global-search.model.ts`.
+2. Complete/verify `GlobalSearchService`.
+3. Connect `GlobalSearch` to `GlobalSearchService`.
+4. Call the backend Search endpoint.
+5. Render real search results.
+6. Implement loading, error and empty states.
+7. Define result navigation.
+8. Continue with Figure Detail.
+
+---
+
+## Important Lessons
+
+When implementing new feature integrations:
+
+* Reuse established HTTP service patterns.
+* Keep backend DTOs and frontend models separate.
+* Keep Prisma entities out of the public contract.
+* Prefer server-side operations for potentially large datasets.
+* Keep shared UI components generic.
+* Let feature components define behaviour.

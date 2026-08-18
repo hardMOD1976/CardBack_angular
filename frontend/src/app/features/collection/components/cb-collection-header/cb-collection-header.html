@@ -26,7 +26,7 @@
     <button
       type="button"
       class="collection-header__button"
-      (click)="filtersClicked.emit()">
+      (click)="toggleFilters()">
 
       Filters
 
@@ -38,7 +38,7 @@
 
 @if (sortOpen) {
 
-  <section class="collection-header__sort">
+  <div class="collection-header__sort">
 
     <div class="collection-header__sort-field">
 
@@ -119,6 +119,125 @@
 
     </button>
 
-  </section>
+  </div>
+
+}
+
+@if (filtersOpen) {
+
+  <div class="collection-header__filters">
+
+    <div class="collection-header__filter-field">
+
+      <label for="collection-condition">
+        Condition
+      </label>
+
+      <select
+        id="collection-condition"
+        [value]="condition ?? ''"
+        (change)="onConditionChange($any($event.target).value)">
+
+        <option value="">
+          All
+        </option>
+
+        <option value="Mint">
+          Mint
+        </option>
+
+        <option value="Near Mint">
+          Near Mint
+        </option>
+
+        <option value="Good">
+          Good
+        </option>
+
+        <option value="Fair">
+          Fair
+        </option>
+
+        <option value="Poor">
+          Poor
+        </option>
+
+      </select>
+
+    </div>
+
+    <div class="collection-header__filter-field">
+
+      <label for="collection-completeness">
+        Completeness
+      </label>
+
+      <select
+        id="collection-completeness"
+        [value]="completeness ?? ''"
+        (change)="onCompletenessChange($any($event.target).value)">
+
+        <option value="">
+          All
+        </option>
+
+        <option value="Complete">
+          Complete
+        </option>
+
+        <option value="Incomplete">
+          Incomplete
+        </option>
+
+      </select>
+
+    </div>
+
+    <div class="collection-header__filter-field">
+
+      <label for="collection-packaging-state">
+        Packaging state
+      </label>
+
+      <select
+        id="collection-packaging-state"
+        [value]="packagingState ?? ''"
+        (change)="onPackagingStateChange($any($event.target).value)">
+
+        <option value="">
+          All
+        </option>
+
+        <option value="Sealed">
+          Sealed
+        </option>
+
+        <option value="Opened">
+          Opened
+        </option>
+
+      </select>
+
+    </div>
+
+    <button
+      type="button"
+      class="collection-header__button"
+      (click)="applyFilters()">
+
+      Apply
+
+    </button>
+
+    <button
+      type="button"
+      class="collection-header__button"
+      (click)="clearFilters()">
+
+      Clear
+
+    </button>
+
+  </div>
 
 }

@@ -37,10 +37,16 @@ export class CollectionHeader {
     }>();
 
   @Output()
-  filtersClicked =
-    new EventEmitter<void>();
+  filtersChanged =
+    new EventEmitter<{
+      condition?: string;
+      completeness?: string;
+      packagingState?: string;
+    }>();
 
   sortOpen = false;
+
+  filtersOpen = false;
 
   sortBy: CollectionSortBy =
     'createdAt';
@@ -48,8 +54,26 @@ export class CollectionHeader {
   sortOrder: CollectionSortOrder =
     'desc';
 
+  condition?: string;
+
+  completeness?: string;
+
+  packagingState?: string;
+
   toggleSort(): void {
     this.sortOpen = !this.sortOpen;
+
+    if (this.sortOpen) {
+      this.filtersOpen = false;
+    }
+  }
+
+  toggleFilters(): void {
+    this.filtersOpen = !this.filtersOpen;
+
+    if (this.filtersOpen) {
+      this.sortOpen = false;
+    }
   }
 
   applySort(): void {
@@ -59,6 +83,30 @@ export class CollectionHeader {
     });
 
     this.sortOpen = false;
+  }
+
+  applyFilters(): void {
+    this.filtersChanged.emit({
+      condition: this.condition,
+      completeness: this.completeness,
+      packagingState: this.packagingState,
+    });
+
+    this.filtersOpen = false;
+  }
+
+  clearFilters(): void {
+    this.condition = undefined;
+    this.completeness = undefined;
+    this.packagingState = undefined;
+
+    this.filtersChanged.emit({
+      condition: undefined,
+      completeness: undefined,
+      packagingState: undefined,
+    });
+
+    this.filtersOpen = false;
   }
 
   onSortByChange(
@@ -73,5 +121,26 @@ export class CollectionHeader {
   ): void {
     this.sortOrder =
       value as CollectionSortOrder;
+  }
+
+  onConditionChange(
+    value: string,
+  ): void {
+    this.condition =
+      value || undefined;
+  }
+
+  onCompletenessChange(
+    value: string,
+  ): void {
+    this.completeness =
+      value || undefined;
+  }
+
+  onPackagingStateChange(
+    value: string,
+  ): void {
+    this.packagingState =
+      value || undefined;
   }
 }

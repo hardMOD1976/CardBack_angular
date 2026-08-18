@@ -1,7 +1,11 @@
 <cb-collection-header
   [totalFigures]="totalFigures()"
   (sortChanged)="onSortChanged($event.sortBy, $event.sortOrder)"
-  (filtersClicked)="onFiltersClicked()">
+  (filtersChanged)="onFiltersChanged(
+    $event.condition,
+    $event.completeness,
+    $event.packagingState
+  )">
 </cb-collection-header>
 
 @if (loading()) {
@@ -9,10 +13,6 @@
 }
 
 @else if (error()) {
-
-  <p>
-    Please try again later.
-  </p>
 
 }
 
@@ -29,13 +29,5 @@
 }
 
 @else {
-
-  <h2>
-    Your collection is empty
-  </h2>
-
-  <p>
-    Start building your collection.
-  </p>
 
 }

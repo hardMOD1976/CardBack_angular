@@ -159,7 +159,23 @@ export class Collection implements OnInit {
     this.loadCollection();
   }
 
+  onFiltersChanged(
+    condition: CollectionQuery['condition'],
+    completeness: CollectionQuery['completeness'],
+    packagingState: CollectionQuery['packagingState'],
+  ): void {
+    this.query.update(current => ({
+      ...current,
+      page: 1,
+      condition,
+      completeness,
+      packagingState,
+    }));
+
+    this.loadCollection();
+  }
+
   onFiltersClicked(): void {
-    // Temporary: filters panel will be implemented next.
+    // Filters are handled by CollectionHeader.
   }
 }

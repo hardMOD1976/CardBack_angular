@@ -3,15 +3,11 @@
   <div class="header__left">
 
     <span class="header__welcome">
-
       {{ welcomeMessage }}
-
     </span>
 
     <h2 class="header__username">
-
       {{ user?.username }}
-
     </h2>
 
   </div>
@@ -20,7 +16,9 @@
 
     <cb-input
       type="search"
-      placeholder="Search figures...">
+      placeholder="Search figures..."
+      [(ngModel)]="searchQuery"
+      (enter)="search()">
     </cb-input>
 
   </div>

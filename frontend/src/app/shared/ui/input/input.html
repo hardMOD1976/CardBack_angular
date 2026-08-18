@@ -1,5 +1,10 @@
 <input
-    class="cb-input"
-    [type]="type()"
-    [placeholder]="placeholder()"
+  class="cb-input"
+  [type]="type()"
+  [placeholder]="placeholder()"
+  [value]="currentValue"
+  [disabled]="isDisabled"
+  (input)="handleInput($event)"
+  (blur)="handleBlur()"
+  (keydown)="handleKeydown($event)"
 />

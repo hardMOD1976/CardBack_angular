@@ -1,14 +1,21 @@
 import { Component, inject } from '@angular/core';
+
+import { FormsModule } from '@angular/forms';
+
 import { Router } from '@angular/router';
 
 import { CurrentUserService } from '../../../core/auth/current-user.service';
+
 import { CurrentUser } from '../../../features/auth/models/current-user.model';
+
 import { AuthService } from '../../../features/auth/services/auth.service';
+
 import { Input } from '../../../shared/ui/input/input';
 
 @Component({
   selector: 'app-header',
   imports: [
+    FormsModule,
     Input,
   ],
   templateUrl: './header.html',
@@ -27,6 +34,8 @@ export class Header {
   readonly user: CurrentUser | null =
     this.currentUserService.getCurrentUser();
 
+  searchQuery = '';
+
   get welcomeMessage(): string {
     // Quan tinguem la col·lecció carregada,
     // aquí decidirem entre "Welcome" i "Welcome back"
@@ -39,8 +48,9 @@ export class Header {
       .toUpperCase() ?? '?';
   }
 
-  search(query: string): void {
-    const normalizedQuery = query.trim();
+  search(): void {
+    const normalizedQuery =
+      this.searchQuery.trim();
 
     if (!normalizedQuery) {
       return;

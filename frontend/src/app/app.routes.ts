@@ -11,6 +11,8 @@ import { Wishlist } from './features/wishlist/pages/wishlist/wishlist';
 import { Identify } from './features/ai-identify/pages/identify/identify';
 import { Scan } from './features/barcode-scan/pages/scan/scan';
 import { Profile } from './features/profile/pages/profile/profile';
+import { GlobalSearch } from './features/global-search/pages/global-search/global-search';
+
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -21,11 +23,11 @@ export const routes: Routes = [
   },
 
   {
-  path: '',
-  component: Shell,
-  canActivate: [authGuard],
+    path: '',
+    component: Shell,
+    canActivate: [authGuard],
 
-  children: [
+    children: [
 
       {
         path: '',
@@ -68,8 +70,12 @@ export const routes: Routes = [
         component: Profile,
       },
 
-    ],
+      {
+        path: 'search',
+        component: GlobalSearch,
+      },
 
+    ],
   },
 
   {

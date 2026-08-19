@@ -1,61 +1,41 @@
-export interface GlobalSearchModel {
+export type GlobalSearchResultType =
+  | 'franchise'
+  | 'manufacturer'
+  | 'line'
+  | 'character'
+  | 'figure'
+  | 'variant'
+  | 'productRelease';
 
+export interface GlobalSearchContext {
+  franchise?: string;
+  manufacturer?: string;
+  line?: string;
+  character?: string;
+  figure?: string;
+  variant?: string;
+}
+
+export interface GlobalSearchResult {
   id: string;
-
+  type: GlobalSearchResultType;
   name: string;
-
-  barcode: string | null;
-
-  releaseYear: number | null;
-
-  packagingType: string | null;
-
-  region: string | null;
-
-  language: string | null;
-
-  retailer: string | null;
-
   imageUrl: string | null;
+  context: GlobalSearchContext;
+}
 
-  variant: {
-
-    id: string;
-
-    name: string;
-
-    figure: {
-
-      id: string;
-
-      name: string;
-
-      character: {
-
-        id: string;
-
-        name: string;
-
-      };
-
-      line: {
-
-        id: string;
-
-        name: string;
-
-        manufacturer: {
-
-          id: string;
-
-          name: string;
-
-        };
-
-      };
-
-    };
-
+export interface GlobalSearchResponse {
+  data: GlobalSearchResult[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
   };
+}
 
+export interface GlobalSearchQuery {
+  q?: string;
+  page?: number;
+  limit?: number;
 }

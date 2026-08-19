@@ -1,0 +1,44 @@
+@import '../tokens/variables';
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+// Aplicar variables a components existents
+.shell {
+  background-color: var(--bg-primary);
+}
+
+.header {
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar {
+  background-color: var(--sidebar-bg);
+  border-right: 1px solid var(--border-color);
+}
+
+// Per als teus components compartits
+.cb-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.cb-input {
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text-primary);
+  
+  &:focus {
+    border-color: var(--button-primary-bg);
+  }
+}
+
+.cb-button {
+  background-color: var(--button-primary-bg);
+  color: var(--button-primary-text);
+}

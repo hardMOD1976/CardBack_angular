@@ -1,0 +1,39 @@
+@import './colors';
+
+:root {
+  // Light theme (default)
+  --bg-primary: #{$light-bg-primary};
+  --bg-secondary: #{$light-bg-secondary};
+  --bg-tertiary: #{$light-bg-tertiary};
+  --text-primary: #{$light-text-primary};
+  --text-secondary: #{$light-text-secondary};
+  --border-color: #{$light-border};
+  --shadow-color: #{$light-shadow};
+  --card-bg: #{$light-card-bg};
+  
+  // Component specific
+  --header-bg: #{$light-bg-primary};
+  --sidebar-bg: #{$light-bg-secondary};
+  --input-bg: #{$light-bg-primary};
+  --input-border: #{$light-border};
+  --button-primary-bg: #0066cc;
+  --button-primary-text: #{$light-text-primary};
+}
+
+[data-theme="dark"] {
+  --bg-primary: #{$dark-bg-primary};
+  --bg-secondary: #{$dark-bg-secondary};
+  --bg-tertiary: #{$dark-bg-tertiary};
+  --text-primary: #{$dark-text-primary};
+  --text-secondary: #{$dark-text-secondary};
+  --border-color: #{$dark-border};
+  --shadow-color: #{$dark-shadow};
+  --card-bg: #{$dark-card-bg};
+  
+  --header-bg: #{$dark-bg-primary};
+  --sidebar-bg: #{$dark-bg-secondary};
+  --input-bg: #{$dark-bg-secondary};
+  --input-border: #{$dark-border};
+  --button-primary-bg: #0055aa;
+  --button-primary-text: #{$dark-text-primary};
+}

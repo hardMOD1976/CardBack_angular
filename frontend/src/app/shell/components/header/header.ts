@@ -10,6 +10,8 @@ import { CurrentUser } from '../../../features/auth/models/current-user.model';
 
 import { AuthService } from '../../../features/auth/services/auth.service';
 
+import { ThemeService } from '../../../core/services/theme.service';
+
 import { Input } from '../../../shared/ui/input/input';
 
 @Component({
@@ -30,6 +32,9 @@ export class Header {
 
   private readonly router =
     inject(Router);
+
+  protected readonly themeService =
+    inject(ThemeService);
 
   readonly user: CurrentUser | null =
     this.currentUserService.getCurrentUser();
@@ -74,5 +79,19 @@ export class Header {
         },
         error: console.error,
       });
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
+
+  get themeIcon(): string {
+    return this.themeService.theme() === 'light' ? '🌙' : '☀️';
+  }
+
+  get themeLabel(): string {
+    return this.themeService.theme() === 'light' 
+      ? 'Switch to dark mode' 
+      : 'Switch to light mode';
   }
 }

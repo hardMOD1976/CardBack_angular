@@ -1,5 +1,10 @@
+// 1. Reset i base (ordre important)
 @use './app/styles/base/reset';
 @use './app/styles/base/typography';
 @use './app/styles/base/global';
 
+// 2. Tokens (inclou el dark theme)
 @use './app/styles/tokens/tokens';
+
+// 3. Theme base (aplica les variables als components)
+@use './app/styles/base/theme';

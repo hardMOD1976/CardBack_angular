@@ -1,13 +1,13 @@
 :root {
 
   /* =====================================================
-     COLORS
+     COLORS - LIGHT THEME (default)
      ===================================================== */
 
   --surface-primary: #ffffff;
   --surface-secondary: #f8f9fb;
   --surface-tertiary: #f3f4f6;
-  --surface-hover:#eef2ff;
+  --surface-hover: #eef2ff;
 
   --text-primary: #111827;
   --text-secondary: #6b7280;
@@ -76,17 +76,58 @@
   --sidebar-width: 280px;
 
   /* =====================================================
-   COMPONENTS
+     COMPONENTS
+     ===================================================== */
+
+  --card-radius: var(--radius-lg);
+
+  --card-shadow: var(--shadow-sm);
+  --card-shadow-hover: var(--shadow-lg);
+
+  --input-height: 48px;
+
+  --content-max-width: 1440px;
+
+}
+
+/* =====================================================
+   DARK THEME
    ===================================================== */
 
---card-radius: var(--radius-lg);
+[data-theme="dark"] {
 
---card-shadow: var(--shadow-sm);
---card-shadow-hover: var(--shadow-lg);
+  /* COLORS - DARK THEME */
 
---input-height: 48px;
+  --surface-primary: #1a1a2e;
+  --surface-secondary: #16213e;
+  --surface-tertiary: #0f3460;
+  --surface-hover: #1a3a6a;
 
---content-max-width: 1440px;
+  --text-primary: #e8e8e8;
+  --text-secondary: #a0a0b0;
+  --text-muted: #6a6a7a;
+
+  --border-primary: #2a2a4a;
+  --border-secondary: #3a3a5a;
+
+  --accent-primary: #4a9eff;
+  --accent-success: #34d399;
+  --accent-warning: #fbbf24;
+  --accent-danger: #f87171;
+
+  /* SHADOWS - DARK THEME (més intensos perquè funcionin sobre fons fosc) */
+
+  --shadow-sm:
+    0 2px 8px rgba(0,0,0,.3);
+
+  --shadow-md:
+    0 6px 18px rgba(0,0,0,.4);
+
+  --shadow-lg:
+    0 12px 30px rgba(0,0,0,.5);
+
+  /* La resta de variables (radius, spacing, transitions, layout, components)
+     es mantenen igual, ja que no canvien amb el tema */
 
 }
 

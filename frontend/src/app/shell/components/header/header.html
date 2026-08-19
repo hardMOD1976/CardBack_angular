@@ -28,9 +28,10 @@
     <button
       class="header__icon"
       type="button"
-      aria-label="Toggle theme">
+      [attr.aria-label]="themeLabel"
+      (click)="toggleTheme()">
 
-      🌙
+      {{ themeIcon }}
 
     </button>
 

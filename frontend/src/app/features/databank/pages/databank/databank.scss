@@ -38,10 +38,11 @@
 
   display: grid;
 
+  /* Canvi: columnes més petites perquè en càpiguen més */
   grid-template-columns:
-    repeat(auto-fill, minmax(260px, 1fr));
+    repeat(auto-fill, minmax(180px, 1fr));
 
-  gap: var(--space-5);
+  gap: var(--space-4);
 
 }
 
@@ -57,4 +58,21 @@
 
   color: var(--text-secondary);
 
+}
+
+/* Ajustos per a pantalles petites */
+@media (max-width: 768px) {
+  .databank-grid {
+    grid-template-columns:
+      repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--space-3);
+  }
+}
+
+@media (max-width: 480px) {
+  .databank-grid {
+    grid-template-columns:
+      repeat(auto-fill, minmax(130px, 1fr));
+    gap: var(--space-2);
+  }
 }

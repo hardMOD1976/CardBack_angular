@@ -1010,6 +1010,8 @@ General feeling
 
 Although much of the session consisted of debugging, it validated the complete Collection architecture and confirmed that backend contracts, reusable components and frontend mapping are now working together correctly.
 
+
+
 ## Session 2026-08-18
 
 ## Summary
@@ -1269,3 +1271,172 @@ When implementing new feature integrations:
 * Prefer server-side operations for potentially large datasets.
 * Keep shared UI components generic.
 * Let feature components define behaviour.
+
+## Session 2026-08-19
+
+## Summary
+
+Today's work completed the frontend integration of the Global Search API and moved the feature into the result presentation phase.
+
+The Global Search frontend model and service are now implemented, the page consumes the real backend Search endpoint, and loading/error/empty states are handled.
+
+A dedicated `GlobalSearchResultCard` component was also created to represent heterogeneous search results.
+
+The next step is to integrate the result card into the Global Search page and validate the real `luke` search results before defining navigation.
+
+---
+
+## Completed
+
+### Global Search Model
+
+The frontend Search result model is now defined against the backend public Search contract.
+
+The model supports the seven Global Search result types:
+
+* franchise
+* manufacturer
+* line
+* character
+* figure
+* variant
+* productRelease
+
+The model remains independent from:
+
+* Prisma entities
+* NestJS DTO classes
+* backend implementation details
+
+The public image field remains:
+
+`imageUrl`
+
+---
+
+### Global Search Service
+
+`GlobalSearchService` is implemented using the established Angular HTTP service pattern.
+
+The service calls:
+
+`GET /search`
+
+and builds query parameters through `HttpParams`.
+
+Current parameters include:
+
+* q
+* page
+* limit
+
+The service returns the public Search response through an Observable.
+
+---
+
+### Global Search Page
+
+`GlobalSearch` is now connected to `GlobalSearchService`.
+
+The page receives the search query from the route and requests the corresponding Search results from the backend.
+
+The API integration has been tested with:
+
+`luke`
+
+The page handles:
+
+* loading
+* error
+* empty
+* results
+
+states.
+
+Real heterogeneous Search results are now available to the frontend.
+
+---
+
+### Global Search Result Data
+
+The real `luke` response demonstrates the intended heterogeneous Search behaviour.
+
+Examples include:
+
+* Luke Skywalker — Character
+* Luke Skywalker — Figure
+* Luke Skywalker — Product Release
+
+Results also contain contextual information such as:
+
+* Franchise
+* Manufacturer
+* Line
+* Character
+* Figure
+* Variant
+
+This confirms that Global Search can provide enough context to distinguish otherwise similarly named results.
+
+---
+
+### GlobalSearchResultCard
+
+A dedicated:
+
+`GlobalSearchResultCard`
+
+component has been created under the Global Search feature.
+
+The component receives:
+
+`GlobalSearchResult`
+
+through a required Angular signal input.
+
+The card currently displays:
+
+* image or placeholder
+* result type
+* result name
+* contextual information
+
+The component is intentionally presentation-only.
+
+It does not:
+
+* perform HTTP requests
+* know about `GlobalSearchService`
+* handle the search query
+* decide application routing
+
+Navigation will be added only after the Cardback navigation pattern has been established.
+
+---
+
+## Architecture Decisions Reinforced
+
+### Heterogeneous Search Results
+
+Global Search results represent different domain concepts.
+
+Therefore, `GlobalSearchResultCard` is kept separate from `FigureCard`.
+
+`FigureCard` remains the business component for catalogue/collection figure presentation.
+
+`GlobalSearchResultCard` represents the result of a global cross-domain search.
+
+---
+
+### Presentation vs Navigation
+
+The result card does not currently own navigation behaviour.
+
+The intended flow is:
+
+```text
+GlobalSearch
+    ↓
+GlobalSearchResultCard
+    ↓
+GlobalSearchResult

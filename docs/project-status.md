@@ -202,20 +202,32 @@ Completed:
 
 ✔ GlobalSearch receives and displays the query
 
-✔ `GlobalSearchService` created
+✔ GlobalSearch frontend result models
 
-✔ `global-search.model.ts` created
+✔ `GlobalSearchService`
+
+✔ `GET /search` integration
+
+✔ Search query parameters
+
+✔ Loading state
+
+✔ Error state
+
+✔ Empty state
+
+✔ Real Search results
+
+✔ `GlobalSearchResultCard` component
 
 ### Current work
 
-* Define frontend Search result models
-* Connect GlobalSearch page to GlobalSearchService
-* Consume `GET /search`
+* Integrate `GlobalSearchResultCard` into GlobalSearch
 * Render real results
-* Loading state
-* Error state
-* Empty state
-* Result navigation
+* Validate result presentation with the real `luke` response
+* Verify differentiation of the seven result types
+* Implement result navigation
+* Define a reusable Search/navigation URL pattern
 
 ---
 
@@ -303,6 +315,36 @@ The component remains generic and does not contain search-specific behaviour.
 
 ---
 
+## GlobalSearchResultCard
+
+Status:
+
+Created / Not yet integrated
+
+Completed:
+
+✔ Dedicated Global Search result presentation component
+
+✔ Required `GlobalSearchResult` signal input
+
+✔ Result image / placeholder
+
+✔ Result type display
+
+✔ Result name display
+
+✔ Context information display
+
+✔ Presentation separated from HTTP/service logic
+
+### Remaining
+
+* Integrate into GlobalSearch page
+* Validate responsive presentation
+* Add navigation after the routing pattern is defined
+
+---
+
 # Routing
 
 Current authenticated Shell routes include:
@@ -318,28 +360,39 @@ Current authenticated Shell routes include:
 
 `/login` remains outside the authenticated Shell.
 
+Current Global Search navigation:
+
+`/search?q=<query>`
+
+The URL pattern is currently functional but not yet considered final.
+
 ---
 
 # Current Milestone
 
-**Global Search integration in progress.**
+**Global Search result rendering in progress.**
 
-The application can now navigate from the Header to:
+The application can now:
 
-`/search?q=<query>`
+1. Navigate from the Header to:
+   `/search?q=<query>`
+2. Load the Search results from the backend.
+3. Handle loading/error/empty states.
+4. Represent results through `GlobalSearchResult`.
+5. Use `GlobalSearchResultCard` for result presentation.
 
-The remaining work is to connect that page to the existing backend Search endpoint and render the returned results.
+The immediate remaining task is to render the cards in the Global Search page and validate them with real API results.
 
 ---
 
 # Next
 
-1. Define Global Search frontend models.
-2. Connect GlobalSearchService to the GlobalSearch page.
-3. Consume backend Search results.
-4. Render Global Search results.
-5. Add Search loading/error/empty states.
-6. Implement result navigation.
+1. Integrate GlobalSearchResultCard into GlobalSearch.
+2. Render Global Search results.
+3. Validate the result cards with the real `luke` search.
+4. Verify all seven result types.
+5. Implement result navigation.
+6. Define the reusable Search/navigation URL pattern.
 7. Figure Detail.
 8. Connect Databank → Figure Detail.
 9. Connect Collection → Figure Detail.
@@ -355,11 +408,11 @@ Backend
 
 Frontend
 
-≈ 60%
+≈ 65%
 
 Overall project
 
-≈ 70%
+≈ 72%
 
 ---
 
@@ -377,6 +430,10 @@ Frontend models represent the public backend contract independently from NestJS 
 
 FigureCard remains the reusable business component shared between Databank and Collection.
 
+GlobalSearchResultCard is a separate feature-specific component because Global Search represents heterogeneous domain results.
+
 Large datasets use server-side pagination, sorting, filtering and search.
 
 Shared UI controls remain generic; feature-specific behaviour belongs to the consuming feature.
+
+Navigation should not be prematurely abstracted. Establish the actual Figure Detail and Global Search navigation flows first, then extract a reusable pattern only where concrete reuse exists.

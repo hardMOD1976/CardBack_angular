@@ -1,0 +1,48 @@
+<article class="search-result-card">
+
+  <div class="search-result-card__image">
+
+    @if (result().imageUrl) {
+      <img
+        [src]="result().imageUrl"
+        [alt]="result().name"
+      />
+    } @else {
+      <div
+        class="search-result-card__image-placeholder"
+        aria-hidden="true"
+      >
+        <span>CB</span>
+      </div>
+    }
+
+  </div>
+
+  <div class="search-result-card__body">
+
+    <span class="search-result-card__type">
+      {{ typeLabel }}
+    </span>
+
+    <h2 class="search-result-card__name">
+      {{ result().name }}
+    </h2>
+
+    @if (contextItems.length) {
+      <div class="search-result-card__context">
+
+        @for (
+          item of contextItems;
+          track item
+        ) {
+          <span class="search-result-card__context-item">
+            {{ item }}
+          </span>
+        }
+
+      </div>
+    }
+
+  </div>
+
+</article>

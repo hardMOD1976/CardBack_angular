@@ -6,23 +6,52 @@
       </span>
 
       <h1 class="global-search__title">
-        {{ query }}
+        {{ query() }}
       </h1>
     </div>
   </header>
 
-  @if (query) {
+  @if (loading()) {
+
     <div class="global-search__content">
       <p class="global-search__placeholder">
-        Search results for "{{ query }}"
+        Searching for "{{ query() }}"...
       </p>
     </div>
-  } @else {
+
+  } @else if (error()) {
+
+    <div class="global-search__content">
+      <p class="global-search__placeholder">
+        Something went wrong while searching.
+      </p>
+    </div>
+
+  } @else if (!query()) {
+
     <div class="global-search__empty">
       <p>
-        Enter a search term to find figures, characters,
-        lines and more.
+        Enter a search term to find figures,
+        characters, lines and more.
       </p>
     </div>
+
+  } @else if (results().length === 0) {
+
+    <div class="global-search__empty">
+      <p>
+        No results found for "{{ query() }}".
+      </p>
+    </div>
+
+  } @else {
+
+    <div class="global-search__content">
+      <p class="global-search__placeholder">
+        {{ results().length }}
+        results found for "{{ query() }}".
+      </p>
+    </div>
+
   }
 </section>

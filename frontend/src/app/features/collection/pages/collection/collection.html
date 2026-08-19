@@ -1,33 +1,43 @@
-<cb-collection-header
-  [totalFigures]="totalFigures()"
-  (sortChanged)="onSortChanged($event.sortBy, $event.sortOrder)"
-  (filtersChanged)="onFiltersChanged(
-    $event.condition,
-    $event.completeness,
-    $event.packagingState
-  )">
-</cb-collection-header>
+<section class="collection-page">
 
-@if (loading()) {
+  <cb-collection-header
+    [totalFigures]="totalFigures()"
+    (sortChanged)="onSortChanged($event.sortBy, $event.sortOrder)"
+    (filtersChanged)="onFiltersChanged(
+      $event.condition,
+      $event.completeness,
+      $event.packagingState
+    )">
+  </cb-collection-header>
 
-}
-
-@else if (error()) {
-
-}
-
-@else if (figures().length) {
-
-  @for (figure of figures(); track figure.id) {
-
-    <cb-figure-card
-      [figure]="figure">
-    </cb-figure-card>
-
+  @if (loading()) {
+    <section class="loading-state">
+      <p>Loading your collection...</p>
+    </section>
   }
 
-}
+  @else if (error()) {
+    <section class="error-state">
+      <h2>Unable to load collection.</h2>
+      <p>Please try again later.</p>
+    </section>
+  }
 
-@else {
+  @else if (figures().length) {
+    <section class="collection-grid">
+      @for (figure of figures(); track figure.id) {
+        <cb-figure-card
+          [figure]="figure">
+        </cb-figure-card>
+      }
+    </section>
+  }
 
-}
+  @else {
+    <section class="empty-state">
+      <h2>Your collection is empty</h2>
+      <p>Start adding figures to your collection.</p>
+    </section>
+  }
+
+</section>

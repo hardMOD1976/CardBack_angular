@@ -1,4 +1,5 @@
 <section class="global-search">
+
   <header class="global-search__header">
     <div>
       <span class="global-search__eyebrow">
@@ -46,12 +47,29 @@
 
   } @else {
 
-    <div class="global-search__content">
-      <p class="global-search__placeholder">
-        {{ results().length }}
-        results found for "{{ query() }}".
+    <div class="global-search__results-header">
+      <p class="global-search__results-count">
+        {{ totalResults() }}
+        {{ totalResults() === 1 ? 'result' : 'results' }}
+        found for "{{ query() }}".
       </p>
     </div>
 
+    <div class="global-search__grid">
+
+      @for (
+        result of results();
+        track result.id
+      ) {
+
+        <cb-global-search-result-card
+          [result]="result"
+        />
+
+      }
+
+    </div>
+
   }
+
 </section>

@@ -2,19 +2,10 @@
 
   <div class="search-result-card__image">
 
-    @if (result().imageUrl) {
-      <img
-        [src]="result().imageUrl"
-        [alt]="result().name"
-      />
-    } @else {
-      <div
-        class="search-result-card__image-placeholder"
-        aria-hidden="true"
-      >
-        <span>CB</span>
-      </div>
-    }
+    <img
+      [src]="result().imageUrl || 'assets/cardback_placeholder.jpeg'"
+      [alt]="result().name"
+    />
 
   </div>
 
@@ -29,18 +20,22 @@
     </h2>
 
     @if (contextItems.length) {
+
       <div class="search-result-card__context">
 
         @for (
           item of contextItems;
           track item
         ) {
+
           <span class="search-result-card__context-item">
             {{ item }}
           </span>
+
         }
 
       </div>
+
     }
 
   </div>

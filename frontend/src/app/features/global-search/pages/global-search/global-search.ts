@@ -15,9 +15,15 @@ import {
   GlobalSearchResult,
 } from '../../models/global-search.model';
 
+import {
+  GlobalSearchResultCard,
+} from '../../components/global-search-result-card/global-search-result-card';
+
 @Component({
   selector: 'app-global-search',
-  imports: [],
+  imports: [
+    GlobalSearchResultCard,
+  ],
   templateUrl: './global-search.html',
   styleUrl: './global-search.scss',
 })
@@ -35,6 +41,9 @@ export class GlobalSearch {
 
   readonly results =
     signal<GlobalSearchResult[]>([]);
+
+  readonly totalResults =
+    signal(0);
 
   readonly loading =
     signal(false);
@@ -55,6 +64,7 @@ export class GlobalSearch {
 
         if (!query) {
           this.results.set([]);
+          this.totalResults.set(0);
           return;
         }
 
@@ -78,11 +88,13 @@ export class GlobalSearch {
       .subscribe({
         next: (response) => {
           this.results.set(response.data);
+          this.totalResults.set(response.meta.total);
           this.loading.set(false);
         },
 
         error: () => {
           this.results.set([]);
+          this.totalResults.set(0);
           this.loading.set(false);
           this.error.set(true);
         },

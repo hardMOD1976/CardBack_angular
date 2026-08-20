@@ -1,25 +1,38 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { ThemeService } from '../../../core/services/theme.service';
 
-import { NavigationItem } from '../../models/navigation-item.model';
-import { NavigationService } from '../../services/navigation.service';
+interface NavItem {
+  route: string;
+  label: string;
+}
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, RouterLinkActive],
+  standalone: true,
+  imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss',
 })
 export class Sidebar {
+  private readonly themeService = inject(ThemeService);
 
-  readonly navigation: NavigationItem[];
+  readonly theme = this.themeService.theme;
 
-  constructor(
-    private readonly navigationService: NavigationService,
-  ) {
+  navigation: NavItem[] = [
+    { route: '/dashboard', label: 'Dashboard' },
+    { route: '/collection', label: 'Collection' },
+    { route: '/databank', label: 'Databank' },
+    { route: '/wishlist', label: 'Wishlist' },
+    { route: '/identify', label: 'AI Identify' },
+    { route: '/scan', label: 'Scan Barcode' },
+    { route: '/profile', label: 'Profile' },
+  ];
 
-    this.navigation = this.navigationService.navigation;
-
+  get logoPath(): string {
+    return this.themeService.theme() === 'light'
+      ? 'assets/Logo_v1_var6_POS_blue.png'
+      : 'assets/Logo_v1_var6_NEG_blue.png';
   }
-
 }

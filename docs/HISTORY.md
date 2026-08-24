@@ -1272,6 +1272,7 @@ When implementing new feature integrations:
 * Keep shared UI components generic.
 * Let feature components define behaviour.
 
+
 ## Session 2026-08-19
 
 ## Summary
@@ -1440,3 +1441,106 @@ GlobalSearch
 GlobalSearchResultCard
     ↓
 GlobalSearchResult
+
+
+---
+
+### `History.md`
+
+He mantingut l'històric, **no he substituït la sessió anterior**.
+
+```md
+# History
+
+## Session 2026-08-24
+
+## Summary
+
+Today's work focused on completing the Global Search interaction and improving the shared search input.
+
+The Global Search result cards are already integrated and working.
+
+The shared `cb-input` was extended with an optional clear button so the Header Search can provide a direct way to clear the current search.
+
+The input itself clears correctly, but the complete end-to-end Search reset is currently not working correctly: the input is emptied while the Global Search results remain visible.
+
+The issue is intentionally left for the next development session rather than being considered complete.
+
+---
+
+## Completed
+
+### Global Search Result Rendering
+
+`GlobalSearchResultCard` is now integrated into the `GlobalSearch` page.
+
+The page renders the real heterogeneous Search results returned by the backend.
+
+The result grid supports:
+
+* responsive desktop layout
+* two-column mobile layout
+* single-column narrow mobile layout
+
+The result card displays:
+
+* image
+* placeholder when no image exists
+* result type
+* result name
+* contextual information
+
+The real `luke` search was successfully tested.
+
+---
+
+### Search Result Placeholder
+
+The Global Search result card now uses the same Cardback placeholder image as `FigureCard`:
+
+`assets/cardback_placeholder.jpeg`
+
+This keeps the visual identity consistent between catalogue cards and Search results.
+
+---
+
+### Global Search Result Count
+
+The Global Search page now consumes:
+
+`response.meta.total`
+
+through:
+
+`totalResults`
+
+The UI displays:
+
+* `1 result found`
+* `N results found`
+
+depending on the returned total.
+
+---
+
+### Light / Dark Theme
+
+A transversal light / dark theme switch was implemented.
+
+The switch is located in the application Header.
+
+This is an application-wide feature and is not specific to Global Search.
+
+The current theme switch works across the application.
+
+Visual refinement against the Figma reference is intentionally postponed.
+
+---
+
+### `cb-input` Clear Capability
+
+The reusable `cb-input` component was extended with:
+
+```text
+clearable = input(false)
+clear = output<void>()

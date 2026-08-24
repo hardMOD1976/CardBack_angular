@@ -28,11 +28,19 @@ export class Input implements ControlValueAccessor {
 
   readonly placeholder = input('');
 
+  readonly clearable = input(false);
+
   /**
    * Emitted when the user presses Enter
    * while the input has focus.
    */
   readonly enter = output<void>();
+
+  /**
+   * Emitted when the input value is cleared
+   * through the clear button.
+   */
+  readonly clear = output<void>();
 
   private value = '';
 
@@ -70,8 +78,15 @@ export class Input implements ControlValueAccessor {
     return this.disabled;
   }
 
+  get showClearButton(): boolean {
+    return this.clearable() &&
+      this.value.length > 0 &&
+      !this.disabled;
+  }
+
   handleInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
+    const input =
+      event.target as HTMLInputElement;
 
     this.value = input.value;
 
@@ -88,5 +103,14 @@ export class Input implements ControlValueAccessor {
     }
 
     this.enter.emit();
+  }
+
+  handleClear(): void {
+    this.value = '';
+
+    this.onChange(this.value);
+    this.onTouched();
+
+    this.clear.emit();
   }
 }

@@ -1,10 +1,28 @@
-<input
-  class="cb-input"
-  [type]="type()"
-  [placeholder]="placeholder()"
-  [value]="currentValue"
-  [disabled]="isDisabled"
-  (input)="handleInput($event)"
-  (blur)="handleBlur()"
-  (keydown)="handleKeydown($event)"
-/>
+<div class="cb-input-wrapper">
+
+  <input
+    class="cb-input"
+    [type]="type()"
+    [placeholder]="placeholder()"
+    [value]="currentValue"
+    [disabled]="isDisabled"
+    (input)="handleInput($event)"
+    (blur)="handleBlur()"
+    (keydown)="handleKeydown($event)"
+  />
+
+  @if (showClearButton) {
+
+    <button
+      class="cb-input__clear"
+      type="button"
+      aria-label="Clear input"
+      (click)="handleClear()">
+
+      ×
+
+    </button>
+
+  }
+
+</div>

@@ -15,6 +15,14 @@
 cb-card {
 
     width: 420px;
+    justify-items: center;
+    h1, p {
+        text-align: center;
+    }
+    img {
+        background-image: url('../../../../../assets/Logo_v1_var6_POS_blue.png');
+        width: 100%;
+    }
 
 }
 
@@ -27,5 +35,9 @@ cb-card {
     gap: 1rem;
 
     margin-top: 2rem;
+    cb-button {
+        align-self: center;
+    }
+
 
 }

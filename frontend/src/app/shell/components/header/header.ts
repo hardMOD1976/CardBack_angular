@@ -71,6 +71,19 @@ export class Header {
     );
   }
 
+  clearSearch(): void {
+    this.searchQuery = '';
+
+    this.router.navigate(
+      ['/search'],
+      {
+        queryParams: {
+          q: null,
+        },
+      },
+    );
+  }
+
   logout(): void {
     this.authService.logout()
       .subscribe({
@@ -86,12 +99,14 @@ export class Header {
   }
 
   get themeIcon(): string {
-    return this.themeService.theme() === 'light' ? '🌙' : '☀️';
+    return this.themeService.theme() === 'light'
+      ? '🌙'
+      : '☀️';
   }
 
   get themeLabel(): string {
-    return this.themeService.theme() === 'light' 
-      ? 'Switch to dark mode' 
+    return this.themeService.theme() === 'light'
+      ? 'Switch to dark mode'
       : 'Switch to light mode';
   }
 }

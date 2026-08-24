@@ -17,8 +17,10 @@
     <cb-input
       type="search"
       placeholder="Search figures..."
+      [clearable]="true"
       [(ngModel)]="searchQuery"
-      (enter)="search()">
+      (enter)="search()"
+      (clear)="clearSearch()">
     </cb-input>
 
   </div>

@@ -35,10 +35,16 @@ The following major areas are already functional:
 * Collection sorting
 * Collection filtering
 * Global Search API integration
+* Global Search result rendering
+* Light / dark theme switching
 
 The current active feature is:
 
 * Global Search
+
+The immediate unfinished task is:
+
+* Complete and verify Global Search clearing behaviour
 
 ---
 
@@ -131,14 +137,23 @@ It supports:
 * configurable input type
 * configurable placeholder
 * Enter key event
+* optional clear button
 
 The Enter event is exposed through:
 
 `enter = output<void>()`
 
-The shared input does not know what Enter means semantically.
+The clear event is exposed through:
 
-It only reports that the user pressed Enter.
+`clear = output<void>()`
+
+The clear button is controlled through:
+
+`clearable = input(false)`
+
+The shared input does not know what Enter or Clear mean semantically.
+
+It only reports that the user pressed Enter or requested a clear.
 
 Consumers decide the behaviour.
 
@@ -149,6 +164,9 @@ cb-input
  ├── ControlValueAccessor
  │      └── value → ngModel / FormControl
  │
- └── enter output
-        ├── Header → search()
-        └── Login form → submit()
+ ├── enter output
+ │      ├── Header → search()
+ │      └── Login form → submit()
+ │
+ └── clear output
+        └── Header → clearSearch()

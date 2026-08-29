@@ -1447,9 +1447,7 @@ GlobalSearchResult
 
 ### `History.md`
 
-He mantingut l'històric, **no he substituït la sessió anterior**.
 
-```md
 # History
 
 ## Session 2026-08-24
@@ -1544,3 +1542,426 @@ The reusable `cb-input` component was extended with:
 ```text
 clearable = input(false)
 clear = output<void>()
+
+## Session 2026-08-24
+
+## Summary
+
+Today's work focused on completing the Global Search interaction and improving the shared search input.
+
+The Global Search result cards are already integrated and working.
+
+The shared `cb-input` was extended with an optional clear button so the Header Search can provide a direct way to clear the current search.
+
+The input itself clears correctly, but the complete end-to-end Search reset is currently not working correctly: the input is emptied while the Global Search results remain visible.
+
+The issue is intentionally left for the next development session rather than being considered complete.
+
+---
+
+## Completed
+
+### Global Search Result Rendering
+
+`GlobalSearchResultCard` is now integrated into the `GlobalSearch` page.
+
+The page renders the real heterogeneous Search results returned by the backend.
+
+The result grid supports:
+
+* responsive desktop layout
+* two-column mobile layout
+* single-column narrow mobile layout
+
+The result card displays:
+
+* image
+* placeholder when no image exists
+* result type
+* result name
+* contextual information
+
+The real `luke` search was successfully tested.
+
+---
+
+### Search Result Placeholder
+
+The Global Search result card now uses the same Cardback placeholder image as `FigureCard`:
+
+`assets/cardback_placeholder.jpeg`
+
+This keeps the visual identity consistent between catalogue cards and Search results.
+
+---
+
+### Global Search Result Count
+
+The Global Search page now consumes:
+
+`response.meta.total`
+
+through:
+
+`totalResults`
+
+The UI displays:
+
+* `1 result found`
+* `N results found`
+
+depending on the returned total.
+
+---
+
+### Light / Dark Theme
+
+A transversal light / dark theme switch was implemented.
+
+The switch is located in the application Header.
+
+This is an application-wide feature and is not specific to Global Search.
+
+The current theme switch works across the application.
+
+Visual refinement against the Figma reference is intentionally postponed.
+
+---
+
+### `cb-input` Clear Capability
+
+The reusable `cb-input` component was extended with:
+
+```text
+clearable = input(false)
+clear = output<void>()
+
+## Session 2026-08-29
+
+## Summary
+
+Today's work focused on defining the conceptual architecture of the transversal catalogue Detail experience.
+
+We reviewed the existing Prisma domain model, backend controllers and services for:
+
+* Franchise
+* Manufacturer
+* Line
+* Character
+* Figure
+* Variant
+* Product Release
+
+The existing `findOne()` implementations already return useful relational hierarchies, but the current public response DTO layer is insufficient for the collector-facing Detail experience.
+
+The main conclusion is that Detail must be designed from the collector's perspective rather than by reusing existing Collection, Databank or list response models.
+
+The domain model itself remains valid and does not need restructuring.
+
+---
+
+# Domain Model Consensus
+
+The existing distinction between Character and Figure remains important.
+
+```text
+Franchise
+   │
+   ├── Line
+   │     │
+   │     └── Figure
+   │           │
+   │           └── Variant
+   │                 │
+   │                 └── Product Release
+   │
+   └── Character
+         │
+         └── Figure
+```
+
+This represents domain relationships, not necessarily the exact visual hierarchy of the Detail pages.
+
+### Character
+
+Character represents the fictional/lore entity.
+
+Example:
+
+`Darth Vader`
+
+Character information can provide contextual information to Figure Detail, but Character remains a separate domain entity.
+
+### Figure
+
+Figure represents a specific representation of a Character within a Line.
+
+Example:
+
+`Darth Vader — POTF / Kenner`
+
+Figure therefore remains distinct from Character.
+
+### Variant
+
+Variant has its own cataloguing identity.
+
+It is not merely a visual difference inside Figure.
+
+Conceptually:
+
+```text
+Figure
+└── Variant
+    ├── Long Saber
+    ├── Short Saber
+    ├── Retailer Exclusive
+    └── Fan Club Promotion Exclusive
+```
+
+Variants may have their own:
+
+* name
+* image
+* distinguishing description
+* associated Product Releases
+* regional information where relevant
+* packaging information
+* accessories
+* first / unique appearance
+* photographs
+
+### Product Release
+
+Product Release represents the concrete commercial product.
+
+It is not the universal root of the catalogue hierarchy.
+
+Conceptually:
+
+```text
+Figure
+└── Variant
+    └── Product Release
+```
+
+Product Release has its own Detail page focused on the concrete commercial release.
+
+---
+
+# Detail Architecture Decision
+
+A single generic, oversized `DetailResponseDto` will not be created.
+
+The Detail API will use dedicated response contracts:
+
+```text
+FranchiseDetailResponseDto
+ManufacturerDetailResponseDto
+LineDetailResponseDto
+CharacterDetailResponseDto
+FigureDetailResponseDto
+VariantDetailResponseDto
+ProductReleaseDetailResponseDto
+```
+
+Reusable summary/reference DTOs may be introduced where useful to avoid uncontrolled recursive payloads.
+
+The exact DTO structures have not yet been implemented.
+
+The first contract to design will be:
+
+`FranchiseDetailResponseDto`
+
+The DTO design should begin with the collector-facing experience and then be mapped from the existing Prisma domain.
+
+---
+
+# Franchise Detail Concept
+
+Franchise Detail should act as a gateway into the catalogue.
+
+Example:
+
+`Star Wars`
+
+Expected structure:
+
+1. Identifying franchise/logo image
+2. Descriptive introduction
+3. Origin/history of the franchise
+4. Historical context related to action figures
+5. Available Lines
+
+Lines should be visually represented and clickable.
+
+Example:
+
+```text
+Star Wars
+   │
+   ├── Kenner 77
+   ├── Power of the Force
+   ├── Power of the Force 2
+   ├── Power of the Jedi
+   └── ...
+```
+
+Selecting a Line leads to Line Detail.
+
+The Franchise page should provide enough context to establish the franchise while acting as an entry point into deeper catalogue levels.
+
+---
+
+# Line Detail Concept
+
+Line Detail should provide:
+
+* Line logo where available
+* Text fallback when no logo exists
+* Representative image showing the Line as a collection
+* Manufacturer
+* Start / commercialisation year
+* End year where applicable
+* Indicator when the Line is still active / available
+* Total number of products
+* All Figures belonging to the Line
+
+Figures should be represented visually rather than as plain text links.
+
+Each Figure should have an identifying image so collectors can recognise it without relying solely on the name.
+
+---
+
+# Character Detail Concept
+
+Character Detail should provide:
+
+* Character name
+* Representative image
+* Lore history
+* First appearance in lore
+* First action figure appearance / first Product Release
+* Lines in which the Character appears
+* All Figure appearances across those Lines
+* Variants
+* Product Release photographic galleries
+
+The experience should distinguish between:
+
+1. First appearance in lore
+2. First incarnation as an action figure
+3. Appearances across Lines
+4. Variants
+5. Product Release photographic history
+
+---
+
+# Variant Detail Concept
+
+Variant has first-class catalogue identity.
+
+The Variant Detail page should answer the collector-oriented question:
+
+"What makes this variant special, and how do I identify it?"
+
+Expected information includes:
+
+* Variant name
+* Dedicated image
+* Description of distinguishing characteristics
+* Associated Figure
+* Product Releases where it appears
+* Region information where historically useful
+* Packaging
+* Accessories
+* First or unique appearance
+* Photographs
+
+Regional information should remain contextual rather than becoming the main focus.
+
+The emphasis is on identification, collecting relevance and differentiation.
+
+---
+
+# Product Release Detail Concept
+
+Product Release has its own dedicated Detail page.
+
+It represents the concrete commercial product rather than the Variant.
+
+Expected information includes:
+
+* Product Release identity
+* Packaging
+* Region
+* Language
+* Retailer
+* Release date
+* Barcode
+* Notes
+* Product image
+* Associated Variant
+* Parent Figure
+* Character / Line / Franchise context where useful
+
+The Product Release Detail page should not duplicate the complete Variant Detail unnecessarily.
+
+---
+
+# Transversal Navigation
+
+The Detail system should become the common destination for catalogue entities discovered through different features.
+
+```text
+Global Search ────────┐
+Databank ─────────────┤
+Collection ───────────┼──→ Detail
+                       │
+future features ──────┘
+```
+
+Planned connections:
+
+* Global Search → Detail
+* Databank → Detail
+* Collection → Detail
+
+This reinforces the decision that Detail should be a transversal domain experience rather than a feature-specific extension of Collection or Databank.
+
+---
+
+# Current State
+
+No Detail DTOs have been implemented yet.
+
+No Detail frontend page has been implemented yet.
+
+No Detail navigation has been implemented yet.
+
+The conceptual architecture is now agreed.
+
+The next technical step is to design:
+
+`FranchiseDetailResponseDto`
+
+followed by the necessary reusable summary/reference DTOs and the remaining Detail contracts.
+
+---
+
+# Important Decision
+
+Do not modify the existing Prisma domain model merely to support Detail.
+
+The current separation between:
+
+```text
+Character
+Figure
+Variant
+Product Release
+```
+
+is considered correct and should be preserved.
+
+Detail should compose these entities into collector-oriented response contracts rather than collapsing them into a single generic entity hierarchy.

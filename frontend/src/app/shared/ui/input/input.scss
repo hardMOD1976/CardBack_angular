@@ -1,15 +1,10 @@
 .cb-input-wrapper {
-
     position: relative;
-
     width: 100%;
-
 }
 
 .cb-input {
-
     width: 100%;
-
     height: var(--input-height);
 
     padding: .75rem 1rem;
@@ -29,31 +24,38 @@
     transition:
         border-color .2s ease,
         box-shadow .2s ease;
-
 }
 
 .cb-input-wrapper:has(.cb-input__clear) .cb-input {
-
     padding-right: 2.75rem;
-
 }
 
 .cb-input::placeholder {
-
     color: var(--text-secondary);
+}
 
+/*
+ * Hide the browser-native clear button for
+ * search inputs.
+ *
+ * cb-input provides its own clear button so
+ * clearing the input can also trigger feature-specific
+ * behaviour through the clear output.
+ */
+.cb-input::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
 }
 
 .cb-input:focus {
-
     border-color: #3b82f6;
 
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, .15);
-
+    box-shadow:
+        0 0 0 3px rgba(59, 130, 246, .15);
 }
 
 .cb-input__clear {
-
     position: absolute;
 
     top: 50%;
@@ -87,21 +89,14 @@
     transition:
         background-color .15s ease,
         color .15s ease;
-
 }
 
 .cb-input__clear:hover {
-
     background: var(--surface-secondary);
-
     color: var(--text-primary);
-
 }
 
 .cb-input__clear:focus-visible {
-
     outline: 2px solid var(--primary);
-
     outline-offset: 2px;
-
 }

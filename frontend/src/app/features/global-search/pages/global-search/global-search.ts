@@ -5,7 +5,10 @@ import {
   signal,
 } from '@angular/core';
 
-import { ActivatedRoute } from '@angular/router';
+import {
+  ActivatedRoute,
+  Router,
+} from '@angular/router';
 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -30,6 +33,9 @@ import {
 export class GlobalSearch {
   private readonly route =
     inject(ActivatedRoute);
+
+  private readonly router =
+    inject(Router);
 
   private readonly destroyRef =
     inject(DestroyRef);
@@ -72,6 +78,29 @@ export class GlobalSearch {
       });
   }
 
+  onResultSelected(
+    result: GlobalSearchResult,
+  ): void {
+    const routes: Record<
+      GlobalSearchResult['type'],
+      string
+    > = {
+      franchise: 'franchises',
+      manufacturer: 'manufacturers',
+      line: 'lines',
+      character: 'characters',
+      figure: 'figures',
+      variant: 'variants',
+      productRelease: 'product-releases',
+    };
+
+    this.router.navigate([
+      '/',
+      routes[result.type],
+      result.id,
+    ]);
+  }
+
   private search(query: string): void {
     this.loading.set(true);
     this.error.set(false);
@@ -88,7 +117,9 @@ export class GlobalSearch {
       .subscribe({
         next: (response) => {
           this.results.set(response.data);
-          this.totalResults.set(response.meta.total);
+          this.totalResults.set(
+            response.meta.total,
+          );
           this.loading.set(false);
         },
 

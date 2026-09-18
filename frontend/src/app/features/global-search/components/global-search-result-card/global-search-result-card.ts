@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   input,
+  output,
 } from '@angular/core';
 
 import {
@@ -19,6 +20,9 @@ import {
 export class GlobalSearchResultCard {
   readonly result =
     input.required<GlobalSearchResult>();
+
+  readonly selected =
+    output<GlobalSearchResult>();
 
   get typeLabel(): string {
     return this.formatType(
@@ -41,6 +45,10 @@ export class GlobalSearchResultCard {
       (value): value is string =>
         Boolean(value),
     );
+  }
+
+  select(): void {
+    this.selected.emit(this.result());
   }
 
   private formatType(

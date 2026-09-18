@@ -63,8 +63,9 @@
       ) {
 
         <cb-global-search-result-card
-          [result]="result"
-        />
+  [result]="result"
+  (selected)="onResultSelected($event)"
+/>
 
       }
 

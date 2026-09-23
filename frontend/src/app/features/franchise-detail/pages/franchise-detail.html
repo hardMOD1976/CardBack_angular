@@ -1,0 +1,164 @@
+<section class="franchise-detail-page">
+
+@if (loading()) {
+
+```
+<section class="state-container">
+  <p>Loading franchise...</p>
+</section>
+```
+
+} @else if (notFound()) {
+
+```
+<section class="state-container">
+  <h2>Franchise not found</h2>
+
+  <p>
+    The franchise you're looking for doesn't exist
+    or is no longer available.
+  </p>
+</section>
+```
+
+} @else if (error()) {
+
+```
+<section class="state-container">
+  <h2>Unable to load franchise</h2>
+
+  <p>
+    Something went wrong while loading this franchise.
+    Please try again later.
+  </p>
+</section>
+```
+
+} @else if (franchise(); as franchiseData) {
+
+```
+<header class="franchise-header">
+
+  <div class="franchise-header__logo">
+    <img
+      [src]="franchiseData.logo || 'assets/cardback_placeholder.jpeg'"
+      [alt]="franchiseData.name">
+  </div>
+
+  <div class="franchise-header__content">
+
+    <span class="eyebrow">
+      Franchise
+    </span>
+
+    <h1>
+      {{ franchiseData.name }}
+    </h1>
+
+    @if (franchiseData.owner) {
+      <p class="owner">
+        {{ franchiseData.owner }}
+      </p>
+    }
+
+    @if (franchiseData.firstAppearance) {
+      <p class="first-appearance">
+        First appearance · {{ franchiseData.firstAppearance }}
+      </p>
+    }
+
+  </div>
+
+</header>
+
+@if (franchiseData.description) {
+  <section class="franchise-description">
+
+    <h2>About</h2>
+
+    <p>
+      {{ franchiseData.description }}
+    </p>
+
+  </section>
+}
+
+<section class="lines-section">
+
+  <header class="section-header">
+
+    <div>
+      <span class="eyebrow">
+        Catalogue
+      </span>
+
+      <h2>Lines</h2>
+    </div>
+
+    <span class="line-count">
+      {{ franchiseData.lines.length }}
+      {{ franchiseData.lines.length === 1 ? 'Line' : 'Lines' }}
+    </span>
+
+  </header>
+
+  @if (franchiseData.lines.length === 0) {
+
+    <div class="empty-state">
+      <p>
+        No Lines are currently available for this Franchise.
+      </p>
+    </div>
+
+  } @else {
+
+    <div class="lines-grid">
+
+      @for (line of franchiseData.lines; track line.id) {
+
+        <a
+          class="line-card"
+          [routerLink]="['/lines', line.id]">
+
+          <div class="line-card__logo">
+            <img
+              [src]="line.logo || 'assets/cardback_placeholder.jpeg'"
+              [alt]="line.name">
+          </div>
+
+          <div class="line-card__content">
+
+            <h3>
+              {{ line.name }}
+            </h3>
+
+            @if (line.startYear || line.endYear) {
+              <p class="line-years">
+                {{ line.startYear ?? '—' }}
+                –
+                {{ line.endYear ?? 'Present' }}
+              </p>
+            }
+
+            @if (line.scale) {
+              <span class="line-scale">
+                {{ line.scale }} scale
+              </span>
+            }
+
+          </div>
+
+        </a>
+
+      }
+
+    </div>
+
+  }
+
+</section>
+```
+
+}
+
+</section>

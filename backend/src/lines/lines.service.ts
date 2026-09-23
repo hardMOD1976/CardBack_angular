@@ -1,75 +1,133 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 
 import { CreateLineDto } from './dto/create-lines.dto';
 import { UpdateLineDto } from './dto/update-lines.dto';
-
 import {
   PaginationQueryDto,
   buildPaginatedResponse,
 } from '../common/pagination';
 
+import {
+  LineDetailResponseDto,
+} from './dto/line-detail.dto';
+
 @Injectable()
 export class LinesService {
   constructor(private prisma: PrismaService) {}
 
-async findAll(
-  pagination: PaginationQueryDto,
-) {
-  const { page, limit, search } = pagination;
+  async findAll(
+    pagination: PaginationQueryDto,
+  ) {
+    const { page, limit, search } = pagination;
 
-  const skip = (page - 1) * limit;
+    const skip = (page - 1) * limit;
 
-  const where = {
-    deletedAt: null,
-    ...(search && {
-      name: {
-        contains: search,
-        mode: 'insensitive' as const,
-      },
-    }),
-  };
+    const where = {
+      deletedAt: null,
+      ...(search && {
+        name: {
+          contains: search,
+          mode: 'insensitive' as const,
+        },
+      }),
+    };
 
-  const [lines, total] =
-    await this.prisma.$transaction([
-      this.prisma.line.findMany({
-        where,
+    const [lines, total] =
+      await this.prisma.$transaction([
+        this.prisma.line.findMany({
+          where,
+          include: {
+            manufacturer: true,
+            franchise: true,
+          },
+          orderBy: {
+            name: 'asc',
+          },
+          skip,
+          take: limit,
+        }),
+        this.prisma.line.count({
+          where,
+        }),
+      ]);
+
+    return buildPaginatedResponse(
+      lines,
+      page,
+      limit,
+      total,
+    );
+  }
+
+  async findDetail(
+    id: string,
+  ): Promise<LineDetailResponseDto> {
+    const line =
+      await this.prisma.line.findFirst({
+        where: {
+          id,
+          deletedAt: null,
+        },
         include: {
           manufacturer: true,
           franchise: true,
+          figures: {
+            where: {
+              deletedAt: null,
+              character: {
+                deletedAt: null,
+              },
+            },
+            include: {
+              character: true,
+            },
+            orderBy: {
+              name: 'asc',
+            },
+          },
         },
-        orderBy: {
-          name: 'asc',
-        },
-        skip,
-        take: limit,
-      }),
+      });
 
-      this.prisma.line.count({
-        where,
-      }),
-    ]);
+    if (!line) {
+      throw new NotFoundException(
+        `Line with id "${id}" not found`,
+      );
+    }
 
-  return buildPaginatedResponse(
-    lines,
-    page,
-    limit,
-    total,
-  );
-}
+    return {
+      id: line.id,
+      name: line.name,
+      startYear: line.startYear,
+      endYear: line.endYear,
+      scale: line.scale,
+      logo: line.logo,
+      description: line.description,
 
-  findOne(id: string) {
-    return this.prisma.line.findFirst({
-      where: {
-        id,
-        deletedAt: null,
+      manufacturer: {
+        id: line.manufacturer.id,
+        name: line.manufacturer.name,
       },
-      include: {
-        manufacturer: true,
-        franchise: true,
+
+      franchise: {
+        id: line.franchise.id,
+        name: line.franchise.name,
+        logo: line.franchise.logo,
       },
-    });
+
+      figures: line.figures.map((figure) => ({
+        id: figure.id,
+        name: figure.name,
+        code: figure.code,
+        imageUrl: figure.imageUrl,
+        characterId: figure.character.id,
+        characterName: figure.character.name,
+      })),
+    };
   }
 
   async create(createLineDto: CreateLineDto) {

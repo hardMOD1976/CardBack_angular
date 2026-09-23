@@ -1965,3 +1965,339 @@ Product Release
 is considered correct and should be preserved.
 
 Detail should compose these entities into collector-oriented response contracts rather than collapsing them into a single generic entity hierarchy.
+
+# Cardback — History
+
+## Session: 2026-09-19 — Franchise Detail Backend Implemented
+
+### Global Search
+
+* Global Search result cards emit a `selected` event containing the selected result.
+* The page has a prepared navigation map for all seven result types:
+  Franchise, Manufacturer, Line, Character, Figure, Variant, and Product Release.
+* The corresponding detail routes/pages do not yet exist, so navigation is not fully functional.
+* The Global Search page HTML correctly binds:
+  `(selected)="onResultSelected($event)"`.
+* Search clearing has already been fixed in a previous session and is considered completed.
+* The relevant fix is represented by commit `a094f8f` (`Fix global search clear i restyle login`).
+* Do not treat search clearing as an outstanding task unless a new regression is observed.
+
+### Detail Pages
+
+* The review of existing response DTOs for Character, Figure, Variant, Franchise, Manufacturer, and Line has already been completed.
+* Do not repeat the DTO review.
+* Line does not have a dedicated general-purpose response DTO.
+* Franchise Detail was selected as the first detail-page vertical.
+* `FranchiseDetailResponseDto` has now been created with:
+  `id`, `name`, `owner`, `firstAppearance`, `description`, `logo`, `lines`.
+* `LineSummaryDto` has now been created with:
+  `id`, `name`, `startYear`, `endYear`, `scale`, `logo`.
+* `FranchisesService.findDetail(id)` has been implemented.
+* The existing `GET /franchises/:id` endpoint now returns the Franchise Detail response.
+* Only active Lines are included (`deletedAt: null`).
+* Lines are ordered alphabetically by name.
+* The response is explicitly mapped instead of exposing Prisma entities.
+* No Prisma schema changes were required.
+* `NotFoundException` was added so an unknown Franchise ID correctly returns HTTP `404`.
+
+### Backend Verification
+
+* `GET /franchises/1` was tested first.
+* Because Franchise ID `1` does not exist, the endpoint initially returned `200` with an empty body.
+* This was corrected by changing `findDetail()` to throw `NotFoundException` when no active Franchise is found.
+* The same request was retested and correctly returned:
+  `404 Not Found`.
+* A real Star Wars Franchise ID was then tested:
+  `GET /franchises/cms8tgcbq0005ukxkcehh2ybw`.
+* The endpoint correctly returned:
+  `200 OK`.
+* The response contained the Franchise data and its active Lines using the new detail contract.
+
+### Current State
+
+The **Franchise Detail backend is complete and verified**.
+
+The frontend implementation has not started yet.
+
+### Next Session
+
+1. Implement the Franchise Detail frontend page.
+2. Follow existing Angular feature/page/service conventions rather than introducing new abstractions.
+3. Add the `/franchises/:id` frontend route.
+4. Connect the Franchise Detail page to `GET /franchises/:id`.
+5. Connect Global Search Franchise result navigation to the new route.
+6. Continue with the remaining Detail pages.
+
+### Backlog
+
+* Improve Login UX:
+
+  * Clear incorrect-credentials feedback.
+  * “Forgot password?” flow.
+  * Review the overall login experience.
+* Login UX remains behind the transversal Detail work in priority.
+# Cardback — Development History
+
+## Session: 2026-09-23 — Line Detail Frontend and Navigation Completed
+
+### Line Detail Frontend
+
+Implemented and verified the Line Detail frontend.
+
+Created:
+
+* `features/line-detail/models/line-detail.model.ts`
+* `features/line-detail/services/line-detail.service.ts`
+* `features/line-detail/pages/line-detail/line-detail.ts`
+* `features/line-detail/pages/line-detail/line-detail.html`
+* `features/line-detail/pages/line-detail/line-detail.scss`
+
+The Line Detail model matches the backend detail contract:
+
+* Figure/Line identity and metadata.
+* Manufacturer summary.
+* Franchise summary.
+* Figure summaries.
+
+The Line Detail component:
+
+* Reads the Line ID from the route.
+* Loads the detail through `LineDetailService`.
+* Handles loading, not-found, and generic error states.
+* Displays Line metadata and Figures.
+* Uses the existing Cardback styling tokens.
+* Compiles successfully.
+
+### Line Detail Route
+
+Added:
+
+```text
+/lines/:id
+```
+
+to the protected Shell routes.
+
+The route was manually validated with:
+
+```text
+/lines/cms8tgdcb000lukxkqhys2t04
+```
+
+and loads the Star Wars PBP Line Detail correctly.
+
+### Franchise Detail → Line Detail
+
+Updated Franchise Detail so Line cards are navigable.
+
+The Line cards now use:
+
+```text
+RouterLink → /lines/:id
+```
+
+No service or DTO changes were required.
+
+The complete flow was tested successfully:
+
+```text
+Franchise Detail
+      ↓
+select Line
+      ↓
+Line Detail
+```
+
+### Global Search Verification
+
+Reviewed the existing `global-search.ts`.
+
+No change was required.
+
+The existing navigation map already contains:
+
+```ts
+franchise: 'franchises',
+manufacturer: 'manufacturers',
+line: 'lines',
+character: 'characters',
+figure: 'figures',
+variant: 'variants',
+productRelease: 'product-releases'
+```
+
+Therefore, because `/lines/:id` now exists, Global Search Line results are automatically connected to Line Detail.
+
+Current functional paths:
+
+```text
+Global Search → Franchise Detail
+Global Search → Line Detail
+Franchise Detail → Line Detail
+```
+
+Other Global Search destination routes remain pending until their corresponding Detail pages are implemented.
+
+---
+
+## Session: 2026-09-23 — Figure Detail Planning Started
+
+### Figure Prisma Model Reviewed
+
+Reviewed the current Prisma schema for:
+
+* Figure
+* Character
+* Line
+* Variant
+* ProductRelease
+
+Figure relationships:
+
+```text
+Figure
+ ├── Character
+ ├── Line
+ └── Variants
+```
+
+Variant relationship:
+
+```text
+Variant
+ └── ProductReleases
+```
+
+### Figure Detail Architecture Decision
+
+The next Detail page is Figure Detail.
+
+Following the established Detail architecture, Figure Detail will use a dedicated response DTO rather than exposing the Prisma entity or creating a universal Detail DTO.
+
+Proposed Figure Detail response:
+
+```text
+Figure
+ ├── id
+ ├── name
+ ├── code
+ ├── description
+ ├── imageUrl
+ │
+ ├── Character summary
+ │    ├── id
+ │    ├── name
+ │    └── image
+ │
+ ├── Line summary
+ │    ├── id
+ │    ├── name
+ │    ├── scale
+ │    └── logo
+ │
+ └── Variants[]
+      ├── id
+      ├── name
+      ├── description
+      └── imageUrl
+```
+
+Product Releases will **not** be included in Figure Detail.
+
+They belong to the Variant Detail level to avoid recursive/overloaded payloads.
+
+Expected backend rules:
+
+* Active Figure only.
+* Active Character only.
+* Active Line only.
+* Active Variants only.
+* Variants ordered by name.
+* Explicit DTO mapping.
+* `404 Not Found` for an unknown/inactive Figure.
+* No Prisma entity exposure.
+
+### Current Figure DTO State
+
+Figure currently has:
+
+* `CreateFigureDto`
+* `UpdateFigureDto`
+
+There is no existing Figure response DTO.
+
+The current `figures.service.ts` contains:
+
+* `findAll`
+* `findOne`
+* `create`
+* `update`
+* `remove`
+* Character/Line existence validation helpers
+
+The current `figures.controller.ts` exposes:
+
+* `GET /figures`
+* `GET /figures/:id`
+* `POST /figures`
+* `PUT /figures/:id`
+* `DELETE /figures/:id`
+
+### Next Session
+
+Implement Figure Detail backend:
+
+1. Create `FigureDetailResponseDto`.
+2. Add `FiguresService.findDetail(id)`.
+3. Update `GET /figures/:id` to use the detail contract.
+4. Verify `200 OK` with a real Figure.
+5. Verify `404 Not Found` with an unknown Figure ID.
+6. Then implement the Angular Figure Detail page and route.
+7. Connect Line Detail → Figure Detail.
+8. Global Search already has `figure: 'figures'`, so its navigation will become functional once the route exists.
+
+---
+
+## Session: 2026-09-19 — Franchise Detail Backend Implemented
+
+### Global Search
+
+* Global Search result cards emit a `selected` event containing the selected result.
+* The page has a prepared navigation map for all seven result types.
+* Search clearing was already fixed.
+* The page correctly binds `(selected)="onResultSelected($event)`.
+
+### Franchise Detail Backend
+
+Implemented:
+
+* `FranchiseDetailResponseDto`
+* `LineSummaryDto`
+* `FranchisesService.findDetail(id)`
+* Existing `GET /franchises/:id` mapped to the detail response.
+* Active Franchise filtering.
+* Active Line filtering.
+* Alphabetical Line ordering.
+* Explicit DTO-shaped response mapping.
+* `404 Not Found` for unknown Franchise IDs.
+
+### Backend Verification
+
+* `GET /franchises/1` correctly returns `404 Not Found`.
+* Real Star Wars Franchise:
+  `GET /franchises/cms8tgcbq0005ukxkcehh2ybw`
+  returned `200 OK`.
+
+### Current State
+
+The Franchise Detail backend was complete and verified.
+
+### Next Session
+
+Implement the Franchise Detail frontend, route integration, Global Search connection, and then continue with subsequent Detail pages.
+
+---
+
+## Previous Sessions
+
+Previous project history remains below this point and should not be removed.

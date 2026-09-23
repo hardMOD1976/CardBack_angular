@@ -1,0 +1,209 @@
+<section class="line-detail-page">
+
+  @if (loading()) {
+
+    <section class="state-container">
+      <p>Loading line...</p>
+    </section>
+
+  } @else if (notFound()) {
+
+    <section class="state-container">
+      <h2>Line not found</h2>
+
+      <p>
+        The line you're looking for doesn't exist
+        or is no longer available.
+      </p>
+    </section>
+
+  } @else if (error()) {
+
+    <section class="state-container">
+      <h2>Unable to load line</h2>
+
+      <p>
+        Something went wrong while loading this line.
+        Please try again later.
+      </p>
+    </section>
+
+  } @else if (line(); as lineData) {
+
+    <header class="line-header">
+
+      <div class="line-header__logo">
+        <img
+          [src]="lineData.logo || 'assets/cardback_placeholder.jpeg'"
+          [alt]="lineData.name"
+        />
+      </div>
+
+      <div class="line-header__content">
+
+        <span class="eyebrow">
+          Figure Line
+        </span>
+
+        <h1>
+          {{ lineData.name }}
+        </h1>
+
+        <p class="line-header__manufacturer">
+          {{ lineData.manufacturer.name }}
+        </p>
+
+        @if (lineData.startYear || lineData.endYear) {
+          <p class="line-header__years">
+            {{ lineData.startYear ?? '—' }}
+            –
+            {{ lineData.endYear ?? 'Present' }}
+          </p>
+        }
+
+        @if (lineData.scale) {
+          <span class="line-scale">
+            {{ lineData.scale }} scale
+          </span>
+        }
+
+      </div>
+
+    </header>
+
+    <section class="line-meta">
+
+      <div class="meta-card">
+
+        <span class="meta-card__label">
+          Manufacturer
+        </span>
+
+        <h2>
+          {{ lineData.manufacturer.name }}
+        </h2>
+
+      </div>
+
+      <div class="meta-card">
+
+        <span class="meta-card__label">
+          Franchise
+        </span>
+
+        <h2>
+          {{ lineData.franchise.name }}
+        </h2>
+
+      </div>
+
+      <div class="meta-card">
+
+        <span class="meta-card__label">
+          Figures
+        </span>
+
+        <h2>
+          {{ lineData.figures.length }}
+        </h2>
+
+      </div>
+
+    </section>
+
+    @if (lineData.description) {
+
+      <section class="line-description">
+
+        <h2>
+          About
+        </h2>
+
+        <p>
+          {{ lineData.description }}
+        </p>
+
+      </section>
+
+    }
+
+    <section class="figures-section">
+
+      <header class="section-header">
+
+        <div>
+          <span class="eyebrow">
+            Catalogue
+          </span>
+
+          <h2>
+            Figures
+          </h2>
+        </div>
+
+        <span class="figure-count">
+          {{ lineData.figures.length }}
+          {{ lineData.figures.length === 1 ? 'Figure' : 'Figures' }}
+        </span>
+
+      </header>
+
+      @if (lineData.figures.length === 0) {
+
+        <div class="empty-state">
+          <p>
+            No Figures are currently available for this Line.
+          </p>
+        </div>
+
+      } @else {
+
+        <div class="figures-grid">
+
+          @for (
+            figure of lineData.figures;
+            track figure.id
+          ) {
+
+            <article class="figure-card">
+
+              <div class="figure-card__image">
+
+                <img
+                  [src]="figure.imageUrl || 'assets/cardback_placeholder.jpeg'"
+                  [alt]="figure.name"
+                />
+
+              </div>
+
+              <div class="figure-card__content">
+
+                <h3>
+                  {{ figure.name }}
+                </h3>
+
+                <p class="figure-card__character">
+                  {{ figure.characterName }}
+                </p>
+
+                @if (figure.code) {
+                  <span class="figure-card__code">
+                    {{ figure.code }}
+                  </span>
+                }
+
+              </div>
+
+            </article>
+
+          }
+
+        </div>
+
+      }
+
+    </section>
+
+  }
+
+</section>

@@ -1,494 +1,342 @@
-# Project Status
-
-## Brand
-
-Cardback
-
-## Repository
-
-FigureArchive
-
-## Current Phase
-
-Frontend MVP development.
-
-Infrastructure is complete.
-
-The current focus is connecting and completing the core collector-facing business features.
-
----
-
-# Completed
-
-## Backend
-
-✔ Manufacturer
-
-✔ Franchise
-
-✔ Line
-
-✔ Character
-
-✔ Figure
-
-✔ Variant
-
-✔ Product Release
-
-✔ User
-
-✔ Owned Figure
-
-✔ JWT Authentication
-
-✔ Refresh Tokens
-
-✔ Search
-
-✔ Pagination
-
-✔ Server-side sorting
-
-✔ Server-side filtering
-
-✔ Soft Delete
-
-✔ Public DTO Mapping
-
-✔ `imageUrl` public contract
-
----
-
-## Frontend Foundation
-
-✔ Angular 22
-
-✔ Standalone Components
-
-✔ Signals
-
-✔ Feature-first architecture
-
-✔ Shell
-
-✔ Routing
-
-✔ Authentication
-
-✔ Header
-
-✔ Sidebar
-
-✔ Shared UI
-
-✔ Design Tokens
-
-✔ Auth Guard
-
-✔ HTTP authentication interceptor
-
-✔ Light / dark theme switching
-
----
-
-# Business Features
-
-## Databank
-
-Status:
-
-✔ MVP Completed
-
-Completed:
-
-✔ ProductReleaseModel
-
-✔ DatabankService
-
-✔ Signals
-
-✔ Search
-
-✔ Pagination
-
-✔ Loading state
-
-✔ Error state
-
-✔ Empty state
-
-✔ FigureCard integration
-
-✔ Backend DTO mapping
-
-✔ `imageUrl` contract
-
-✔ Catalogue rendering
-
----
-
-## Collection
-
-Status:
-
-✔ MVP Completed
-
-Completed:
-
-✔ Authenticated endpoint
-
-✔ Backend hierarchy consumption
-
-✔ FigureCard integration
-
-✔ CollectionHeader
-
-✔ Loading state
-
-✔ Error state
-
-✔ Empty state
-
-✔ Collection rendering
-
-✔ Server-side pagination
-
-✔ Server-side sorting
-
-✔ Server-side filtering
-
-✔ Collection query parameters
-
-✔ Sort controls
-
-✔ Filter controls
+# Cardback — Project Status
+
+**Last updated:** 2026-09-23
+
+## Overall Status
+
+Cardback is in the frontend business-features phase.
+
+Core infrastructure, Databank, Collection, Global Search, Franchise Detail, and Line Detail foundations are in place.
+
+The current milestone is the implementation of catalogue Detail pages.
+
+**Franchise Detail and Line Detail are complete and verified.**
+
+The next Detail page is **Figure Detail**.
+
+## Feature Status
+
+| Area                      | Status                  | Notes                                                                     |
+| ------------------------- | ----------------------- | ------------------------------------------------------------------------- |
+| Backend infrastructure    | Complete                | NestJS, Prisma, PostgreSQL, auth, validation, DTO approach                |
+| Authentication            | Implemented; UX backlog | Improve error feedback and password recovery                              |
+| Databank                  | MVP complete            | Product Release listing, pagination, search, loading/error/empty states   |
+| Collection                | MVP complete            | Server-side pagination, search, sort, and filters                         |
+| Global Search backend     | Implemented             | Search endpoint and public result DTO                                     |
+| Global Search frontend    | Implemented             | Page, service, result cards, query-param search, clearing fixed           |
+| Search result navigation  | Partially complete      | Franchise and Line destinations now functional                            |
+| Franchise Detail backend  | Complete                | Dedicated detail DTO, Line summary DTO, service mapping, 200/404 verified |
+| Franchise Detail frontend | Complete                | Page, model, service, route, Line navigation verified                     |
+| Line Detail backend       | Complete                | Dedicated detail contract, summaries, service mapping, 200 verified       |
+| Line Detail frontend      | Complete                | Page, model, service, route verified                                      |
+| Figure Detail             | Next                    | Backend contract and implementation pending                               |
+| Manufacturer Detail       | Pending                 | Not started                                                               |
+| Character Detail          | Pending                 | Not started                                                               |
+| Variant Detail            | Pending                 | Not started                                                               |
+| Product Release Detail    | Pending                 | Not started                                                               |
+
+## Global Search
+
+### Completed
+
+* Global Search API integration.
+* Search result model and service.
+* Loading, error, empty, and result states.
+* Result cards.
+* Result selection event.
+* Navigation map for all seven result types.
+* Search clearing fix.
+* Correct page binding:
+  `(selected)="onResultSelected($event)`.
+
+### Currently Functional Destinations
+
+```text
+Global Search → Franchise Detail
+Global Search → Line Detail
+```
+
+The existing navigation map contains:
+
+```ts
+franchise: 'franchises'
+manufacturer: 'manufacturers'
+line: 'lines'
+character: 'characters'
+figure: 'figures'
+variant: 'variants'
+productRelease: 'product-releases'
+```
+
+Only implemented destination routes should be considered functional.
 
 ### Remaining
 
-* Collection actions
+Connect additional result navigation as their Detail pages are implemented.
 
----
+## Detail Navigation
 
-# Global Search
-
-Status:
-
-🔄 In Progress
-
-Completed:
-
-✔ Backend Search endpoint
-
-✔ Backend pagination
-
-✔ Backend public DTO contract
-
-✔ GlobalSearch page
-
-✔ `/search` route
-
-✔ Route integrated inside Shell
-
-✔ Authentication protection through `authGuard`
-
-✔ Header search input
-
-✔ `cb-input` ControlValueAccessor integration
-
-✔ `cb-input` Enter output
-
-✔ Header `ngModel` search binding
-
-✔ Header navigation to `/search?q=...`
-
-✔ GlobalSearch receives and displays the query
-
-✔ GlobalSearch frontend result models
-
-✔ `GlobalSearchService`
-
-✔ `GET /search` integration
-
-✔ Search query parameters
-
-✔ Loading state
-
-✔ Error state
-
-✔ Empty state
-
-✔ Real Search results
-
-✔ `GlobalSearchResultCard` component
-
-✔ GlobalSearchResultCard integrated into GlobalSearch
-
-✔ Responsive Search result grid
-
-✔ Shared Cardback placeholder
-
-✔ Search result count
-
-✔ Optional clear button added to `cb-input`
-
-✔ Header Search configured as clearable
-
-### Current work
-
-* Fix end-to-end Search clearing
-* Verify URL query removal
-* Verify GlobalSearch results are cleared
-* Verify empty-search state after clear
-* Implement result navigation
-* Define reusable Search/detail URL pattern
-
----
-
-# Figure / Domain Detail
-
-Status:
-
-🟡 Conceptually Defined — Implementation Not Started
-
-The Detail architecture has now been defined at the domain level.
-
-The transversal Detail system will provide dedicated detail contracts and pages for:
-
-* Franchise
-* Manufacturer
-* Line
-* Character
-* Figure
-* Variant
-* Product Release
-
-The Detail architecture must not blindly reuse Collection or Databank feature models.
-
----
-
-## Domain hierarchy
+Current verified flow:
 
 ```text
-Franchise
-   │
-   ├── Line
-   │     │
-   │     └── Figure
-   │           │
-   │           └── Variant
-   │                 │
-   │                 └── Product Release
-   │
-   └── Character
-         │
-         └── Figure
+Global Search
+     │
+     ├── Franchise
+     │      ↓
+     │  Franchise Detail
+     │      ↓
+     │    Line
+     │      ↓
+     │  Line Detail
+     │
+     └── Line
+            ↓
+       Line Detail
 ```
 
-This represents domain relationships rather than a mandatory visual page hierarchy.
+Planned continuation:
 
----
-
-## Detail response contracts
-
-Planned:
-
-* `FranchiseDetailResponseDto`
-* `ManufacturerDetailResponseDto`
-* `LineDetailResponseDto`
-* `CharacterDetailResponseDto`
-* `FigureDetailResponseDto`
-* `VariantDetailResponseDto`
-* `ProductReleaseDetailResponseDto`
-
-Small summary/reference DTOs may be introduced to avoid unnecessarily recursive payloads.
-
-### First contract to design
-
-`FranchiseDetailResponseDto`
-
-The DTO design should start from the collector-facing experience and then map the Prisma data into that contract.
-
----
+```text
+Line Detail
+     ↓
+Figure Detail
+     ↓
+Variant Detail
+     ↓
+Product Release Detail
+```
 
 ## Franchise Detail
 
-Concept:
+### Backend
 
-Franchise Detail acts as a gateway into the catalogue.
+Complete and verified.
 
-Expected content:
+Implemented:
 
-* Franchise/logo image
-* Franchise description
-* Origin / history
-* Historical context related to action figures
-* Available Lines
+* `FranchiseDetailResponseDto`
+* `LineSummaryDto`
+* `FranchisesService.findDetail(id)`
+* Active Franchise filtering.
+* Active Line filtering.
+* Alphabetical Line ordering.
+* Explicit response mapping.
+* `404 Not Found` for unknown Franchise IDs.
 
-Lines should be visual and clickable.
+### Frontend
 
-Example:
+Complete and verified.
+
+Implemented:
+
+* Franchise Detail model.
+* Franchise Detail service.
+* Franchise Detail page.
+* `/franchises/:id` route.
+* Franchise information display.
+* Line summary display.
+* Line navigation through `RouterLink`.
+
+Verified flow:
 
 ```text
-Star Wars
-   │
-   ├── Kenner 77
-   ├── Power of the Force
-   ├── Power of the Force 2
-   ├── Power of the Jedi
-   └── ...
+Franchise Detail → Line Detail
 ```
-
-Selecting a Line leads to Line Detail.
-
----
 
 ## Line Detail
 
-Expected content:
+### Backend
 
-* Line logo where available
-* Text fallback where no logo exists
-* Representative collection image
-* Manufacturer
-* Start / commercialisation year
-* End year where applicable
-* Active / still available indicator
-* Total number of products
-* Figures belonging to the Line
+Complete and verified.
 
-Figures should be displayed using identifying images rather than plain text links.
+The Line Detail response contains:
 
-The intended presentation is a catalogue/card experience useful to collectors.
+* Line identity and metadata.
+* Manufacturer summary.
+* Franchise summary.
+* Figure summaries.
 
----
+Figure summary contains:
 
-## Character Detail
+* id
+* name
+* code
+* imageUrl
+* characterId
+* characterName
 
-Expected content:
+Backend behaviour:
 
-* Character name
-* Representative image
-* Lore history
-* First appearance in lore
-* First action figure appearance / first Product Release
-* Lines in which the Character appears
-* All Figure appearances across those Lines
-* Variants
-* Product Release photographic galleries
+* Active Line only.
+* Active Figures only.
+* Active Characters only.
+* Figures ordered by name.
+* Explicit response mapping.
+* `404` for unknown Line.
 
-The page should distinguish between lore history and collecting history.
-
----
-
-## Variant Detail
-
-Variant is a first-class catalogue entity, not merely a visual difference inside Figure.
-
-Expected information may include:
-
-* Name
-* Dedicated image
-* Distinguishing description
-* Associated Figure
-* Product Releases
-* Region information where historically useful
-* Packaging
-* Accessories
-* First or unique appearance
-* Photographs
-
-The primary collector-oriented questions are:
-
-* What makes the Variant special?
-* How do I identify it?
-* Where did it appear?
-* Which Product Releases contain it?
-* How can I recognise or acquire it today?
-
----
-
-## Product Release Detail
-
-Product Release has its own dedicated detail page.
-
-It represents the concrete commercial product.
-
-Expected information includes:
-
-* Product Release identity
-* Packaging
-* Region
-* Language
-* Retailer
-* Release date
-* Barcode
-* Notes
-* Product image
-* Associated Variant
-* Parent Figure
-* Character / Line / Franchise context where useful
-
-Product Release should not become the universal Detail root.
-
----
-
-## Navigation into Detail
-
-The Detail system should become the common destination for catalogue entities discovered through:
+Verified with:
 
 ```text
-Global Search ────────┐
-Databank ─────────────┤
-Collection ───────────┼──→ Detail
-                       │
-future features ──────┘
+GET /lines/cms8tgdcb000lukxkqhys2t04
 ```
 
-Planned navigation:
+Result: `200 OK`.
 
-* Global Search → Detail
-* Databank → Detail
-* Collection → Detail
+### Frontend
 
----
+Complete and verified.
 
-# Next Development Steps
+Implemented:
 
-## Immediate
+* Line Detail model.
+* Line Detail service.
+* Line Detail page.
+* `/lines/:id` route.
+* Loading/error/not-found/empty states.
+* Line metadata.
+* Figure summary display.
 
-1. Complete Global Search clearing behaviour
-2. Verify query parameter removal
-3. Implement Global Search result navigation
-4. Define reusable Detail URL pattern
+Verified direct navigation:
 
-## Then
+```text
+/lines/cms8tgdcb000lukxkqhys2t04
+```
 
-5. Design `FranchiseDetailResponseDto`
-6. Define reusable summary/reference DTOs
-7. Design remaining Detail response contracts
-8. Implement backend `findOne()` mappings for Detail
-9. Implement transversal Detail frontend architecture
-10. Connect Global Search → Detail
-11. Connect Databank → Detail
-12. Connect Collection → Detail
+Result: Line Detail loads correctly.
 
----
+## Next Milestone: Figure Detail
 
-# UX Backlog
+### Current Backend State
 
-## Login
+Figure currently has only:
 
-Status:
+* `CreateFigureDto`
+* `UpdateFigureDto`
 
-⏳ Planned
+There is no Figure response DTO.
 
-Needs:
+Current Figure Prisma relationships:
 
-* Clear invalid-credentials feedback
-* "Forgot password?" flow
-* Review and improve the complete login experience
+```text
+Figure
+ ├── Character
+ ├── Line
+ └── Variants
+```
 
-Priority:
+Variant:
 
-After the transversal Detail page if it fits the development plan; otherwise later.
+```text
+Variant
+ └── Product Releases
+```
+
+### Proposed Figure Detail Contract
+
+`FigureDetailResponseDto`:
+
+```text
+Figure
+ ├── id
+ ├── name
+ ├── code
+ ├── description
+ ├── imageUrl
+ │
+ ├── character
+ │    ├── id
+ │    ├── name
+ │    └── image
+ │
+ ├── line
+ │    ├── id
+ │    ├── name
+ │    ├── scale
+ │    └── logo
+ │
+ └── variants[]
+      ├── id
+      ├── name
+      ├── description
+      └── imageUrl
+```
+
+Product Releases are intentionally excluded from Figure Detail.
+
+They will belong to Variant Detail.
+
+### Planned Figure Backend Work
+
+1. Create `FigureDetailResponseDto`.
+2. Add `FiguresService.findDetail(id)`.
+3. Update `GET /figures/:id` to return the dedicated detail contract.
+4. Filter inactive Figure, Character, Line, and Variants.
+5. Order Variants by name.
+6. Explicitly map the response.
+7. Verify `200 OK` with an existing Figure.
+8. Verify `404 Not Found` with an unknown Figure ID.
+
+### Planned Figure Frontend Work
+
+After backend verification:
+
+1. Create Figure Detail model.
+2. Create Figure Detail service.
+3. Create Figure Detail page.
+4. Add `/figures/:id`.
+5. Connect Line Detail → Figure Detail.
+6. Verify Global Search Figure navigation.
+
+## Detail Architecture
+
+Do not create one universal Detail DTO.
+
+Use:
+
+* Dedicated Detail response contracts.
+* Small summary/reference DTOs.
+* Explicit response mapping.
+* Active-record filtering.
+* No recursive descendant loading.
+
+Current hierarchy:
+
+```text
+Franchise
+   └── Line
+        └── Figure
+             └── Variant
+                  └── Product Release
+```
+
+Each Detail page should expose the next relevant level without overfetching deeper descendants.
+
+## Login UX Backlog
+
+* Clear incorrect-credentials feedback.
+* Implement “Forgot password?” flow.
+* Review and improve the overall login experience.
+
+**Priority:** After the transversal Detail work, if it fits the implementation plan.
+
+## Immediate Next Actions
+
+1. Implement Figure Detail backend.
+2. Verify Figure Detail API with real and invalid IDs.
+3. Implement Figure Detail frontend.
+4. Add `/figures/:id`.
+5. Connect Line Detail → Figure Detail.
+6. Verify Global Search Figure navigation.
+7. Continue with Variant Detail.
+8. Continue with Product Release Detail.
+
+## Collaboration Rules
+
+* Provide complete changed files for copy/paste when code changes are requested.
+* Return only the files requested.
+* Preserve working code and existing conventions.
+* Do not invent assumptions about the codebase.
+* Avoid premature abstractions.
+* Keep `AI-context.md`, `HISTORY.md`, and `project-status.md` separate.
+* `HISTORY.md` is append-only.
+* Do not repeat already completed DTO reviews unless a concrete implementation issue requires it.

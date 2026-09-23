@@ -1,595 +1,466 @@
-# AI Context
+# Cardback — AI Context
 
-## Project
+## Project Overview
 
-Product name:
-Cardback
+**Cardback** (repository/folder: `FigureArchive`) is a collector-first platform for action figure collectors, initially focused on Star Wars figures, from the 1970s to current releases.
 
-Repository:
-FigureArchive
+The goal is to build a free, community-driven, Discogs-like platform for action figures, with a strong catalogue, collection management, and collector-oriented UX.
 
-## Goal
+Core principles:
 
-Build the definitive platform for action figure collectors.
+* Collector-first, UX-first, mobile-first.
+* Separate immutable catalogue data from user-owned collection data.
+* High-quality catalogue and community contribution.
+* Fast navigation and accessible interfaces.
+* Avoid unnecessary abstractions and overengineering.
+* Do not expose Prisma entities directly through the API.
+* No marketplace as a core MVP feature.
+* No spending until the product is close to the intended vision and ready for community release.
 
-The platform separates immutable catalogue information from user-owned collection data.
+## Tech Stack
 
-The product catalogue is the authoritative source for figure information, while collection data represents what each user owns.
-
----
-
-# Current Phase
-
-Frontend business features.
-
-Infrastructure is finished.
-
-The project is currently focused on implementing and connecting the core MVP business features.
-
-The following major areas are already functional:
-
-* Authentication
-* Shell / application layout
-* Databank
-* Collection
-* Collection sorting
-* Collection filtering
-* Global Search API integration
-* Global Search result rendering
-* Light / dark theme switching
-
-The current active feature is:
-
-* Global Search
-
-The immediate unfinished task is:
-
-* Complete and verify Global Search clearing behaviour
-
----
-
-# Architecture
-
-## Backend
+### Backend
 
 * NestJS
-* Prisma
+* Prisma ORM
 * PostgreSQL
-* REST API
 * JWT authentication
-* Refresh tokens
-* Public DTO mapping
-* Server-side pagination
-* Server-side sorting
-* Server-side filtering
+* DTO-based public API contracts
+* Server-side pagination, sorting, filtering, and search
+* Soft delete
 
-## Frontend
+### Frontend
 
 * Angular 22
-* Standalone Components
-* Signals
+* Standalone components
 * Feature-first architecture
+* Signals and RxJS
 * HttpClient
-* RxJS for HTTP communication
-* ControlValueAccessor for reusable form controls
+* ControlValueAccessor for shared inputs
+* Authenticated Shell and route guard
+* Light/dark theme support
 
----
+## Domain Model
 
-# Important Architecture Principles
+Core catalogue entities:
 
-## Backend / Frontend boundary
-
-Backend entities are never exposed directly to the frontend.
-
-Public DTOs define the application contract.
-
-Database entities may use different internal names, but frontend models must consume the stable public API contract.
-
-Mapping between database entities and public DTOs is mandatory.
-
-Current public image field:
-
-`imageUrl`
-
-Never expose Prisma entities directly.
-
----
-
-# Data Loading Strategy
-
-Cardback must not load entire collections or catalogue datasets into the frontend unnecessarily.
-
-Large datasets must use server-side:
-
-* Pagination
-* Sorting
-* Filtering
-* Search
-
-The frontend sends query parameters to the backend and renders the returned page.
-
-This principle is especially important for user collections, which may grow substantially.
-
----
-
-# Domain Model
-
-The catalogue domain is intentionally separated into distinct concepts.
-
-```text
-Franchise
-   │
-   ├── Line
-   │     │
-   │     └── Figure
-   │           │
-   │           └── Variant
-   │                 │
-   │                 └── Product Release
-   │
-   └── Character
-         │
-         └── Figure
-```
-
-This is a domain relationship model, not necessarily the exact visual hierarchy used by the frontend.
-
-## Character
-
-Represents the character as a lore / fictional entity.
-
-Examples:
-
-* Luke Skywalker
-* Darth Vader
-* Han Solo
-
-Character information may include:
-
-* name
-* species
-* homeworld
-* affiliation
-* description
-* image
-* franchise
-
-A Character may appear in multiple Figures across different Lines.
-
----
-
-## Figure
-
-Represents a specific representation of a Character within a Line.
-
-A Figure is therefore not simply another name for a Character.
-
-Example:
-
-```text
-Character:
-Darth Vader
-
-Figure:
-Darth Vader — The Power of the Force / Kenner
-```
-
-Figure-specific information may include:
-
-* name
-* code
-* description
-* image
-* character
-* line
-* variants
-
-Character information can be surfaced as contextual information on a Figure detail page, while maintaining Character as a separate domain entity.
-
----
-
-## Variant
-
-Variant has its own cataloguing identity.
-
-It is not merely a visual difference inside a Figure.
-
-A Variant may have:
-
-* its own name
-* its own image
-* description of what differentiates it
-* associated Figure / Product Releases
-* regional information where relevant
-* packaging information where relevant
-* accessories where relevant
-* first or unique appearance information
-* photographs
-
-Example:
-
-```text
-Figure:
-Darth Vader — POTF / Kenner / 1997
-
-Variants:
-├── Darth Vader POTF Kenner 1997 — Long Saber
-├── Darth Vader POTF Kenner 1997 — Short Saber
-├── Darth Vader POTF Kenner 1997 — Walmart Exclusive
-└── Darth Vader POTF Kenner 1997 — Fan Club Promotion Exclusive
-```
-
-The examples above are conceptual examples only.
-
-Variant is therefore a first-class catalog entity and requires its own dedicated detail contract.
-
----
-
-## Product Release
-
-Product Release represents a concrete commercial product release.
-
-It is not the universal root of the domain.
-
-Example conceptual hierarchy:
-
-```text
-Figure
-   └── Variant
-         └── Product Release
-```
-
-Product Release may contain:
-
-* name
-* packaging type
-* region
-* language
-* retailer
-* release date
-* barcode
-* notes
-* image
-* associated Variant
-
-Product Release has its own detail page.
-
-The Product Release detail page represents the concrete commercial product and does not need to absorb the complete Variant detail model.
-
----
-
-# Detail Architecture
-
-## Status
-
-Conceptually defined.
-
-Technical implementation:
-
-Not Started.
-
-The Detail feature must be designed around the domain rather than around existing feature-specific frontend models.
-
-The transversal detail experience should support:
-
-* Franchise
 * Manufacturer
+* Franchise
 * Line
 * Character
 * Figure
 * Variant
 * Product Release
 
-The frontend must not blindly reuse Collection or Databank models for Detail.
-
----
-
-## Detail API Contract Strategy
-
-Do not create one universal, oversized `DetailResponseDto`.
-
-Each domain entity should have a dedicated detail response contract.
-
-Planned contracts:
-
-```text
-FranchiseDetailResponseDto
-ManufacturerDetailResponseDto
-LineDetailResponseDto
-CharacterDetailResponseDto
-FigureDetailResponseDto
-VariantDetailResponseDto
-ProductReleaseDetailResponseDto
-```
-
-Small summary/reference DTOs may be introduced where useful to prevent unnecessary recursive payloads.
-
-The exact DTO structure will be designed from the collector-facing experience first and then mapped from Prisma entities.
-
----
-
-# Detail Navigation Concept
-
-The Detail pages form a navigable catalogue hierarchy.
-
-```text
-Global Search ────────┐
-Databank ─────────────┤
-Collection ───────────┼──→ Detail
-                       │
-other future flows ───┘
-```
-
-The same detail system should therefore become the common destination for catalogue entities discovered through different application features.
-
----
-
-# Franchise Detail
-
-Franchise Detail is intended to act as an entry point into the catalogue.
-
-Example:
-
-```text
-Star Wars
-```
-
-The page should provide:
-
-* Identifying franchise/logo image
-* Descriptive introduction
-* Franchise origin / history
-* Historical context related to action figures
-* Available Lines
-
-Lines should be visually represented and clickable.
-
-Example conceptual navigation:
-
-```text
-Star Wars
-   │
-   ├── Kenner 77
-   ├── Power of the Force
-   ├── Power of the Force 2
-   ├── Power of the Jedi
-   └── ...
-```
-
-Selecting a Line leads to its Detail page.
-
-The Franchise page is therefore a gateway deeper into the catalogue rather than an exhaustive dump of all descendant data.
-
----
-
-# Line Detail
-
-Line Detail should provide:
-
-* Line logo where available
-* Text fallback when no logo exists
-* Representative image showing the Line as a collection rather than a single product
-* Manufacturer
-* Start / commercialisation year
-* End year where applicable
-* Indicator when the Line is still active / available
-* Total number of products associated with the Line
-* All Figures belonging to the Line
-
-Figures should not be represented as plain text links.
-
-Each Figure should have an identifying image so collectors can visually recognise the figure without having to rely solely on its name.
-
-The intended experience is closer to a catalogue card than to a conventional text list.
-
----
-
-# Character Detail
-
-Character Detail should provide:
-
-* Character name
-* Representative image / visual identity
-* Lore history
-* First appearance in the fictional universe
-* First appearance as an action figure / first Product Release
-* Lines in which the Character appears
-* All Figure appearances across those Lines
-* Variant information where relevant
-* Product Release galleries
-
-The Character page should distinguish between:
-
-1. First appearance in lore
-2. First incarnation as an action figure
-3. Appearances across Lines
-4. Variants and their appearances
-5. Photographic catalogue history
-
-The presentation should prioritise collector usefulness rather than merely exposing database fields.
-
----
-
-# Variant Detail
-
-Variant is a first-class catalogue entity.
-
-The Variant detail page should be capable of explaining why the Variant matters to a collector.
-
-Potential information includes:
-
-* Variant name
-* Dedicated image
-* Description of the distinguishing characteristics
-* Associated Figure
-* Product Releases in which it appears
-* Regions where relevant as historical distribution information
-* Packaging information
-* Accessories
-* First appearance or unique appearance
-* Photographs
-
-Regional information should not become the primary focus of Variant Detail.
-
-For collectible purposes, the more useful questions are generally:
-
-* What makes this Variant special?
-* How can I identify it?
-* Where did it appear?
-* Which Product Releases contain it?
-* How can I recognise or acquire it today?
-
----
-
-# Product Release Detail
-
-Product Release has its own dedicated detail page.
-
-It represents the concrete commercial product rather than the Variant itself.
-
-The page should focus on the product-specific information previously defined for the catalogue, including:
-
-* Product Release identity
-* Packaging
-* Region
-* Language
-* Retailer
-* Release date
-* Barcode
-* Notes
-* Product image
-* Associated Variant
-* Parent Figure
-* Character / Line / Franchise context where useful
-
-The Product Release page should not duplicate the complete Variant detail unnecessarily.
-
----
-
-# Detail Data Loading
-
-Detail pages should also avoid unnecessary over-fetching.
-
-The API contract should provide enough information to render the page and its immediately useful navigation, while related collections should be paginated where their size can become significant.
-
-The frontend should not receive an uncontrolled recursive representation of the complete catalogue graph.
-
----
-
-# Shared UI
-
-Current reusable components include:
-
-* `cb-button`
-* `cb-input`
-* `cb-card`
-* spinner
-* badge
-
-## `cb-input`
-
-`cb-input` is a reusable form control implemented through:
-
-* `ControlValueAccessor`
-* `NG_VALUE_ACCESSOR`
-
-It supports:
-
-* value propagation
-* disabled state
-* touched state
-* configurable input type
-* configurable placeholder
-* Enter key event
-* optional clear button
-
-The Enter event is exposed through:
-
-`enter = output<void>()`
-
-The clear event is exposed through:
-
-`clear = output<void>()`
-
-The clear button is controlled through:
-
-`clearable = input(false)`
-
-The shared input does not know what Enter or Clear mean semantically.
-
-It only reports that the user pressed Enter or requested a clear.
-
-Consumers decide the behaviour.
-
-Example:
-
-```text
-cb-input
- ├── ControlValueAccessor
- │      └── value → ngModel / FormControl
- │
- ├── enter output
- │      ├── Header → search()
- │      └── Login form → submit()
- │
- └── clear output
-        └── Header → clearSearch()
-```
-
----
-
-# UX Backlog
-
-## Login
-
-The current login UX needs improvement.
-
-Planned improvements:
-
-* Clear error messages for invalid credentials
-* "Forgot password?" flow
-* Review of the complete login experience
-* General UX refinement of authentication
-
-Priority:
-
-After the transversal Detail page if it fits naturally into the development plan; otherwise later.
-
----
-
-# Current Development Priorities
-
-1. Finish and verify Global Search clearing behaviour
-2. Implement Global Search result navigation
-3. Define and implement the reusable Detail URL pattern
-4. Design Detail response contracts
-5. Implement transversal Detail architecture
-6. Connect Global Search → Detail
-7. Connect Databank → Detail
-8. Connect Collection → Detail
-9. Continue Collection actions
-10. Address Login UX improvements
-
-The Detail DTO design should begin with:
-
-```text
-FranchiseDetailResponseDto
-```
-
-and establish reusable summary/reference DTO patterns from there.
-
-The implementation should then proceed conceptually down the catalogue:
+User-owned entity:
+
+* Owned Figure
+
+Domain distinctions:
+
+* Character = fictional identity.
+* Figure = physical representation of a Character within a Line.
+* Variant = distinct variation of a Figure.
+* Product Release = concrete commercial release, packaging, region, retailer, etc.
+* Owned Figure = a user's collection entry referencing a Product Release.
+
+Vehicles/accessories may be supported as a separate category later. They are not Characters.
+
+## Current Implementation
+
+### Backend
+
+* Authentication and protected routes are implemented.
+* Databank API supports paginated Product Releases.
+* Collection API supports server-side pagination, search, sorting, and filtering.
+* Global Search endpoint is implemented with public DTO mapping and multiple result types.
+* Product Release response DTO exists.
+* Franchise Detail backend is implemented and verified.
+* Line Detail backend is implemented and verified.
+* Dedicated detail contracts are used instead of exposing Prisma entities.
+* Never return raw Prisma entities from public endpoints.
+
+### Frontend
+
+* Databank MVP complete.
+* Collection MVP complete, including server-side sort/filter.
+* Global Search page and result cards implemented.
+* Search navigation uses `/search?q=<query>`.
+* Global Search result types:
+  `franchise`, `manufacturer`, `line`, `character`, `figure`, `variant`, `productRelease`.
+* Shared `FigureCard` exists.
+* Shared `cb-input` supports ControlValueAccessor and Enter output.
+* Franchise Detail frontend is implemented and verified.
+* Line Detail frontend is implemented and verified.
+* `/franchises/:id` route exists.
+* `/lines/:id` route exists.
+* Franchise Detail Line cards navigate to Line Detail.
+* Global Search already contains `line: 'lines'` in its navigation map, so Line Search navigation is now connected to the implemented Line Detail route.
+* Global Search Franchise navigation is connected to Franchise Detail.
+
+## Detail Pages — Architecture Decisions
+
+Detail pages are common destinations from Global Search, Databank, and Collection.
+
+Do not create one oversized universal detail DTO. Use dedicated detail contracts and small summary/reference DTOs to avoid recursive payloads and overfetching.
+
+The intended hierarchy is:
 
 ```text
 Franchise
-   ↓
-Line
-   ↓
-Figure
-   ↓
-Variant
-   ↓
-Product Release
+   └── Line
+        └── Figure
+             └── Variant
+                  └── Product Release
 ```
 
-with Character treated as a parallel domain entity connected to Figures.
+Detail pages should follow this hierarchy without recursively loading all descendant data.
+
+## Franchise Detail
+
+### Backend
+
+`FranchiseDetailResponseDto`:
+
+* id
+* name
+* owner
+* firstAppearance
+* description
+* logo
+* lines: `LineSummaryDto[]`
+
+`LineSummaryDto`:
+
+* id
+* name
+* startYear
+* endYear
+* scale
+* logo
+
+`FranchisesService.findDetail(id)`:
+
+* Returns only active Franchises (`deletedAt: null`).
+* Returns only active Lines (`deletedAt: null`).
+* Orders Lines by name ascending.
+* Explicitly maps Franchise and Line data to the detail response.
+* Throws `NotFoundException` for an unknown/inactive Franchise.
+
+Verified with a real Star Wars Franchise ID returning `200 OK`.
+
+### Frontend
+
+Implemented:
+
+* `features/franchise-detail/models/franchise-detail.model.ts`
+* `features/franchise-detail/services/franchise-detail.service.ts`
+* `features/franchise-detail/pages/franchise-detail/franchise-detail.ts`
+* `features/franchise-detail/pages/franchise-detail/franchise-detail.html`
+* `features/franchise-detail/pages/franchise-detail/franchise-detail.scss`
+
+The page displays:
+
+* Franchise logo/name.
+* Owner.
+* First appearance.
+* Description.
+* Available Lines.
+* Line count.
+* Line metadata.
+
+Line cards use `RouterLink` and navigate to:
+
+```text
+/lines/:id
+```
+
+The frontend compiles and the route has been manually validated.
+
+## Line Detail
+
+### Backend
+
+`LineDetailResponseDto`:
+
+* id
+* name
+* startYear
+* endYear
+* scale
+* logo
+* description
+* manufacturer summary
+* franchise summary
+* figures
+
+Manufacturer summary:
+
+* id
+* name
+
+Franchise summary:
+
+* id
+* name
+* logo
+
+Figure summary:
+
+* id
+* name
+* code
+* imageUrl
+* characterId
+* characterName
+
+`LinesService.findDetail(id)`:
+
+* Loads only an active Line.
+* Loads the related Manufacturer and Franchise.
+* Loads only active Figures.
+* Loads only active Characters for those Figures.
+* Orders Figures by name.
+* Explicitly maps the response to the detail contract.
+* Returns `404 Not Found` when the Line does not exist.
+
+Verified with:
+
+```text
+GET /lines/cms8tgdcb000lukxkqhys2t04
+```
+
+The endpoint returned `200 OK` for Star Wars PBP with its Manufacturer, Franchise, and Figures array.
+
+### Frontend
+
+Implemented:
+
+* `features/line-detail/models/line-detail.model.ts`
+* `features/line-detail/services/line-detail.service.ts`
+* `features/line-detail/pages/line-detail/line-detail.ts`
+* `features/line-detail/pages/line-detail/line-detail.html`
+* `features/line-detail/pages/line-detail/line-detail.scss`
+
+The page displays:
+
+* Line logo/name.
+* Manufacturer.
+* Franchise.
+* Start/end years.
+* Scale.
+* Description.
+* Figure count.
+* Figure summaries.
+
+The component compiles successfully.
+
+Route:
+
+```text
+/lines/:id
+```
+
+The route has been manually validated and loads the Line Detail correctly.
+
+## Current Detail Navigation Flow
+
+The currently implemented transversal flow is:
+
+```text
+Global Search
+     │
+     ├── Franchise ──→ Franchise Detail
+     │                      │
+     │                      └── Line ──→ Line Detail
+     │
+     ├── Line ────────→ Line Detail
+     │
+     ├── Manufacturer → pending
+     ├── Character ───→ pending
+     ├── Figure ──────→ pending
+     ├── Variant ─────→ pending
+     └── Product Release → pending
+```
+
+Global Search already contains navigation mappings for all seven result types:
+
+```ts
+franchise: 'franchises'
+manufacturer: 'manufacturers'
+line: 'lines'
+character: 'characters'
+figure: 'figures'
+variant: 'variants'
+productRelease: 'product-releases'
+```
+
+Only routes/pages that actually exist should be considered functional.
+
+## Current Next Detail: Figure Detail
+
+The next detail page to implement is **Figure Detail**.
+
+Prisma model relationships have been reviewed.
+
+Current Figure model:
+
+* id
+* name
+* code
+* description
+* imageUrl
+* characterId
+* lineId
+* deletedAt
+* createdAt
+* updatedAt
+* character relation
+* line relation
+* variants relation
+
+Variant model:
+
+* id
+* name
+* description
+* imageUrl
+* figureId
+* deletedAt
+* productReleases relation
+
+ProductRelease should not be loaded recursively from Figure Detail.
+
+### Proposed Figure Detail contract
+
+`FigureDetailResponseDto` should contain:
+
+* Figure fields:
+
+  * id
+  * name
+  * code
+  * description
+  * imageUrl
+* Character summary:
+
+  * id
+  * name
+  * image
+* Line summary:
+
+  * id
+  * name
+  * scale
+  * logo
+* Variants:
+
+  * id
+  * name
+  * description
+  * imageUrl
+
+Expected hierarchy:
+
+```text
+Figure Detail
+     ├── Character summary
+     ├── Line summary
+     └── Variants
+             └── Product Releases belong to Variant Detail
+```
+
+Expected backend behaviour:
+
+* Only active Figure.
+* Only active Character.
+* Only active Line.
+* Only active Variants.
+* Explicit DTO mapping.
+* `404 Not Found` for unknown/inactive Figure.
+* Variants ordered by name.
+* No Prisma entity exposure.
+* No Product Releases included in Figure Detail.
+
+### Current Figure backend files
+
+`figures.service.ts` currently contains:
+
+* `findAll`
+* `findOne`
+* `create`
+* `update`
+* `remove`
+* Character/Line existence helpers
+
+`figures.controller.ts` currently exposes:
+
+* `GET /figures`
+* `GET /figures/:id`
+* `POST /figures`
+* `PUT /figures/:id`
+* `DELETE /figures/:id`
+
+Current Figure DTOs:
+
+* `CreateFigureDto`
+* `UpdateFigureDto`
+
+There is currently no Figure response DTO.
+
+The next implementation should add the dedicated Figure Detail response contract and `findDetail()` following the established Franchise/Line Detail pattern.
+
+## Global Search
+
+Global Search is implemented.
+
+Result types:
+
+* franchise
+* manufacturer
+* line
+* character
+* figure
+* variant
+* productRelease
+
+The page receives `q` from query parameters and calls the backend search service.
+
+Result cards emit the selected `GlobalSearchResult`.
+
+The page navigation map already exists.
+
+No changes are currently required to `global-search.ts` for Line navigation because:
+
+```ts
+line: 'lines'
+```
+
+is already present and `/lines/:id` is now implemented.
+
+Search clearing has already been fixed and is considered completed unless a new regression appears.
+
+## Login UX Backlog
+
+The current login experience needs improvement:
+
+* Clear feedback for incorrect credentials.
+* “Forgot password?” flow.
+* Review and improve the overall login experience.
+
+Priority: after the transversal Detail work, if it fits the implementation plan.
+
+## Collaboration Rules
+
+* Provide complete changed files for copy/paste when code changes are requested.
+* Return only the files requested.
+* Preserve working code and existing conventions.
+* Do not invent assumptions about the codebase.
+* Avoid premature abstractions.
+* Keep state documents separate:
+
+  * `AI-context.md`
+  * `HISTORY.md`
+  * `project-status.md`
+* `HISTORY.md` is append-only; add the newest session at the top and preserve previous entries.
+* When pausing a session, update all three state documents separately.

@@ -1,0 +1,21 @@
+:host { display: block; min-height: 100dvh; }
+.welcome-page { min-height: 100dvh; display: grid; grid-template-columns: 1.08fr .92fr; background: var(--bg-primary); color: var(--text-primary); }
+.welcome-art { position: relative; min-height: 100dvh; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; padding: clamp(2rem, 5vw, 5rem); color: #fff; background: url('/assets/bg.jpeg') center / cover; }
+.art-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,9,20,.12), rgba(5,9,20,.02) 35%, rgba(5,9,20,.78)); }
+.welcome-logo, .art-copy, .art-caption { position: relative; z-index: 1; }
+.welcome-logo { width: min(44%, 250px); height: auto; object-fit: contain; }
+.art-copy { max-width: 600px; margin-top: auto; padding-bottom: 2rem; }
+.art-copy h1 { font-size: clamp(2.6rem, 5vw, 5rem); line-height: 1.02; margin: .8rem 0; }
+.art-copy p:last-child { max-width: 34rem; font-size: 1.1rem; line-height: 1.6; }
+.eyebrow { color: #f59e0b; font-size: .76rem; font-weight: 750; text-transform: uppercase; letter-spacing: .14em; }
+.art-caption { font-size: .8rem; color: rgba(255,255,255,.8); }
+.welcome-content { position: relative; display: flex; flex-direction: column; justify-content: center; max-width: 600px; width: 100%; box-sizing: border-box; margin: auto; padding: clamp(2rem, 7vw, 7rem); }
+.welcome-content h2 { margin: .2rem 0 1rem; font-size: clamp(2rem, 3.2vw, 3.2rem); line-height: 1.1; }
+.intro { max-width: 34rem; color: var(--text-secondary); line-height: 1.7; }
+.welcome-points { display: grid; gap: .9rem; margin: 1.3rem 0 2rem; padding-left: 1.2rem; color: var(--text-primary); line-height: 1.5; }
+.welcome-points li::marker { color: #f59e0b; }
+.enter-button { display: inline-flex; justify-content: center; align-items: center; min-height: 3.4rem; border-radius: .65rem; background: #f59e0b; color: #111827; font-weight: 750; text-decoration: none; }
+.legal-note { margin-top: 2rem; color: var(--text-secondary); font-size: .76rem; line-height: 1.5; }
+.theme-toggle { position: absolute; top: 1.5rem; right: 1.5rem; width: 2.6rem; height: 2.6rem; border: 1px solid var(--border-color); border-radius: 50%; color: var(--text-primary); background: var(--card-bg); cursor: pointer; font-size: 1.2rem; }
+.mobile-logo { display: none; }
+@media (max-width: 800px) { .welcome-page { display: block; } .welcome-art { display: none; } .welcome-content { min-height: 100dvh; padding: 5rem 1.4rem 2rem; } .mobile-logo { display: block; width: 150px; margin-bottom: 2.2rem; } .theme-toggle { top: 1rem; right: 1rem; } }

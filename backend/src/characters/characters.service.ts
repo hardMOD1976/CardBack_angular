@@ -32,8 +32,9 @@ async findAll(
     await this.prisma.$transaction([
       this.prisma.character.findMany({
         where,
-        include: {
-          franchise: true,
+        select: {
+          id: true, name: true, species: true, homeworld: true, affiliation: true,
+          description: true, image: true, franchise: { select: { id: true, name: true } },
         },
         orderBy: {
           name: 'asc',
@@ -55,30 +56,64 @@ async findAll(
   );
 }
 
-  findOne(id: string) {
-    return this.prisma.character.findFirst({
+  async findOne(id: string) {
+    const character = await this.prisma.character.findFirst({
       where: {
         id,
         deletedAt: null,
       },
       include: {
-        franchise: true,
+        franchise: { select: { id: true, name: true, owner: true, logo: true, deletedAt: true } },
+        figures: {
+          where: { deletedAt: null, line: { deletedAt: null } },
+          select: {
+            id: true, name: true, code: true, imageUrl: true,
+            line: { select: { id: true, name: true, startYear: true, endYear: true, deletedAt: true } },
+            variants: { where: { deletedAt: null }, select: { id: true } },
+          },
+          orderBy: { name: 'asc' },
+        },
       },
     });
+    if (!character || character.franchise.deletedAt) throw new NotFoundException(`Character with id '${id}' not found.`);
+    return {
+      id: character.id,
+      name: character.name,
+      species: character.species,
+      homeworld: character.homeworld,
+      affiliation: character.affiliation,
+      description: character.description,
+      image: character.image,
+      franchise: {
+        id: character.franchise.id,
+        name: character.franchise.name,
+        owner: character.franchise.owner,
+        logo: character.franchise.logo,
+      },
+      figures: character.figures.filter((figure) => !figure.line.deletedAt).map((figure) => ({
+        id: figure.id, name: figure.name, code: figure.code, imageUrl: figure.imageUrl,
+        line: { id: figure.line.id, name: figure.line.name, startYear: figure.line.startYear, endYear: figure.line.endYear },
+        variantsCount: figure.variants.length,
+      })),
+    };
   }
 
   async create(createCharacterDto: CreateCharacterDto) {
     await this.ensureFranchiseExists(createCharacterDto.franchiseId);
 
-    return this.prisma.character.create({
+    const created = await this.prisma.character.create({
       data: createCharacterDto,
+      select: { id: true, name: true, species: true, homeworld: true, affiliation: true, description: true, image: true, franchiseId: true },
     });
+    return created;
   }
 
   async update(id: string, updateCharacterDto: UpdateCharacterDto) {
+    if (updateCharacterDto.franchiseId) await this.ensureFranchiseExists(updateCharacterDto.franchiseId);
     return this.prisma.character.update({
       where: { id },
       data: updateCharacterDto,
+      select: { id: true, name: true, species: true, homeworld: true, affiliation: true, description: true, image: true, franchiseId: true },
     });
   }
 
@@ -90,6 +125,7 @@ async findAll(
       data: {
         deletedAt: new Date(),
       },
+      select: { id: true, deletedAt: true },
     });
   }
 

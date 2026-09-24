@@ -11,6 +11,7 @@ import {
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
+import { OwnedFigureModel } from '../models/owned-figure.model';
 
 export interface CollectionQuery {
   page?: number;
@@ -45,7 +46,7 @@ export class CollectionService {
 
   getMyCollection(
     query: CollectionQuery = {},
-  ): Observable<CollectionResponse<any>> {
+  ): Observable<CollectionResponse<OwnedFigureModel>> {
     let params = new HttpParams();
 
     if (query.page !== undefined) {
@@ -104,9 +105,28 @@ export class CollectionService {
       );
     }
 
-    return this.http.get<CollectionResponse<any>>(
+    return this.http.get<CollectionResponse<OwnedFigureModel>>(
       this.apiUrl,
       { params },
     );
+  }
+
+  addOwnedFigure(data: { productReleaseId: string; condition: string; completeness: string; packagingState?: string; purchasePrice?: number; currency?: string; purchaseDate?: string; purchaseLocation?: string; estimatedMarketValue?: number; storageLocation?: string; notes?: string; quantity?: number }) {
+    return this.http.post<OwnedFigureModel>(this.apiUrl, data);
+  }
+
+  updateOwnedFigure(id: string, data: Partial<Pick<OwnedFigureModel, 'condition' | 'completeness' | 'packagingState' | 'purchaseDate' | 'purchasePrice' | 'currency' | 'purchaseLocation' | 'estimatedMarketValue' | 'storageLocation' | 'notes' | 'quantity'>>) {
+    return this.http.put<OwnedFigureModel>(`${this.apiUrl}/${id}`, data);
+  }
+
+  removeOwnedFigure(id: string) {
+    return this.http.delete<{ id: string; deleted: boolean }>(`${this.apiUrl}/${id}`);
+  }
+
+  getStats() {
+    return this.http.get<{
+      totalEntries: number; totalCopies: number; purchaseValue: number; estimatedValue: number;
+      recent: OwnedFigureModel[];
+    }>(`${this.apiUrl}/stats`);
   }
 }

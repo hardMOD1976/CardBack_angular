@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -48,20 +48,44 @@ export class ManufacturersService {
     ]);
 
   return buildPaginatedResponse(
-    manufacturers,
+    manufacturers.map(({ id, name, country, foundedYear, dissolvedYear }) => ({ id, name, country, foundedYear, dissolvedYear })),
     page,
     limit,
     total,
   );
 }
 
-  findOne(id: string) {
-    return this.prisma.manufacturer.findFirst({
+  async findOne(id: string) {
+    const manufacturer = await this.prisma.manufacturer.findFirst({
       where: {
         id,
         deletedAt: null,
       },
+      include: {
+        lines: {
+          where: { deletedAt: null, franchise: { deletedAt: null } },
+          include: { franchise: { select: { id: true, name: true } } },
+          orderBy: { name: 'asc' },
+        },
+      },
     });
+    if (!manufacturer) throw new NotFoundException(`Manufacturer with id '${id}' not found.`);
+    return {
+      id: manufacturer.id,
+      name: manufacturer.name,
+      country: manufacturer.country,
+      foundedYear: manufacturer.foundedYear,
+      dissolvedYear: manufacturer.dissolvedYear,
+      lines: manufacturer.lines.map((line) => ({
+        id: line.id,
+        name: line.name,
+        startYear: line.startYear,
+        endYear: line.endYear,
+        scale: line.scale,
+        logo: line.logo,
+        franchise: line.franchise,
+      })),
+    };
   }
 
   async create(
@@ -69,6 +93,7 @@ export class ManufacturersService {
   ) {
     return this.prisma.manufacturer.create({
       data: createManufacturerDto,
+      select: { id: true, name: true, country: true, foundedYear: true, dissolvedYear: true },
     });
   }
 
@@ -81,6 +106,7 @@ export class ManufacturersService {
         id,
       },
       data: updateManufacturerDto,
+      select: { id: true, name: true, country: true, foundedYear: true, dissolvedYear: true },
     });
   }
 
@@ -92,6 +118,7 @@ export class ManufacturersService {
       data: {
         deletedAt: new Date(),
       },
+      select: { id: true, deletedAt: true },
     });
   }
 }

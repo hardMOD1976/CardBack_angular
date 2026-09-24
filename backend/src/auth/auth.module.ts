@@ -13,10 +13,13 @@ import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 import { UsersModule } from '../users/users.module';
+import { PrismaModule } from '../prisma/prisma.module';
+import { AuthThrottleGuard } from './guards/auth-throttle.guard';
 
 @Module({
   imports: [
     UsersModule,
+    PrismaModule,
 
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -24,19 +27,19 @@ import { UsersModule } from '../users/users.module';
 
       useFactory: (
         configService: ConfigService,
-      ) => ({
-        secret:
-          configService.getOrThrow<string>(
-            'JWT_SECRET',
-          ),
-
-        signOptions: {
-          expiresIn:
-            configService.getOrThrow<string>(
-              'JWT_EXPIRES_IN',
-            ) as StringValue,
-        },
-      }),
+      ) => {
+        const secret = configService.getOrThrow<string>('JWT_SECRET');
+        const refreshSecret = configService.getOrThrow<string>('JWT_REFRESH_SECRET');
+        if (secret.length < 32 || refreshSecret.length < 32 || secret === refreshSecret) {
+          throw new Error('JWT_SECRET and JWT_REFRESH_SECRET must be distinct values of at least 32 characters.');
+        }
+        return {
+          secret,
+          signOptions: {
+            expiresIn: configService.getOrThrow<string>('JWT_EXPIRES_IN') as StringValue,
+          },
+        };
+      },
     }),
   ],
 
@@ -45,6 +48,7 @@ import { UsersModule } from '../users/users.module';
   providers: [
     AuthService,
     JwtStrategy,
+    AuthThrottleGuard,
   ],
 })
 export class AuthModule {}

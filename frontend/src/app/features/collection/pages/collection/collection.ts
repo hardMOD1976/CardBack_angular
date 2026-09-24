@@ -66,9 +66,15 @@ export class Collection implements OnInit {
         next: response => {
           const figures =
             response.data.map(
-              (ownedFigure: any) => ({
+              (ownedFigure) => ({
                 id:
                   ownedFigure.id,
+
+                ownedFigureId:
+                  ownedFigure.id,
+
+                productReleaseId:
+                  ownedFigure.productRelease.id,
 
                 character:
                   ownedFigure
@@ -177,5 +183,15 @@ export class Collection implements OnInit {
 
   onFiltersClicked(): void {
     // Filters are handled by CollectionHeader.
+  }
+
+  removeOwnedFigure(id: string): void {
+    this.collectionService.removeOwnedFigure(id).subscribe({
+      next: () => {
+        this.figures.update((current) => current.filter((figure) => figure.ownedFigureId !== id));
+        this.totalFigures.update((total) => Math.max(0, total - 1));
+      },
+      error: () => this.error.set(true),
+    });
   }
 }

@@ -21,8 +21,6 @@ export class AuthService {
 
   // Auth API endpoint
   private readonly apiUrl = `${environment.apiUrl}/auth`;
-  authService: any;
-  router: any;
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
 
@@ -31,6 +29,30 @@ export class AuthService {
       credentials,
     );
 
+  }
+
+  register(request: { username: string; displayName: string; email: string; password: string }): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/register`, request);
+  }
+
+  configuration(): Observable<{ passwordRecoveryEnabled: boolean }> {
+    return this.http.get<{ passwordRecoveryEnabled: boolean }>(`${this.apiUrl}/config`);
+  }
+
+  forgotPassword(request: { email: string }): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/password/forgot`, request);
+  }
+
+  resetPassword(request: { token: string; password: string }): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/password/reset`, request);
+  }
+
+  changePassword(request: { currentPassword: string; newPassword: string }): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/password/change`, request);
+  }
+
+  refresh(refreshToken: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/refresh`, { refreshToken });
   }
 
  logout(): Observable<void> {

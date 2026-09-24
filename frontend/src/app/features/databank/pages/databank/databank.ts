@@ -49,6 +49,8 @@ export class Databank implements OnInit {
 
             id: release.id,
 
+            productReleaseId: release.id,
+
             character:
               release.variant.figure.character.name,
 

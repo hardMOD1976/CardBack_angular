@@ -84,7 +84,7 @@ export class UsersController {
   @Roles(Role.ADMIN)
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+    return this.usersService.findOnePublic(id);
   }
 
   @ApiOperation({

@@ -1,0 +1,21 @@
+:host { display: block; min-height: 100%; }
+.detail-page { max-width: 1120px; margin: 0 auto; padding: clamp(1rem, 3vw, 2.25rem); color: var(--text-primary); }
+.detail-page h1 { margin: .35rem 0 .6rem; font-size: clamp(2rem, 4vw, 3.2rem); line-height: 1.08; }
+.eyebrow { margin: 1rem 0 0; color: #d97706; font-size: .75rem; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+.lede, .detail-page p { color: var(--text-secondary); line-height: 1.6; }
+.back-link { color: var(--text-secondary); text-decoration: none; }
+.detail-page section { margin-top: 2.5rem; }
+.detail-page section > header { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+.detail-page h2 { font-size: 1.35rem; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 1rem; }
+.entity-card { display: flex; min-width: 0; gap: 1rem; align-items: center; padding: 1rem; border: 1px solid var(--border-color); border-radius: .8rem; color: inherit; background: var(--card-bg); text-decoration: none; transition: transform .15s ease, border-color .15s ease; }
+.entity-card:hover { transform: translateY(-2px); border-color: #f59e0b; }
+.entity-card img { width: 5rem; height: 5rem; flex: 0 0 5rem; object-fit: contain; border-radius: .5rem; background: var(--bg-secondary); }
+.entity-card h3 { margin: 0 0 .2rem; font-size: 1rem; }
+.entity-card p, .entity-card small { margin: .2rem 0; color: var(--text-secondary); }
+.empty, .state { padding: 1.2rem; border: 1px dashed var(--border-color); border-radius: .75rem; }
+.hero { display: grid; grid-template-columns: minmax(150px, 260px) 1fr; gap: clamp(1rem, 3vw, 2rem); align-items: center; margin: 1.5rem 0; padding: clamp(1rem, 3vw, 2rem); border: 1px solid var(--border-color); border-radius: 1rem; background: var(--card-bg); }
+.hero > img { width: 100%; max-height: 300px; object-fit: contain; border-radius: .75rem; background: var(--bg-secondary); }
+.metadata { display: flex; flex-wrap: wrap; gap: .6rem; padding: 0; list-style: none; }
+.metadata li { padding: .4rem .65rem; border-radius: 99px; color: var(--text-secondary); background: var(--bg-secondary); font-size: .86rem; }
+@media (max-width: 620px) { .detail-page { padding: 1rem; } .hero { grid-template-columns: 1fr; } .hero > img { max-height: 220px; } }

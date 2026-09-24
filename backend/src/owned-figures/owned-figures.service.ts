@@ -9,6 +9,7 @@ import { CreateOwnedFigureDto } from './dto/create-owned-figure.dto';
 import { UpdateOwnedFigureDto } from './dto/update-owned-figure.dto';
 import { OwnedFiguresQueryDto } from './dto/owned-figures-query.dto';
 import { buildPaginatedResponse } from '../common/pagination';
+import { OwnedFigureResponseDto } from './dto/owned-figure-response.dto';
 
 @Injectable()
 export class OwnedFiguresService {
@@ -49,6 +50,14 @@ export class OwnedFiguresService {
     const where = {
       userId,
       deletedAt: null,
+      productRelease: {
+        deletedAt: null,
+        variant: { deletedAt: null, figure: {
+          deletedAt: null,
+          character: { deletedAt: null, franchise: { deletedAt: null } },
+          line: { deletedAt: null, manufacturer: { deletedAt: null }, franchise: { deletedAt: null } },
+        } },
+      },
 
       ...(condition && {
         condition,
@@ -136,29 +145,7 @@ export class OwnedFiguresService {
         this.prisma.ownedFigure.findMany({
           where,
 
-          include: {
-            user: true,
-
-            productRelease: {
-              include: {
-                variant: {
-                  include: {
-                    figure: {
-                      include: {
-                        character: true,
-
-                        line: {
-                          include: {
-                            manufacturer: true,
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
+          include: this.collectionInclude(),
 
           orderBy,
 
@@ -172,11 +159,35 @@ export class OwnedFiguresService {
       ]);
 
     return buildPaginatedResponse(
-      ownedFigures,
+      ownedFigures.map((item) => this.toResponse(item)),
       page,
       limit,
       total,
     );
+  }
+
+  async getStats(userId: string) {
+    const where = {
+      userId,
+      deletedAt: null,
+      productRelease: { deletedAt: null, variant: { deletedAt: null, figure: {
+        deletedAt: null,
+        character: { deletedAt: null, franchise: { deletedAt: null } },
+        line: { deletedAt: null, manufacturer: { deletedAt: null }, franchise: { deletedAt: null } },
+      } } },
+    };
+    const [aggregate, recent, totalEntries] = await this.prisma.$transaction([
+      this.prisma.ownedFigure.aggregate({ where, _sum: { quantity: true, purchasePrice: true, estimatedMarketValue: true }, _count: { _all: true } }),
+      this.prisma.ownedFigure.findMany({ where, orderBy: { createdAt: 'desc' }, take: 5, include: this.collectionInclude() }),
+      this.prisma.ownedFigure.count({ where }),
+    ]);
+    return {
+      totalEntries,
+      totalCopies: aggregate._sum.quantity ?? 0,
+      purchaseValue: aggregate._sum.purchasePrice?.toNumber() ?? 0,
+      estimatedValue: aggregate._sum.estimatedMarketValue?.toNumber() ?? 0,
+      recent: recent.map((entry) => this.toResponse(entry)),
+    };
   }
 
   async findOne(
@@ -188,36 +199,25 @@ export class OwnedFiguresService {
       id,
     );
 
-    return this.prisma.ownedFigure.findFirst({
+    const ownedFigure = await this.prisma.ownedFigure.findFirst({
       where: {
         id,
         userId,
-      },
-
-      include: {
-        user: true,
-
+        deletedAt: null,
         productRelease: {
-          include: {
-            variant: {
-              include: {
-                figure: {
-                  include: {
-                    character: true,
-
-                    line: {
-                      include: {
-                        manufacturer: true,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
+          deletedAt: null,
+          variant: { deletedAt: null, figure: {
+            deletedAt: null,
+            character: { deletedAt: null, franchise: { deletedAt: null } },
+            line: { deletedAt: null, manufacturer: { deletedAt: null }, franchise: { deletedAt: null } },
+          } },
         },
       },
+
+      include: this.collectionInclude(),
     });
+    if (!ownedFigure) throw new NotFoundException(`Owned Figure with id '${id}' not found.`);
+    return this.toResponse(ownedFigure);
   }
 
   async create(
@@ -228,12 +228,13 @@ export class OwnedFiguresService {
       dto.productReleaseId,
     );
 
-    return this.prisma.ownedFigure.create({
+    const created = await this.prisma.ownedFigure.create({
       data: {
         ...dto,
         userId,
       },
     });
+    return this.findOne(userId, created.id);
   }
 
   async update(
@@ -252,12 +253,13 @@ export class OwnedFiguresService {
       );
     }
 
-    return this.prisma.ownedFigure.update({
+    const updated = await this.prisma.ownedFigure.update({
       where: {
         id,
       },
       data: dto,
     });
+    return this.findOne(userId, updated.id);
   }
 
   async remove(
@@ -269,7 +271,7 @@ export class OwnedFiguresService {
       id,
     );
 
-    return this.prisma.ownedFigure.update({
+    await this.prisma.ownedFigure.update({
       where: {
         id,
       },
@@ -277,6 +279,96 @@ export class OwnedFiguresService {
         deletedAt: new Date(),
       },
     });
+    return { id, deleted: true };
+  }
+
+  private collectionInclude() {
+    return {
+      productRelease: {
+        select: {
+          id: true,
+          name: true,
+          packagingType: true,
+          region: true,
+          releaseDate: true,
+          barcode: true,
+          imageUrl: true,
+          deletedAt: true,
+          variant: {
+            select: {
+              id: true,
+              name: true,
+              deletedAt: true,
+              figure: {
+                select: {
+                  id: true,
+                  name: true,
+                  code: true,
+                  imageUrl: true,
+                  deletedAt: true,
+                  character: { select: { id: true, name: true, image: true, deletedAt: true } },
+                  line: {
+                    select: {
+                      id: true,
+                      name: true,
+                      deletedAt: true,
+                      manufacturer: { select: { id: true, name: true, deletedAt: true } },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+  }
+
+  private toResponse(item: any): OwnedFigureResponseDto {
+    const release = item.productRelease;
+    const variant = release.variant;
+    const figure = variant.figure;
+    return {
+      id: item.id,
+      productReleaseId: item.productReleaseId,
+      condition: item.condition,
+      completeness: item.completeness,
+      packagingState: item.packagingState,
+      purchaseDate: item.purchaseDate?.toISOString() ?? null,
+      purchasePrice: item.purchasePrice?.toNumber() ?? null,
+      currency: item.currency,
+      purchaseLocation: item.purchaseLocation,
+      estimatedMarketValue: item.estimatedMarketValue?.toNumber() ?? null,
+      storageLocation: item.storageLocation,
+      notes: item.notes,
+      quantity: item.quantity,
+      createdAt: item.createdAt.toISOString(),
+      productRelease: {
+        id: release.id,
+        name: release.name,
+        packagingType: release.packagingType,
+        region: release.region,
+        releaseDate: release.releaseDate?.toISOString() ?? null,
+        barcode: release.barcode,
+        imageUrl: release.imageUrl,
+        variant: {
+          id: variant.id,
+          name: variant.name,
+          figure: {
+            id: figure.id,
+            name: figure.name,
+            code: figure.code,
+            imageUrl: figure.imageUrl,
+            character: { id: figure.character.id, name: figure.character.name, image: figure.character.image },
+            line: {
+              id: figure.line.id,
+              name: figure.line.name,
+              manufacturer: { id: figure.line.manufacturer.id, name: figure.line.manufacturer.name },
+            },
+          },
+        },
+      },
+    };
   }
 
   private buildOrderBy(
@@ -339,6 +431,14 @@ export class OwnedFiguresService {
           id,
           userId,
           deletedAt: null,
+          productRelease: {
+            deletedAt: null,
+            variant: { deletedAt: null, figure: {
+              deletedAt: null,
+              character: { deletedAt: null, franchise: { deletedAt: null } },
+              line: { deletedAt: null, manufacturer: { deletedAt: null }, franchise: { deletedAt: null } },
+            } },
+          },
         },
       });
 

@@ -92,11 +92,27 @@ Vehicles/accessories may be supported as a separate category later. They are not
 * Shared `cb-input` supports ControlValueAccessor and Enter output.
 * Franchise Detail frontend is implemented and verified.
 * Line Detail frontend is implemented and verified.
+* Figure, Manufacturer, Character, Variant, and Product Release detail routes and frontend pages are implemented, using dedicated detail services/models and explicit backend response projections.
+* User-specific Wishlist entries reference Product Releases and remain separate from `Owned Figure` collection records.
+* Owned Figures public responses are explicitly mapped to API contracts; relation trees and user records are not serialized directly.
+* The dashboard uses per-user collection aggregates and recent records. Barcode search resolves against the local Product Release catalogue; browser camera/image detection is capability-dependent.
+* AI image identification is a suggestion workflow. It requires `GEMINI_API_KEY` and never creates catalogue records automatically.
+* Registration, session refresh, password change, and password reset are implemented. Password reset delivery requires Resend configuration and a public application URL.
 * `/franchises/:id` route exists.
 * `/lines/:id` route exists.
 * Franchise Detail Line cards navigate to Line Detail.
 * Global Search already contains `line: 'lines'` in its navigation map, so Line Search navigation is now connected to the implemented Line Detail route.
 * Global Search Franchise navigation is connected to Franchise Detail.
+
+## Current parity work and release constraints (2026-09-25)
+
+The main user-facing journeys now present in the parallel React project have Angular implementations, adapted to the established catalogue/ownership domain. React-only demo behavior, broad theme skins, and any external web lookup are not copied where they would undermine catalogue provenance or require unverified data.
+
+The new PasswordResetToken and WishlistEntry schema additions require applying their checked-in migrations to the intended database before those functions work. No production database migration was run as part of local development.
+
+The Angular project still lacks application-wide localization. Add a language service/selector and migrate all visible copy before claiming language parity. Release readiness also requires environment-specific migration, email/Gemini configuration, deployment configuration, security review, and end-to-end verification.
+
+The Angular compiler's template/type check passes with `ngc`; `npm run build` currently stops because the build worker is denied filesystem access to the repository under `Desktop`. Backend compilation and Prisma schema validation pass. Automated tests were not run.
 
 ## Detail Pages — Architecture Decisions
 

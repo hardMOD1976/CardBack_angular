@@ -134,6 +134,7 @@ model ProductRelease {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   ownedFigures  OwnedFigure[]
+  wishlistEntries WishlistEntry[]
   variant       Variant       @relation(fields: [variantId], references: [id])
 
   @@unique([variantId, name])
@@ -182,8 +183,40 @@ model User {
   role             Role          @default(USER)
   refreshTokenHash String?
   ownedFigures     OwnedFigure[]
+  passwordResetTokens PasswordResetToken[]
+  wishlistEntries WishlistEntry[]
 
   @@index([username])
+}
+
+model WishlistEntry {
+  id               String         @id @default(cuid())
+  userId           String
+  productReleaseId String
+  targetPrice      Decimal?
+  notes            String?
+  deletedAt        DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productRelease   ProductRelease @relation(fields: [productReleaseId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, productReleaseId])
+  @@index([userId, deletedAt])
+  @@index([productReleaseId])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 enum Role {

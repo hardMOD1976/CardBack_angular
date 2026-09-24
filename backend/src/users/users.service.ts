@@ -23,6 +23,7 @@ export class UsersService {
       orderBy: {
         username: 'asc',
       },
+      select: { id: true, username: true, displayName: true, email: true, country: true, avatar: true, role: true, createdAt: true },
 
     });
 
@@ -39,6 +40,13 @@ export class UsersService {
 
     });
 
+  }
+
+  findOnePublic(id: string) {
+    return this.prisma.user.findFirst({
+      where: { id, deletedAt: null },
+      select: { id: true, username: true, displayName: true, email: true, country: true, avatar: true, role: true, createdAt: true },
+    });
   }
 
   async findByUsername(username: string) {
@@ -66,13 +74,8 @@ export class UsersService {
 
         OR: [
 
-          {
-            username: identifier,
-          },
-
-          {
-            email: identifier,
-          },
+          { username: { equals: identifier, mode: 'insensitive' } },
+          { email: { equals: identifier, mode: 'insensitive' } },
 
         ],
 
@@ -80,6 +83,27 @@ export class UsersService {
 
     });
 
+  }
+
+  async findByEmail(email: string) {
+    return this.prisma.user.findFirst({
+      where: { email: { equals: email, mode: 'insensitive' }, deletedAt: null },
+    });
+  }
+
+  async createAccount(data: { username: string; displayName: string; email: string; passwordHash: string }) {
+    return this.prisma.user.create({
+      data: { ...data, role: 'USER' },
+      select: { id: true, username: true, displayName: true, email: true, role: true },
+    });
+  }
+
+  async updatePassword(userId: string, passwordHash: string) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash, refreshTokenHash: null },
+      select: { id: true },
+    });
   }
 
   update(
@@ -94,6 +118,7 @@ export class UsersService {
       },
 
       data: updateUserDto,
+      select: { id: true, username: true, displayName: true, email: true, country: true, avatar: true, role: true, updatedAt: true },
 
     });
 
@@ -129,6 +154,7 @@ export class UsersService {
       data: {
         deletedAt: new Date(),
       },
+      select: { id: true, deletedAt: true },
 
     });
 
@@ -139,6 +165,7 @@ export class UsersService {
     return this.prisma.user.create({
 
       data: createUserDto,
+      select: { id: true, username: true, displayName: true, email: true, country: true, avatar: true, role: true, createdAt: true },
 
     });
 

@@ -21,6 +21,8 @@ import { OwnedFiguresModule } from './owned-figures/owned-figures.module';
 import { GlobalSearchModule } from './global-search/global-search.module';
 
 import { AuthModule } from './auth/auth.module';
+import { WishlistModule } from './wishlist/wishlist.module';
+import { AiModule } from './ai/ai.module';
 
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
@@ -46,6 +48,8 @@ import { RolesGuard } from './auth/guards/roles.guard';
     GlobalSearchModule,
 
     AuthModule,
+    WishlistModule,
+    AiModule,
   ],
 
   controllers: [

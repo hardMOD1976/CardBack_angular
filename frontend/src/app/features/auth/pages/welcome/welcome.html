@@ -1,0 +1,28 @@
+<main class="welcome-page">
+  <section class="welcome-art" aria-label="Cardback action figure archive">
+    <div class="art-shade"></div>
+    <img class="welcome-logo" src="assets/Logo_v1_var6_POS_blue.png" alt="Cardback">
+    <div class="art-copy">
+      <p class="eyebrow">For collectors, by collectors</p>
+      <h1>Keep the story<br>behind every figure.</h1>
+      <p>A calm, organized home for your action figure catalogue and personal collection.</p>
+    </div>
+    <span class="art-caption">Explore the archive. Preserve your collection.</span>
+  </section>
+  <section class="welcome-content">
+    <button class="theme-toggle" type="button" (click)="theme.toggleTheme()" [attr.aria-label]="theme.theme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'">
+      {{ theme.theme() === 'dark' ? '☀' : '☾' }}
+    </button>
+    <img class="mobile-logo" src="assets/Logo_v1_var6_POS_blue.png" alt="Cardback">
+    <p class="eyebrow">Your collector archive</p>
+    <h2>Welcome to Cardback</h2>
+    <p class="intro">Discover collectible releases, keep track of what you own, and make the details that matter to collectors easy to find.</p>
+    <ul class="welcome-points">
+      <li>Browse a structured, collector-focused databank</li>
+      <li>Track condition, packaging and purchase details privately</li>
+      <li>Build a reference archive together over time</li>
+    </ul>
+    <a class="enter-button" routerLink="/login">Enter Cardback</a>
+    <p class="legal-note">Cardback is an independent fan-made archive. Product names, imagery and trademarks belong to their respective owners.</p>
+  </section>
+</main>

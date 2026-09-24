@@ -1,0 +1,11 @@
+@use '../../../../shared/styles/detail-page';
+.release-actions { display: flex; align-items: flex-start; flex-wrap: wrap; gap: .8rem; margin-top: 1.5rem !important; }
+.primary-action { min-height: 2.8rem; padding: .65rem 1rem; border: 0; border-radius: .55rem; color: #111827; background: #f59e0b; font: inherit; font-weight: 700; cursor: pointer; }
+.primary-action:disabled { opacity: .6; cursor: wait; }
+.add-owned { min-width: 240px; border: 1px solid var(--border-color); border-radius: .6rem; background: var(--card-bg); }
+.add-owned summary { padding: .7rem 1rem; cursor: pointer; color: var(--text-primary); }
+.add-owned form { display: grid; gap: .8rem; padding: 1rem; }
+.add-owned label { display: grid; gap: .35rem; color: var(--text-secondary); font-size: .9rem; }
+.add-owned input, .add-owned select { min-height: 2.4rem; padding: .4rem .6rem; border: 1px solid var(--input-border); border-radius: .4rem; color: var(--text-primary); background: var(--input-bg); font: inherit; }
+.action-notice { color: #15803d !important; }
+.action-error { color: #b91c1c !important; }

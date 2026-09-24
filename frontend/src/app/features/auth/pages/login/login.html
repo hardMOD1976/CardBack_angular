@@ -1,46 +1,107 @@
-<div class="login-page">
+<main class="auth-page">
+  <a class="brand-mark" routerLink="/welcome" aria-label="Cardback home">
+    <img src="assets/Logo_v1_var6_POS_blue.png" alt="Cardback">
+  </a>
+  <section class="auth-panel" aria-labelledby="auth-title">
+    <button class="theme-toggle" type="button" (click)="theme.toggleTheme()" [attr.aria-label]="theme.theme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'">
+      {{ theme.theme() === 'dark' ? '☀' : '☾' }}
+    </button>
 
-    <cb-card>
+    <header>
+      <p class="eyebrow">Collector access</p>
+      <h1 id="auth-title">
+        @switch (screen()) {
+          @case ('register') { Create your account }
+          @case ('forgot') { Reset your password }
+          @case ('reset') { Choose a new password }
+          @default { Welcome back }
+        }
+      </h1>
+      <p class="subtitle">
+        @switch (screen()) {
+          @case ('register') { Start building your collection archive. }
+          @case ('forgot') { Enter the email associated with your account. }
+          @case ('reset') { Choose a strong password for your account. }
+          @default { Sign in to continue to your collection. }
+        }
+      </p>
+    </header>
 
-        <h1>
-        <img class="img" src="../../../../../assets/Logo_v1_var6_POS_blue.png"></h1>
+    @if (errorMessage()) { <div class="feedback error" role="alert">{{ errorMessage() }}</div> }
+    @if (successMessage()) { <div class="feedback success" role="status">{{ successMessage() }}</div> }
+    @if (screen() === 'forgot' && !passwordRecoveryEnabled()) {
+      <div class="feedback info" role="status">Password recovery email is not configured yet. Please contact the administrator.</div>
+    }
 
-        <p>Where your collection lives!</p>
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      @if (screen() === 'login') {
+        <label>Username or email
+          <input autocomplete="username" formControlName="identifier" placeholder="Your username or email">
+        </label>
+        <label>Password
+          <input type="password" autocomplete="current-password" formControlName="password" placeholder="Your password">
+        </label>
+        <label class="remember"><input type="checkbox" formControlName="rememberMe"> Keep me signed in on this device</label>
+      }
 
-        <form
-            class="login-form"
-            [formGroup]="loginForm"
-            (ngSubmit)="login()">
+      @if (screen() === 'register') {
+        <label>Collector name
+          <input autocomplete="nickname" formControlName="displayName" placeholder="How should we address you?">
+        </label>
+        <label>Username
+          <input autocomplete="username" formControlName="username" placeholder="3–24 letters, numbers, dots or dashes">
+        </label>
+        <label>Email
+          <input type="email" autocomplete="email" formControlName="email" placeholder="you@example.com">
+        </label>
+        <label>Password
+          <input type="password" autocomplete="new-password" formControlName="password" placeholder="At least 12 characters">
+        </label>
+        <label>Confirm password
+          <input type="password" autocomplete="new-password" formControlName="confirmPassword" placeholder="Enter it again">
+        </label>
+        <label class="remember"><input type="checkbox" formControlName="rememberMe"> Keep me signed in on this device</label>
+        <p class="privacy-note">Your account details and collection are used to provide Cardback. Do not use a password you use on another service.</p>
+      }
 
-            <input
-                class="cb-input"
-                type="text"
-                placeholder="Username or email"
-                formControlName="identifier">
+      @if (screen() === 'forgot') {
+        <label>Email
+          <input type="email" autocomplete="email" formControlName="email" placeholder="you@example.com" [disabled]="!passwordRecoveryEnabled()">
+        </label>
+      }
 
-            <input
-                class="cb-input"
-                type="password"
-                placeholder="Password"
-                formControlName="password">
+      @if (screen() === 'reset') {
+        <label>New password
+          <input type="password" autocomplete="new-password" formControlName="password" placeholder="At least 12 characters">
+        </label>
+        <label>Confirm new password
+          <input type="password" autocomplete="new-password" formControlName="confirmPassword" placeholder="Enter it again">
+        </label>
+      }
 
-            <cb-button type="submit">
+      <button class="primary-button" type="submit" [disabled]="loading() || (screen() === 'forgot' && !passwordRecoveryEnabled())">
+        @if (loading()) { Please wait… }
+        @else {
+          @switch (screen()) {
+            @case ('register') { Create account }
+            @case ('forgot') { Send reset link }
+            @case ('reset') { Save new password }
+            @default { Sign in }
+          }
+        }
+      </button>
+    </form>
 
-                Login
-
-            </cb-button>
-
-        </form>
-
-    </cb-card>
-<div class="disclaimer">
-    <p>Legal disclaimer</p>
-    <p>This application is an unofficial, fan-made collection tracking tool and is intended for informational and educational purposes only.</p>
-    <p>All product names, logos, brands, images, characters, and references appearing in this application are the property of their respective owners, creators, authors, and trademark holders.</p>
-    <p>These owners are not affiliated with, do not endorse, and are not associated with this application or its developers.</p>
-    <p>Star Wars and all associated names, characters, and indicia are registered trademarks and/or copyrights of Lucasfilm Ltd., Disney, Hasbro, or their respective trademark holders.</p>
-    <p>This application claims no ownership over any intellectual property used within the platform.</p>
-    <p>All rights reserved to their respective owners.</p>
-    <p>CardBack 2026 ©</p>
-</div>
-</div>
+    <nav class="auth-links" aria-label="Account options">
+      @if (screen() === 'login') {
+        <button type="button" (click)="setScreen('forgot')">Forgot password?</button>
+        <span>New to Cardback?</span>
+        <button type="button" (click)="setScreen('register')">Create account</button>
+      } @else {
+        <span>Already have an account?</span>
+        <button type="button" (click)="setScreen('login')">Sign in</button>
+      }
+    </nav>
+    <p class="legal-note">Cardback is an independent collector archive. Product names, images and trademarks belong to their respective owners.</p>
+  </section>
+</main>

@@ -1,0 +1,17 @@
+.wishlist-page { max-width: 1180px; margin: 0 auto; padding: clamp(1rem,3vw,2rem); color: var(--text-primary); }
+header { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+h1 { margin: .3rem 0; font-size: clamp(2rem,4vw,3rem); }
+header p:not(.eyebrow), .wish-card p { color: var(--text-secondary); }
+.eyebrow { color: #d97706 !important; font-size: .74rem; font-weight: 750; letter-spacing: .11em; text-transform: uppercase; }
+a { color: inherit; }
+.wishlist-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(min(100%,400px),1fr)); gap: 1rem; }
+.wish-card { overflow: hidden; border: 1px solid var(--border-color); border-radius: .85rem; background: var(--card-bg); }
+.wish-main { display: grid; grid-template-columns: 130px 1fr; gap: 1rem; padding: 1rem; text-decoration: none; }
+.wish-main img { width: 130px; height: 160px; object-fit: contain; background: var(--bg-secondary); border-radius: .5rem; }
+.wish-main h2 { margin: .3rem 0; font-size: 1.1rem; }
+.wish-main p { margin: .35rem 0; }
+.notes { font-size: .86rem; }
+.wish-actions { display: flex; justify-content: space-between; padding: .75rem 1rem; border-top: 1px solid var(--border-color); }
+.wish-actions button, .state button { border: 1px solid var(--border-color); border-radius: .5rem; padding: .5rem .8rem; color: var(--text-primary); background: var(--bg-secondary); cursor: pointer; }
+.state { max-width: 600px; margin: 3rem auto; padding: 2rem; text-align: center; border: 1px dashed var(--border-color); border-radius: .8rem; }
+@media (max-width: 540px) { header { align-items: flex-start; flex-direction: column; } .wish-main { grid-template-columns: 88px 1fr; gap: .75rem; } .wish-main img { width: 88px; height: 120px; } }

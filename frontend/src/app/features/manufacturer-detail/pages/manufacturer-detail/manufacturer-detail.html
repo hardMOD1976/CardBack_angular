@@ -1,0 +1,15 @@
+<main class="detail-page">
+  @if (loading()) { <p role="status">Loading manufacturer…</p> }
+  @else if (notFound()) { <h1>Manufacturer not found</h1><a routerLink="/search">Back to search</a> }
+  @else if (error()) { <h1>Unable to load manufacturer</h1><p>Please try again.</p> }
+  @else if (data(); as manufacturer) {
+    <a class="back-link" routerLink="/search">← Back to results</a>
+    <p class="eyebrow">Manufacturer</p><h1>{{ manufacturer.name }}</h1>
+    <p class="lede">{{ manufacturer.country || 'Country not recorded' }} @if (manufacturer.foundedYear) { · Founded {{ manufacturer.foundedYear }} } @if (manufacturer.dissolvedYear) { · Ended {{ manufacturer.dissolvedYear }} }</p>
+    <section><header><h2>Lines produced</h2><span>{{ manufacturer.lines.length }}</span></header>
+      @if (manufacturer.lines.length) { <div class="cards">@for (line of manufacturer.lines; track line.id) {
+        <a class="entity-card" [routerLink]="['/lines', line.id]"><img [src]="line.logo || 'assets/cardback_placeholder.jpeg'" [alt]="line.name"><div><h3>{{ line.name }}</h3><p>{{ line.franchise.name }}</p><small>{{ line.startYear || '—' }} – {{ line.endYear || 'Present' }} @if (line.scale) { · {{ line.scale }} }</small></div></a>
+      }</div> } @else { <p class="empty">No active lines are linked to this manufacturer yet.</p> }
+    </section>
+  }
+</main>

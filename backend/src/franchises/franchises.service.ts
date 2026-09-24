@@ -53,7 +53,7 @@ export class FranchisesService {
       ]);
 
     return buildPaginatedResponse(
-      franchises,
+      franchises.map(({ id, name, owner, firstAppearance, description, logo }) => ({ id, name, owner, firstAppearance, description, logo })),
       page,
       limit,
       total,
@@ -115,6 +115,7 @@ export class FranchisesService {
   ) {
     return this.prisma.franchise.create({
       data: createFranchiseDto,
+      select: { id: true, name: true, owner: true, firstAppearance: true, description: true, logo: true },
     });
   }
 
@@ -127,6 +128,7 @@ export class FranchisesService {
         id,
       },
       data: updateFranchiseDto,
+      select: { id: true, name: true, owner: true, firstAppearance: true, description: true, logo: true },
     });
   }
 
@@ -138,6 +140,7 @@ export class FranchisesService {
       data: {
         deletedAt: new Date(),
       },
+      select: { id: true, deletedAt: true },
     });
   }
 }

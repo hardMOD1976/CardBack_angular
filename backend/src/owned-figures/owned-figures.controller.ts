@@ -66,6 +66,11 @@ export class OwnedFiguresController {
     );
   }
 
+  @Get('stats')
+  stats(@CurrentUserId() userId: string) {
+    return this.ownedFiguresService.getStats(userId);
+  }
+
   @ApiOperation({
     summary: 'Get owned figure by id',
     description:

@@ -57,7 +57,12 @@ export class LinesService {
       ]);
 
     return buildPaginatedResponse(
-      lines,
+      lines.map((line) => ({
+        id: line.id, name: line.name, startYear: line.startYear, endYear: line.endYear,
+        scale: line.scale, logo: line.logo, description: line.description,
+        manufacturer: { id: line.manufacturer.id, name: line.manufacturer.name },
+        franchise: { id: line.franchise.id, name: line.franchise.name, logo: line.franchise.logo },
+      })),
       page,
       limit,
       total,
@@ -133,6 +138,7 @@ export class LinesService {
   async create(createLineDto: CreateLineDto) {
     return this.prisma.line.create({
       data: createLineDto,
+      select: { id: true, name: true, startYear: true, endYear: true, scale: true, logo: true, description: true, manufacturerId: true, franchiseId: true },
     });
   }
 
@@ -145,6 +151,7 @@ export class LinesService {
         id,
       },
       data: updateLineDto,
+      select: { id: true, name: true, startYear: true, endYear: true, scale: true, logo: true, description: true, manufacturerId: true, franchiseId: true },
     });
   }
 
@@ -156,6 +163,7 @@ export class LinesService {
       data: {
         deletedAt: new Date(),
       },
+      select: { id: true, deletedAt: true },
     });
   }
 }

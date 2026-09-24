@@ -20,24 +20,24 @@ export class VariantsService {
 async findAll(
   pagination: PaginationQueryDto,
 ) {
-  const { page, limit } = pagination;
+  const { page, limit, search } = pagination;
 
   const skip = (page - 1) * limit;
 
   const where = {
   deletedAt: null,
 
-  ...(pagination.search && {
+  ...(search && {
     OR: [
       {
         name: {
-          contains: pagination.search,
+          contains: search,
           mode: 'insensitive' as const,
         },
       },
       {
         description: {
-          contains: pagination.search,
+          contains: search,
           mode: 'insensitive' as const,
         },
       },
@@ -49,20 +49,13 @@ async findAll(
     await this.prisma.$transaction([
       this.prisma.variant.findMany({
         where,
-        include: {
+        select: {
+          id: true, name: true, description: true, imageUrl: true,
           figure: {
-            include: {
-              character: {
-                include: {
-                  franchise: true,
-                },
-              },
-              line: {
-                include: {
-                  manufacturer: true,
-                  franchise: true,
-                },
-              },
+            select: {
+              id: true, name: true, code: true, imageUrl: true,
+              character: { select: { id: true, name: true } },
+              line: { select: { id: true, name: true, manufacturer: { select: { id: true, name: true } } } },
             },
           },
         },
@@ -79,15 +72,21 @@ async findAll(
     ]);
 
   return buildPaginatedResponse(
-    variants,
+    variants.map((variant) => ({
+      id: variant.id, name: variant.name, description: variant.description, imageUrl: variant.imageUrl,
+      figure: {
+        id: variant.figure.id, name: variant.figure.name, code: variant.figure.code,
+        imageUrl: variant.figure.imageUrl, character: variant.figure.character, line: variant.figure.line,
+      },
+    })),
     page,
     limit,
     total,
   );
 }
 
-  findOne(id: string) {
-    return this.prisma.variant.findFirst({
+  async findOne(id: string) {
+    const variant = await this.prisma.variant.findFirst({
       where: {
         id,
         deletedAt: null,
@@ -95,21 +94,36 @@ async findAll(
       include: {
         figure: {
           include: {
-            character: {
-              include: {
-                franchise: true,
-              },
-            },
-            line: {
-              include: {
-                manufacturer: true,
-                franchise: true,
-              },
-            },
+            character: { include: { franchise: true } },
+            line: { include: { manufacturer: true, franchise: true } },
           },
+        },
+        productReleases: {
+          where: { deletedAt: null },
+          orderBy: { name: 'asc' },
         },
       },
     });
+    if (!variant || variant.figure.deletedAt || variant.figure.character.deletedAt || variant.figure.character.franchise.deletedAt || variant.figure.line.deletedAt || variant.figure.line.manufacturer.deletedAt || variant.figure.line.franchise.deletedAt) {
+      throw new NotFoundException(`Variant with id '${id}' not found.`);
+    }
+    return {
+      id: variant.id,
+      name: variant.name,
+      description: variant.description,
+      imageUrl: variant.imageUrl,
+      figure: {
+        id: variant.figure.id, name: variant.figure.name, code: variant.figure.code, imageUrl: variant.figure.imageUrl,
+        character: { id: variant.figure.character.id, name: variant.figure.character.name, image: variant.figure.character.image },
+        line: { id: variant.figure.line.id, name: variant.figure.line.name, scale: variant.figure.line.scale, manufacturer: { id: variant.figure.line.manufacturer.id, name: variant.figure.line.manufacturer.name } },
+        franchise: { id: variant.figure.character.franchise.id, name: variant.figure.character.franchise.name },
+      },
+      productReleases: variant.productReleases.map((release) => ({
+        id: release.id, name: release.name, packagingType: release.packagingType, region: release.region,
+        language: release.language, retailer: release.retailer, releaseDate: release.releaseDate?.toISOString() ?? null,
+        barcode: release.barcode, imageUrl: release.imageUrl, notes: release.notes,
+      })),
+    };
   }
 
   async create(createVariantDto: CreateVariantDto) {
@@ -117,6 +131,7 @@ async findAll(
 
     return this.prisma.variant.create({
       data: createVariantDto,
+      select: { id: true, name: true, description: true, imageUrl: true, figureId: true },
     });
   }
 
@@ -133,6 +148,7 @@ async findAll(
         id,
       },
       data: updateVariantDto,
+      select: { id: true, name: true, description: true, imageUrl: true, figureId: true },
     });
   }
 
@@ -144,6 +160,7 @@ async findAll(
       data: {
         deletedAt: new Date(),
       },
+      select: { id: true, deletedAt: true },
     });
   }
 

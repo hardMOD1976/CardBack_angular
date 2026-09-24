@@ -1,0 +1,19 @@
+<main class="detail-page">
+  @if (loading()) { <p role="status">Loading character…</p> }
+  @else if (notFound()) { <h1>Character not found</h1><a routerLink="/search">Back to search</a> }
+  @else if (error()) { <h1>Unable to load character</h1><p>Please try again.</p> }
+  @else if (data(); as character) {
+    <a class="back-link" routerLink="/search">← Back to results</a>
+    <div class="hero"><img [src]="character.image || 'assets/cardback_placeholder.jpeg'" [alt]="character.name"><div>
+      <p class="eyebrow">Character · {{ character.franchise.name }}</p><h1>{{ character.name }}</h1>
+      @if (character.description) { <p>{{ character.description }}</p> }
+      <ul class="metadata">@if (character.species) { <li>{{ character.species }}</li> } @if (character.homeworld) { <li>{{ character.homeworld }}</li> } @if (character.affiliation) { <li>{{ character.affiliation }}</li> }</ul>
+      <a [routerLink]="['/franchises', character.franchise.id]">View {{ character.franchise.name }}</a>
+    </div></div>
+    <section><header><h2>Figure appearances</h2><span>{{ character.figures.length }}</span></header>
+      @if (character.figures.length) { <div class="cards">@for (figure of character.figures; track figure.id) {
+        <a class="entity-card" [routerLink]="['/figures', figure.id]"><img [src]="figure.imageUrl || 'assets/cardback_placeholder.jpeg'" [alt]="figure.name"><div><h3>{{ figure.name }}</h3><p>{{ figure.line.name }}</p><small>{{ figure.line.startYear || '—' }} – {{ figure.line.endYear || 'Present' }} · {{ figure.variantsCount }} variants</small></div></a>
+      }</div> } @else { <p class="empty">No active figures are linked to this character yet.</p> }
+    </section>
+  }
+</main>

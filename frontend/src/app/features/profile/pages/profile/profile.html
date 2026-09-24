@@ -1,1 +1,26 @@
-<p>profile works!</p>
+<section class="profile-page">
+  <header>
+    <p class="eyebrow">Your account</p>
+    <h1>Profile & security</h1>
+    <p>Manage your sign-in details for Cardback.</p>
+  </header>
+
+  @if (message()) { <p class="notice success" role="status">{{ message() }}</p> }
+  @if (error()) { <p class="notice error" role="alert">{{ error() }}</p> }
+
+  <article class="profile-card">
+    <h2>Change password</h2>
+    <p>Use at least 12 characters. Changing your password signs you out on this device.</p>
+    <form [formGroup]="form" (ngSubmit)="changePassword()">
+      <label>Current password<input type="password" autocomplete="current-password" formControlName="currentPassword"></label>
+      <label>New password<input type="password" autocomplete="new-password" formControlName="newPassword"></label>
+      <label>Confirm new password<input type="password" autocomplete="new-password" formControlName="confirmPassword"></label>
+      <button class="primary" type="submit" [disabled]="saving()">{{ saving() ? 'Saving…' : 'Update password' }}</button>
+    </form>
+  </article>
+
+  <article class="profile-card session-card">
+    <div><h2>Session</h2><p>Sign out and remove the saved session from this device.</p></div>
+    <button class="secondary" type="button" (click)="logout()">Sign out</button>
+  </article>
+</section>

@@ -7,7 +7,7 @@ import {
   Post,
   Query,
   Put,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 
 import {
@@ -21,24 +21,37 @@ import {
   ApiOperation,
   ApiParam,
   ApiTags,
-  ApiQuery
+  ApiQuery,
 } from '@nestjs/swagger';
 
 import { FiguresService } from './figures.service';
+
 import { CreateFigureDto } from './dto/create-figure.dto';
+
 import { UpdateFigureDto } from './dto/update-figure.dto';
+
+import { FigureDetailResponseDto } from './dto/figure-detail-response.dto';
+
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+
 import { RolesGuard } from '../auth/guards/roles.guard';
+
 import { Roles } from '../auth/decorators/roles.decorator';
+
 import { Public } from '../auth/decorators/public.decorator';
+
 import { Role } from '@prisma/client';
+
 import { PaginationQueryDto } from '../common/pagination';
 
 @ApiTags('Figures')
 @ApiBearerAuth('access-token')
 @Controller('figures')
 export class FiguresController {
-  constructor(private readonly figuresService: FiguresService) {}
+
+  constructor(
+    private readonly figuresService: FiguresService,
+  ) {}
 
   @ApiOperation({
     summary: 'Get all figures',
@@ -53,41 +66,41 @@ export class FiguresController {
     description: 'Internal server error.',
   })
   @ApiQuery({
-  name: 'page',
-  required: false,
-  example: 1,
-})
-@ApiQuery({
-  name: 'limit',
-  required: false,
-  example: 20,
-})
-@ApiQuery({
-  name: 'search',
-  required: false,
-  example: 'vader',
-})
+    name: 'page',
+    required: false,
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    example: 20,
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    example: 'vader',
+  })
   @Public()
-@Get()
-findAll(
-  @Query('page') page = 1,
-  @Query('limit') limit = 20,
-  @Query('search') search?: string,
-) {
-  const pagination: PaginationQueryDto = {
-    page: Number(page),
-    limit: Number(limit),
-    search,
-  };
+  @Get()
+  findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
+    @Query('search') search?: string,
+  ) {
 
-  return this.figuresService.findAll(pagination);
-}
+    const pagination: PaginationQueryDto = {
+      page: Number(page),
+      limit: Number(limit),
+      search,
+    };
 
+    return this.figuresService.findAll(pagination);
+  }
 
   @ApiOperation({
     summary: 'Get figure by id',
     description:
-      'Returns an active figure by its identifier.',
+      'Returns an active figure by its identifier, including its character, line and variants.',
     operationId: 'findFigureById',
   })
   @ApiParam({
@@ -96,6 +109,7 @@ findAll(
   })
   @ApiOkResponse({
     description: 'Figure found.',
+    type: FigureDetailResponseDto,
   })
   @ApiNotFoundResponse({
     description: 'Figure not found.',
@@ -106,7 +120,7 @@ findAll(
   @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.figuresService.findOne(id);
+    return this.figuresService.findDetail(id);
   }
 
   @ApiOperation({

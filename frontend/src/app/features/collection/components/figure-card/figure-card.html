@@ -1,4 +1,4 @@
-<article class="figure-card">
+<article class="figure-card" [class.clickable]="figure.productReleaseId" [attr.tabindex]="figure.productReleaseId ? 0 : null" [attr.role]="figure.productReleaseId ? 'link' : null" (click)="openRelease()" (keydown.enter)="openRelease()">
 
   <div class="image">
 
@@ -69,5 +69,9 @@
     }
 
   </div>
+
+  @if (figure.ownedFigureId) {
+    <button class="remove-owned" type="button" (click)="$event.stopPropagation(); remove()">Remove from collection</button>
+  }
 
 </article>

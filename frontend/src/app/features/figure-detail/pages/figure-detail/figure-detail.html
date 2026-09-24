@@ -1,0 +1,25 @@
+<main class="detail-page">
+  @if (loading()) { <p role="status">Loading figure…</p> }
+  @else if (notFound()) { <h1>Figure not found</h1><a routerLink="/search">Back to search</a> }
+  @else if (error()) { <h1>Unable to load figure</h1><p>Please try again.</p> }
+  @else if (data(); as figure) {
+    <a class="back-link" routerLink="/databank">← Back to databank</a>
+    <div class="hero"><img [src]="figure.imageUrl || 'assets/cardback_placeholder.jpeg'" [alt]="figure.name"><div>
+      <p class="eyebrow">Figure · <a [routerLink]="['/franchises', figure.line.franchise.id]">{{ figure.line.franchise.name }}</a></p><h1>{{ figure.name }}</h1>
+      @if (figure.description) { <p>{{ figure.description }}</p> }
+      <ul class="metadata">@if (figure.code) { <li>Code {{ figure.code }}</li> } @if (figure.line.scale) { <li>{{ figure.line.scale }}</li> }<li>{{ figure.line.manufacturer.name }}</li></ul>
+      <p>Character · <a [routerLink]="['/characters', figure.character.id]">{{ figure.character.name }}</a></p>
+      <p>Line · <a [routerLink]="['/lines', figure.line.id]">{{ figure.line.name }}</a></p>
+    </div></div>
+    <section><header><h2>Variants</h2><span>{{ figure.variants.length }}</span></header>
+      @if (figure.variants.length) { <div class="cards">@for (variant of figure.variants; track variant.id) {
+        <a class="entity-card" [routerLink]="['/variants', variant.id]"><img [src]="variant.imageUrl || figure.imageUrl || 'assets/cardback_placeholder.jpeg'" [alt]="variant.name || 'Standard variant'"><div><h3>{{ variant.name || 'Standard variant' }}</h3><p>{{ variant.description || 'No variant notes recorded.' }}</p><small>{{ variant.productReleases.length }} product releases</small></div></a>
+      }</div> } @else { <p class="empty">No active variants are recorded for this figure.</p> }
+    </section>
+    <section><header><h2>Product releases</h2><span>{{ releaseCount(figure) }}</span></header>
+      @if (releaseCount(figure)) { <div class="cards">@for (variant of figure.variants; track variant.id) { @for (release of variant.productReleases; track release.id) {
+        <a class="entity-card" [routerLink]="['/product-releases', release.id]"><img [src]="release.imageUrl || variant.imageUrl || figure.imageUrl || 'assets/cardback_placeholder.jpeg'" [alt]="release.name"><div><h3>{{ release.name }}</h3><p>{{ release.packagingType || 'Packaging not recorded' }}</p><small>{{ release.region || 'Region not recorded' }} @if (release.releaseDate) { · {{ release.releaseDate | date:'yyyy' }} }</small></div></a>
+      } }</div> } @else { <p class="empty">No active product releases are recorded yet.</p> }
+    </section>
+  }
+</main>

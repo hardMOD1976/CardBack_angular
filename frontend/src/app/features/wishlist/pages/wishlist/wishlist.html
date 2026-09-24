@@ -1,1 +1,17 @@
-<p>wishlist works!</p>
+<main class="wishlist-page">
+  <header><div><p class="eyebrow">Your collector archive</p><h1>Wishlist</h1><p>Keep track of product releases you hope to add to your collection.</p></div><a routerLink="/databank">Browse databank</a></header>
+  @if (loading()) { <p role="status">Loading your wishlist…</p> }
+  @else if (error()) { <div class="state" role="alert"><p>We could not load your wishlist.</p><button type="button" (click)="load()">Try again</button></div> }
+  @else if (entries().length === 0) { <div class="state"><h2>Your wishlist is empty</h2><p>Save a product release from its detail page to keep it here.</p><a routerLink="/databank">Browse the databank</a></div> }
+  @else { <section class="wishlist-grid" aria-label="Wishlist items">@for (entry of entries(); track entry.id) {
+    <article class="wish-card">
+      <a class="wish-main" [routerLink]="['/product-releases', entry.productRelease.id]"><img [src]="entry.productRelease.imageUrl || 'assets/cardback_placeholder.jpeg'" [alt]="entry.productRelease.name"><div>
+        <p class="eyebrow">{{ entry.productRelease.variant.figure.line.name }} · {{ entry.productRelease.variant.figure.line.manufacturer.name }}</p><h2>{{ entry.productRelease.name }}</h2>
+        <p>{{ entry.productRelease.variant.figure.character.name }} · {{ entry.productRelease.packagingType || 'Packaging not recorded' }}</p>
+        @if (entry.targetPrice !== null) { <small>Target price · {{ entry.targetPrice | currency:'EUR' }}</small> }
+        @if (entry.notes) { <p class="notes">{{ entry.notes }}</p> }
+      </div></a>
+      <div class="wish-actions"><a [routerLink]="['/figures', entry.productRelease.variant.figure.id]">View figure</a><button type="button" [disabled]="removing() === entry.id" (click)="remove(entry)">{{ removing() === entry.id ? 'Removing…' : 'Remove' }}</button></div>
+    </article>
+  }</section> }
+</main>

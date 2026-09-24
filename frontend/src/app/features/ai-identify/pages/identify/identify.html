@@ -1,1 +1,22 @@
-<p>identify works!</p>
+<main class="identify-page">
+  <header><p class="eyebrow">CARD BACK · AI TOOL</p><h1>Identify a figure</h1><p>Upload a clear photo to get possible catalogue matches. Suggestions are not confirmed records.</p></header>
+  <section class="identify-panel">
+    <label class="drop-zone" for="figure-image">
+      @if (previewUrl()) { <img [src]="previewUrl()" alt="Selected figure preview"> } @else { <span class="upload-icon">＋</span><strong>Choose an image</strong><span>JPG, PNG or WebP · up to 5 MB</span> }
+      <input id="figure-image" type="file" accept="image/jpeg,image/png,image/webp" (change)="selectFile($event)">
+    </label>
+    <div class="actions">
+      <button type="button" class="primary" [disabled]="!file() || loading()" (click)="identify()">{{ loading() ? 'Identifying…' : 'Identify figure' }}</button>
+      @if (file()) { <button type="button" class="secondary" [disabled]="loading()" (click)="clear()">Choose another image</button> }
+    </div>
+    @if (error()) { <p class="message error" role="alert">{{ error() }}</p> }
+    @if (disclaimer()) { <p class="message note">{{ disclaimer() }}</p> }
+  </section>
+  @if (matches().length) {
+    <section class="matches"><h2>Possible matches</h2>
+      @for (match of matches(); track $index) {
+        <article class="match"><div><h3>{{ match.figureName }}</h3><p>{{ match.characterName }} · {{ match.lineName }}</p><small>{{ match.manufacturer }}@if (match.approximateYear) { · around {{ match.approximateYear }} }</small></div><span class="confidence">{{ (match.confidence * 100) | number:'1.0-0' }}%<small>confidence</small></span><p class="reasoning">{{ match.reasoning }}</p></article>
+      }
+    </section>
+  }
+</main>

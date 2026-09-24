@@ -30,6 +30,9 @@
 
 }
 
+.figure-card.clickable:focus-visible { outline: 3px solid var(--accent-primary); outline-offset: 3px; }
+.remove-owned { margin: 0 var(--space-4) var(--space-4); padding: .5rem .7rem; border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-secondary); background: var(--surface-secondary); cursor: pointer; }
+
 .image {
 
   position: relative;

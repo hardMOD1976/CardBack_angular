@@ -7,6 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 
 import { CreateProductReleaseDto } from './dto/create-product-release.dto';
 import { UpdateProductReleaseDto } from './dto/update-product-release.dto';
+import { ProductReleaseResponseDto } from './dto/product-release-response.dto';
 
 import {
   PaginationQueryDto,
@@ -29,6 +30,14 @@ async findAll(
 
   const where = {
     deletedAt: null,
+    variant: {
+      deletedAt: null,
+      figure: {
+        deletedAt: null,
+        character: { deletedAt: null },
+        line: { deletedAt: null, manufacturer: { deletedAt: null }, franchise: { deletedAt: null } },
+      },
+    },
 
     ...(pagination.search && {
       OR: [
@@ -151,7 +160,7 @@ async findAll(
     ]);
 
   return buildPaginatedResponse(
-    productReleases,
+    productReleases.map((release) => this.toResponse(release)),
     page,
     limit,
     total,
@@ -167,8 +176,8 @@ async findAll(
 }
 
 
-  findOne(id: string) {
-  return this.prisma.productRelease.findFirst({
+  async findOne(id: string): Promise<ProductReleaseResponseDto> {
+  const release = await this.prisma.productRelease.findFirst({
     where: {
       id,
       deletedAt: null,
@@ -182,6 +191,7 @@ async findAll(
               line: {
                 include: {
                   manufacturer: true,
+                  franchise: true,
                 },
               },
             },
@@ -190,14 +200,20 @@ async findAll(
       },
     },
   });
+  if (!release || release.variant.deletedAt || release.variant.figure.deletedAt || release.variant.figure.character.deletedAt || release.variant.figure.line.deletedAt || release.variant.figure.line.manufacturer.deletedAt || release.variant.figure.line.franchise.deletedAt) {
+    throw new NotFoundException(`Product Release with id '${id}' not found.`);
+  }
+  return this.toResponse(release);
 }
 
   async create(createDto: CreateProductReleaseDto) {
     await this.ensureVariantExists(createDto.variantId);
 
-    return this.prisma.productRelease.create({
+    const result = await this.prisma.productRelease.create({
       data: createDto,
+      select: { id: true },
     });
+    return this.findOne(result.id);
   }
 
   async update(
@@ -208,12 +224,14 @@ async findAll(
       await this.ensureVariantExists(updateDto.variantId);
     }
 
-    return this.prisma.productRelease.update({
+    const result = await this.prisma.productRelease.update({
       where: {
         id,
       },
       data: updateDto,
+      select: { id: true },
     });
+    return this.findOne(result.id);
   }
 
   remove(id: string) {
@@ -224,7 +242,47 @@ async findAll(
       data: {
         deletedAt: new Date(),
       },
+      select: { id: true, deletedAt: true },
     });
+  }
+
+  private toResponse(release: any): ProductReleaseResponseDto {
+    return {
+      id: release.id,
+      name: release.name,
+      barcode: release.barcode,
+      releaseYear: release.releaseDate?.getUTCFullYear() ?? null,
+      releaseDate: release.releaseDate?.toISOString() ?? null,
+      packagingType: release.packagingType,
+      region: release.region,
+      language: release.language,
+      retailer: release.retailer,
+      notes: release.notes,
+      imageUrl: release.imageUrl,
+      variant: {
+        id: release.variant.id,
+        name: release.variant.name,
+        figure: {
+          id: release.variant.figure.id,
+          name: release.variant.figure.name,
+          code: release.variant.figure.code,
+          imageUrl: release.variant.figure.imageUrl,
+          character: {
+            id: release.variant.figure.character.id,
+            name: release.variant.figure.character.name,
+            image: release.variant.figure.character.image,
+          },
+          line: {
+            id: release.variant.figure.line.id,
+            name: release.variant.figure.line.name,
+            manufacturer: {
+              id: release.variant.figure.line.manufacturer.id,
+              name: release.variant.figure.line.manufacturer.name,
+            },
+          },
+        },
+      },
+    };
   }
 
   private async ensureVariantExists(id: string) {

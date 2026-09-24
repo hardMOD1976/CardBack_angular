@@ -1,25 +1,17 @@
 # Cardback — Project Status
 
-**Last updated:** 2026-09-23
+**Last updated:** 2026-09-25
 
 ## Overall Status
 
-Cardback is in the frontend business-features phase.
-
-Core infrastructure, Databank, Collection, Global Search, Franchise Detail, and Line Detail foundations are in place.
-
-The current milestone is the implementation of catalogue Detail pages.
-
-**Franchise Detail and Line Detail are complete and verified.**
-
-The next Detail page is **Figure Detail**.
+Cardback now has the main collector journeys represented in Angular: account entry, catalogue browsing and detail navigation, collection tracking, wishlist, dashboard, barcode lookup, and AI-assisted image suggestions. This is feature implementation progress, not a release-readiness sign-off. Database migrations and external service configuration still need to be applied and verified in the intended environment.
 
 ## Feature Status
 
 | Area                      | Status                  | Notes                                                                     |
 | ------------------------- | ----------------------- | ------------------------------------------------------------------------- |
 | Backend infrastructure    | Complete                | NestJS, Prisma, PostgreSQL, auth, validation, DTO approach                |
-| Authentication            | Implemented; UX backlog | Improve error feedback and password recovery                              |
+| Authentication            | Implemented; integration required | Registration, login, refresh, password change and reset flow; password reset email needs Resend configuration |
 | Databank                  | MVP complete            | Product Release listing, pagination, search, loading/error/empty states   |
 | Collection                | MVP complete            | Server-side pagination, search, sort, and filters                         |
 | Global Search backend     | Implemented             | Search endpoint and public result DTO                                     |
@@ -29,11 +21,17 @@ The next Detail page is **Figure Detail**.
 | Franchise Detail frontend | Complete                | Page, model, service, route, Line navigation verified                     |
 | Line Detail backend       | Complete                | Dedicated detail contract, summaries, service mapping, 200 verified       |
 | Line Detail frontend      | Complete                | Page, model, service, route verified                                      |
-| Figure Detail             | Next                    | Backend contract and implementation pending                               |
-| Manufacturer Detail       | Pending                 | Not started                                                               |
-| Character Detail          | Pending                 | Not started                                                               |
-| Variant Detail            | Pending                 | Not started                                                               |
-| Product Release Detail    | Pending                 | Not started                                                               |
+| Figure Detail             | Implemented             | Dedicated mapped detail response and release/variant navigation          |
+| Manufacturer Detail       | Implemented             | Dedicated detail destination and links                                    |
+| Character Detail         | Implemented             | Dedicated detail destination and links                                    |
+| Variant Detail            | Implemented             | Dedicated detail destination and release links                            |
+| Product Release Detail    | Implemented             | Detail, add-to-collection, and wishlist actions                           |
+| Wishlist                  | Implemented             | User-owned release watchlist, separate from owned collection              |
+| Dashboard                 | Implemented             | Collection aggregates and recently added items                            |
+| Barcode scanner           | Implemented             | Native browser scanner when supported, image/manual fallback, catalogue lookup |
+| AI identification         | Implemented; key required | Gemini suggestions only; does not write catalogue records                 |
+| Public API DTO boundary   | In progress             | Owned Figures now explicitly mapped; remaining public endpoints require continued audit |
+| Localization              | Pending                 | Angular UI still needs a complete application-wide language system        |
 
 ## Global Search
 
@@ -68,7 +66,7 @@ variant: 'variants'
 productRelease: 'product-releases'
 ```
 
-Only implemented destination routes should be considered functional.
+Catalogue destinations for all seven result types are implemented. Build and runtime validation remain required before treating every route as verified.
 
 ### Remaining
 

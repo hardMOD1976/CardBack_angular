@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -8,7 +9,8 @@ import { AppModule } from './app.module';
 import { PrismaExceptionFilter } from './common/exceptions/prisma-exception.filter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { bodyParser: false });
+  app.useBodyParser('json', { limit: '8mb' });
 
   app.enableCors({
   origin: process.env.FRONTEND_URL ?? 'http://localhost:4200',

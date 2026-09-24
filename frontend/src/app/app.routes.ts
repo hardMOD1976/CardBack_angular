@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { Shell } from './shell/components/shell/shell';
 
 import { Login } from './features/auth/pages/login/login';
+import { Welcome } from './features/auth/pages/welcome/welcome';
 
 import { Dashboard } from './features/dashboard/pages/dashboard/dashboard';
 
@@ -23,13 +24,27 @@ import { GlobalSearch } from './features/global-search/pages/global-search/globa
 import { FranchiseDetail } from './features/franchise-detail/pages/franchise-detail';
 
 import { LineDetail } from './features/line-detail/pages/line-detail';
+import { FigureDetail } from './features/figure-detail/pages/figure-detail/figure-detail';
+import { ManufacturerDetail } from './features/manufacturer-detail/pages/manufacturer-detail/manufacturer-detail';
+import { CharacterDetail } from './features/character-detail/pages/character-detail/character-detail';
+import { VariantDetail } from './features/variant-detail/pages/variant-detail/variant-detail';
+import { ProductReleaseDetail } from './features/product-release-detail/pages/product-release-detail/product-release-detail';
 
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
 {
+path: 'welcome',
+component: Welcome,
+},
+{
 path: 'login',
 component: Login,
+},
+{
+path: '',
+pathMatch: 'full',
+redirectTo: 'welcome',
 },
 {
 path: '',
@@ -80,6 +95,26 @@ component: FranchiseDetail,
 {
 path: 'lines/:id',
 component: LineDetail,
+},
+{
+path: 'figures/:id',
+component: FigureDetail,
+},
+{
+path: 'manufacturers/:id',
+component: ManufacturerDetail,
+},
+{
+path: 'characters/:id',
+component: CharacterDetail,
+},
+{
+path: 'variants/:id',
+component: VariantDetail,
+},
+{
+path: 'product-releases/:id',
+component: ProductReleaseDetail,
 },
 ],
 },

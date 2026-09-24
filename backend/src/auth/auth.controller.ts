@@ -1,4 +1,5 @@
 import {
+  Get,
   Body,
   Controller,
   Post,
@@ -20,10 +21,15 @@ import {
   LoginDto,
   RefreshTokenDto,
 } from './dto';
+import { RegisterDto } from './dto/register.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 import { Public } from './decorators/public.decorator';
+import { AuthThrottleGuard } from './guards/auth-throttle.guard';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -33,6 +39,7 @@ export class AuthController {
   ) {}
 
   @Public()
+  @UseGuards(AuthThrottleGuard)
   @Post('login')
   @ApiOperation({
     summary: 'User login',
@@ -42,6 +49,39 @@ export class AuthController {
   })
   login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
+  }
+
+  @Public()
+  @Get('config')
+  configuration() {
+    return { passwordRecoveryEnabled: this.authService.passwordRecoveryEnabled() };
+  }
+
+  @Public()
+  @UseGuards(AuthThrottleGuard)
+  @Post('register')
+  register(@Body() dto: RegisterDto) {
+    return this.authService.register(dto);
+  }
+
+  @Public()
+  @UseGuards(AuthThrottleGuard)
+  @Post('password/forgot')
+  forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(dto);
+  }
+
+  @Public()
+  @UseGuards(AuthThrottleGuard)
+  @Post('password/reset')
+  resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.authService.resetPassword(dto);
+  }
+
+  @UseGuards(JwtAuthGuard, AuthThrottleGuard)
+  @Post('password/change')
+  changePassword(@Req() req: Request, @Body() dto: ChangePasswordDto) {
+    return this.authService.changePassword((req.user as { sub: string }).sub, dto);
   }
 
   @Public()

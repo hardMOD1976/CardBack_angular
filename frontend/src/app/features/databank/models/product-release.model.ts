@@ -8,6 +8,8 @@ export interface ProductReleaseModel {
 
   releaseYear: number | null;
 
+  releaseDate: string | null;
+
   packagingType: string | null;
 
   region: string | null;
@@ -16,25 +18,30 @@ export interface ProductReleaseModel {
 
   retailer: string | null;
 
+  notes: string | null;
+
   imageUrl: string | null;
 
   variant: {
 
     id: string;
 
-    name: string;
+    name: string | null;
 
     figure: {
 
       id: string;
 
       name: string;
+      code: string | null;
+      imageUrl: string | null;
 
       character: {
 
         id: string;
 
         name: string;
+        image: string | null;
 
       };
 
@@ -43,7 +50,6 @@ export interface ProductReleaseModel {
         id: string;
 
         name: string;
-
         manufacturer: {
 
           id: string;

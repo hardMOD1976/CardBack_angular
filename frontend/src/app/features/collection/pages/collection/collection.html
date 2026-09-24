@@ -27,7 +27,8 @@
     <section class="collection-grid">
       @for (figure of figures(); track figure.id) {
         <cb-figure-card
-          [figure]="figure">
+          [figure]="figure"
+          (removeOwnedFigure)="removeOwnedFigure($event)">
         </cb-figure-card>
       }
     </section>

@@ -49,4 +49,8 @@ export class DatabankService {
 
   }
 
+  getById(id: string): Observable<ProductReleaseModel> {
+    return this.http.get<ProductReleaseModel>(`${environment.apiUrl}/product-releases/${id}`);
+  }
+
 }

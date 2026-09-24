@@ -1,0 +1,16 @@
+.profile-page { max-width: 860px; margin: 0 auto; padding: 2rem; color: var(--text-primary); }
+.profile-page header p, .profile-card p { color: var(--text-secondary); }
+.eyebrow { color: #d97706 !important; text-transform: uppercase; font-weight: 700; font-size: .75rem; letter-spacing: .12em; }
+.profile-card { margin-top: 1.5rem; padding: 1.5rem; border: 1px solid var(--border-color); border-radius: .9rem; background: var(--card-bg); }
+.profile-card h2 { margin-top: 0; }
+form { display: grid; gap: 1rem; max-width: 560px; }
+label { display: grid; gap: .45rem; color: var(--text-secondary); }
+input { min-height: 2.9rem; padding: .6rem .8rem; border: 1px solid var(--input-border); border-radius: .55rem; color: var(--text-primary); background: var(--input-bg); font: inherit; }
+button { min-height: 2.8rem; padding: .65rem 1rem; border: 0; border-radius: .55rem; font: inherit; font-weight: 700; cursor: pointer; }
+.primary { color: #111827; background: #f59e0b; }
+.secondary { border: 1px solid var(--border-color); color: var(--text-primary); background: var(--bg-secondary); }
+.session-card { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.notice { padding: .8rem 1rem; border-radius: .5rem; }
+.notice.success { color: #166534; background: #dcfce7; }
+.notice.error { color: #991b1b; background: #fee2e2; }
+@media (max-width: 600px) { .profile-page { padding: 1rem; } .session-card { align-items: flex-start; flex-direction: column; } }

@@ -1,1 +1,24 @@
-<p>scan works!</p>
+<main class="scan-page">
+  <header><p class="eyebrow">COLLECTION TOOL</p><h1>Barcode scanner</h1><p>Scan a retail barcode to find matching releases in the Cardback catalogue.</p></header>
+  <section class="scan-panel" aria-label="Barcode scanner">
+    @if (scanning()) {
+      <div class="camera-frame"><video #video autoplay muted playsinline aria-label="Camera barcode preview"></video><span class="scan-line"></span></div>
+      <button type="button" class="secondary" (click)="stopCamera()">Stop camera</button>
+    } @else {
+      <div class="scan-actions">
+        <button type="button" class="primary" (click)="startCamera()" [disabled]="!cameraAvailable">Use camera</button>
+        <label class="secondary upload">Scan a barcode photo<input type="file" accept="image/*" capture="environment" (change)="scanImage($event)"></label>
+      </div>
+      <p class="hint">Camera scanning depends on browser support and permission. You can always enter the code below.</p>
+    }
+    <form class="manual" (ngSubmit)="lookup()"><label for="barcode">Barcode number</label><div><input id="barcode" name="barcode" [ngModel]="barcode()" (ngModelChange)="barcode.set($event)" placeholder="EAN / UPC" inputmode="numeric" autocomplete="off"><button class="primary" type="submit" [disabled]="loading()">{{ loading() ? 'Searching…' : 'Search' }}</button></div></form>
+    @if (error()) { <p class="message" role="status">{{ error() }}</p> }
+  </section>
+  @if (results().length) {
+    <section class="results"><h2>Catalogue matches <span>{{ results().length }}</span></h2>
+      @for (release of results(); track release.id) {
+        <a class="result" [routerLink]="['/product-releases', release.id]"><img [src]="release.imageUrl || release.variant.figure.imageUrl || 'assets/cardback_placeholder.jpeg'" [alt]="release.name" (error)="$any($event.target).src='assets/cardback_placeholder.jpeg'"><span><strong>{{ release.name }}</strong><small>{{ release.variant.figure.name }} · {{ release.variant.figure.character.name }}</small><small>{{ release.variant.figure.line.manufacturer.name }} · {{ release.releaseYear || 'Year unknown' }}</small></span><span class="code">{{ release.barcode }}</span></a>
+      }
+    </section>
+  }
+</main>

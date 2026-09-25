@@ -42,7 +42,9 @@ export class Login {
     username: ['', [Validators.required, Validators.pattern(/^[A-Za-z0-9._-]{3,24}$/)]],
     displayName: ['', [Validators.required, Validators.maxLength(80)]],
     email: ['', [Validators.required, Validators.email, Validators.maxLength(254)]],
-    password: ['', [Validators.required, Validators.minLength(12), Validators.maxLength(128)]],
+    // Existing accounts may have passwords shorter than the new-account policy.
+    // Apply the 12-character minimum only in register/reset flows below.
+    password: ['', Validators.required],
     currentPassword: ['', Validators.required],
     confirmPassword: ['', Validators.required],
     rememberMe: [true],
@@ -122,11 +124,19 @@ export class Login {
         this.errorMessage.set('The passwords do not match.');
         return false;
       }
+      if (controls.password.value.length < 12 || controls.password.value.length > 128) {
+        this.errorMessage.set('Use a password between 12 and 128 characters.');
+        return false;
+      }
       return controls.username.valid && controls.displayName.valid && controls.email.valid && controls.password.valid;
     }
     if (screen === 'forgot') return controls.email.valid;
     if (controls.password.value !== controls.confirmPassword.value) {
       this.errorMessage.set('The passwords do not match.');
+      return false;
+    }
+    if (controls.password.value.length < 12 || controls.password.value.length > 128) {
+      this.errorMessage.set('Use a password between 12 and 128 characters.');
       return false;
     }
     return controls.token.valid && controls.password.valid;

@@ -2301,3 +2301,117 @@ Implement the Franchise Detail frontend, route integration, Global Search connec
 ## Previous Sessions
 
 Previous project history remains below this point and should not be removed.
+Session 2026-09-25
+
+Turbo Update / React Parity Checkpoint
+
+Today's session documented a major acceleration of the Angular implementation through the new turbo update performed with Codex / Work.
+
+The relevant recent commits are:
+
+Turbo update per alinear amb projecte react
+Add detail for franchise, line and WIP figure
+Add detail to global search
+Update global search
+bg update
+Add legal disclaimer and bg image to login
+Update status files
+Remove doble X on cb-input
+Fix global search clear i restyle login
+Add logo for dark theme
+Add global search result card in gbs page
+Update status files
+
+The parallel React project was created as a rapid experimentation/prototyping effort using the existing Neon database. It was initially generated from AI-context.md plus a small number of additional directions and has been used to explore product features and UX ideas quickly.
+
+AI Studio also inserted a batch of test catalogue records into Neon during this experimentation. These records use generated/demo image URLs and are not considered canonical Cardback catalogue data.
+
+Current Angular State
+
+The turbo update has substantially expanded the Angular implementation to cover the same main user-facing journeys already explored in the React version.
+
+The current branch contains implementations for:
+
+authentication, including registration/session refresh/password change/password reset flow
+
+wishlist
+
+dashboard
+
+barcode lookup/scanning fallbacks
+
+AI image identification suggestions
+
+Global Search
+
+Franchise Detail
+
+Line Detail
+
+Figure Detail
+
+Manufacturer Detail
+
+Character Detail
+
+Variant Detail
+
+Product Release Detail
+
+The existence of code/routes is recorded here as implementation status. Manual runtime verification is still required before every destination is considered verified.
+
+Detail Architecture — Decision Preserved
+
+The original Cardback architectural rules remain the source of truth.
+
+Dedicated Detail response contracts are used instead of a universal oversized Detail DTO.
+
+Public endpoints must not expose raw Prisma entities.
+
+Small summary/reference DTOs should be used where appropriate.
+
+Detail pages should avoid recursive descendant loading.
+
+Prisma domain entities are not to be reshaped merely to satisfy frontend presentation.
+
+React implementation choices are reference material and experimentation, not automatic architectural decisions for Angular.
+
+Figure Detail — Current WIP
+
+The current turbo implementation includes:
+
+Figure
+ ├── Character
+ ├── Line
+ │    ├── Manufacturer
+ │    └── Franchise
+ └── Variants
+      └── Product Releases
+
+This is broader than the Detail boundary previously agreed for Cardback.
+
+The previously agreed architectural contract was:
+
+Figure Detail
+ ├── Figure
+ ├── Character summary
+ ├── Line summary
+ └── Variants
+
+with Product Releases reserved for Variant Detail.
+
+Therefore the current nested Product Release implementation is recorded as WIP / under review, not as a superseding architectural decision.
+
+No refactor is being made blindly. The next step is to inspect and verify the current implementation and then explicitly decide whether the richer Figure Detail presentation should become part of the canonical Cardback architecture.
+
+Immediate Next Step
+
+Before adding more features:
+
+Verify the current Figure Detail backend with a real and invalid identifier.
+
+Review the current Figure Detail frontend model/service/page.
+
+Decide the final Figure → Variant → Product Release boundary.
+
+Only then continue auditing the remaining Detail destinations.

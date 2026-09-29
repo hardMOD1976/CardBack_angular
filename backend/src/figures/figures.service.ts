@@ -31,8 +31,24 @@ export class FiguresService {
 
     const where = {
       deletedAt: null,
-      character: { deletedAt: null, franchise: { deletedAt: null } },
-      line: { deletedAt: null, manufacturer: { deletedAt: null }, franchise: { deletedAt: null } },
+
+      character: {
+        deletedAt: null,
+        franchise: {
+          deletedAt: null,
+        },
+      },
+
+      line: {
+        deletedAt: null,
+        manufacturer: {
+          deletedAt: null,
+        },
+        franchise: {
+          deletedAt: null,
+        },
+      },
+
       ...(search && {
         name: {
           contains: search,
@@ -71,12 +87,33 @@ export class FiguresService {
 
     return buildPaginatedResponse(
       figures.map((figure) => ({
-        id: figure.id, name: figure.name, code: figure.code, description: figure.description, imageUrl: figure.imageUrl,
-        character: { id: figure.character.id, name: figure.character.name, image: figure.character.image },
+        id: figure.id,
+        name: figure.name,
+        code: figure.code,
+        description: figure.description,
+        imageUrl: figure.imageUrl,
+
+        character: {
+          id: figure.character.id,
+          name: figure.character.name,
+          image: figure.character.image,
+        },
+
         line: {
-          id: figure.line.id, name: figure.line.name, scale: figure.line.scale, logo: figure.line.logo,
-          manufacturer: { id: figure.line.manufacturer.id, name: figure.line.manufacturer.name },
-          franchise: { id: figure.line.franchise.id, name: figure.line.franchise.name },
+          id: figure.line.id,
+          name: figure.line.name,
+          scale: figure.line.scale,
+          logo: figure.line.logo,
+
+          manufacturer: {
+            id: figure.line.manufacturer.id,
+            name: figure.line.manufacturer.name,
+          },
+
+          franchise: {
+            id: figure.line.franchise.id,
+            name: figure.line.franchise.name,
+          },
         },
       })),
       page,
@@ -93,10 +130,18 @@ export class FiguresService {
       where: {
         id,
         deletedAt: null,
+        character: {
+          deletedAt: null,
+        },
+        line: {
+          deletedAt: null,
+        },
       },
       include: {
-        character: { include: { franchise: true } },
-        line: { include: { manufacturer: true, franchise: true } },
+        character: true,
+
+        line: true,
+
         variants: {
           where: {
             deletedAt: null,
@@ -104,21 +149,11 @@ export class FiguresService {
           orderBy: {
             name: 'asc',
           },
-          include: {
-            productReleases: { where: { deletedAt: null }, orderBy: { name: 'asc' } },
-          },
         },
       },
     });
 
-    if (
-      !figure ||
-      figure.character.deletedAt !== null ||
-      figure.character.franchise.deletedAt !== null ||
-      figure.line.deletedAt !== null ||
-      figure.line.manufacturer.deletedAt !== null ||
-      figure.line.franchise.deletedAt !== null
-    ) {
+    if (!figure) {
       throw new NotFoundException(
         `Figure with id '${id}' not found.`,
       );
@@ -142,8 +177,6 @@ export class FiguresService {
         name: figure.line.name,
         scale: figure.line.scale,
         logo: figure.line.logo,
-        manufacturer: { id: figure.line.manufacturer.id, name: figure.line.manufacturer.name },
-        franchise: { id: figure.line.franchise.id, name: figure.line.franchise.name },
       },
 
       variants: figure.variants.map((variant) => ({
@@ -151,15 +184,6 @@ export class FiguresService {
         name: variant.name,
         description: variant.description,
         imageUrl: variant.imageUrl,
-        productReleases: variant.productReleases.map((release) => ({
-          id: release.id,
-          name: release.name,
-          packagingType: release.packagingType,
-          region: release.region,
-          releaseDate: release.releaseDate?.toISOString() ?? null,
-          barcode: release.barcode,
-          imageUrl: release.imageUrl,
-        })),
       })),
     };
   }
@@ -176,7 +200,15 @@ export class FiguresService {
 
     return this.prisma.figure.create({
       data: createFigureDto,
-      select: { id: true, name: true, code: true, description: true, imageUrl: true, characterId: true, lineId: true },
+      select: {
+        id: true,
+        name: true,
+        code: true,
+        description: true,
+        imageUrl: true,
+        characterId: true,
+        lineId: true,
+      },
     });
   }
 
@@ -202,7 +234,15 @@ export class FiguresService {
         id,
       },
       data: updateFigureDto,
-      select: { id: true, name: true, code: true, description: true, imageUrl: true, characterId: true, lineId: true },
+      select: {
+        id: true,
+        name: true,
+        code: true,
+        description: true,
+        imageUrl: true,
+        characterId: true,
+        lineId: true,
+      },
     });
   }
 
@@ -215,7 +255,10 @@ export class FiguresService {
       data: {
         deletedAt: new Date(),
       },
-      select: { id: true, deletedAt: true },
+      select: {
+        id: true,
+        deletedAt: true,
+      },
     });
   }
 

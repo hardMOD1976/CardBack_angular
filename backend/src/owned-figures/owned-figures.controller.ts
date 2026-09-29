@@ -23,12 +23,15 @@ import {
 } from '@nestjs/swagger';
 
 import { OwnedFiguresService } from './owned-figures.service';
+
 import { CreateOwnedFigureDto } from './dto/create-owned-figure.dto';
+
 import { UpdateOwnedFigureDto } from './dto/update-owned-figure.dto';
 
 import { CurrentUserId } from '../auth/decorators/current-user-id.decorator';
+
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { PaginationQueryDto } from '../common/pagination';
+
 import { OwnedFiguresQueryDto } from './dto/owned-figures-query.dto';
 
 @ApiTags('Owned Figures')
@@ -36,6 +39,7 @@ import { OwnedFiguresQueryDto } from './dto/owned-figures-query.dto';
 @ApiBearerAuth('access-token')
 @UseGuards(JwtAuthGuard)
 export class OwnedFiguresController {
+
   constructor(
     private readonly ownedFiguresService: OwnedFiguresService,
   ) {}
@@ -67,8 +71,37 @@ export class OwnedFiguresController {
   }
 
   @Get('stats')
-  stats(@CurrentUserId() userId: string) {
+  stats(
+    @CurrentUserId() userId: string,
+  ) {
     return this.ownedFiguresService.getStats(userId);
+  }
+
+  @ApiOperation({
+    summary: 'Check product release ownership',
+    description:
+      'Returns whether the authenticated user has the specified product release in their collection.',
+    operationId: 'checkProductReleaseOwnership',
+  })
+  @ApiParam({
+    name: 'productReleaseId',
+    description: 'Product Release identifier.',
+  })
+  @ApiOkResponse({
+    description: 'Product release ownership status retrieved successfully.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
+  })
+  @Get('product-release/:productReleaseId')
+  checkProductReleaseOwnership(
+    @CurrentUserId() userId: string,
+    @Param('productReleaseId') productReleaseId: string,
+  ) {
+    return this.ownedFiguresService.checkProductReleaseOwnership(
+      userId,
+      productReleaseId,
+    );
   }
 
   @ApiOperation({

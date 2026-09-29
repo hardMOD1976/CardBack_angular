@@ -3,7 +3,7 @@
 .welcome-art { position: relative; min-height: 100dvh; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; padding: clamp(2rem, 5vw, 5rem); color: #fff; background: url('/assets/bg.jpeg') center / cover; }
 .art-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,9,20,.12), rgba(5,9,20,.02) 35%, rgba(5,9,20,.78)); }
 .welcome-logo, .art-copy, .art-caption { position: relative; z-index: 1; }
-.welcome-logo { width: min(44%, 250px); height: auto; object-fit: contain; }
+.welcome-logo { width: min(100%, 360px); height: auto; object-fit: contain; margin: auto; }
 .art-copy { max-width: 600px; margin-top: auto; padding-bottom: 2rem; }
 .art-copy h1 { font-size: clamp(2.6rem, 5vw, 5rem); line-height: 1.02; margin: .8rem 0; }
 .art-copy p:last-child { max-width: 34rem; font-size: 1.1rem; line-height: 1.6; }

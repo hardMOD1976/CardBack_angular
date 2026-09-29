@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 
 import {
   ActivatedRoute,
+  RouterLink,
 } from '@angular/router';
 
 import { HttpErrorResponse } from '@angular/common/http';
@@ -37,11 +38,13 @@ import {
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
   ],
   templateUrl: './line-detail.html',
   styleUrl: './line-detail.scss',
 })
 export class LineDetail {
+
   private readonly route = inject(ActivatedRoute);
 
   private readonly destroyRef = inject(DestroyRef);
@@ -58,9 +61,11 @@ export class LineDetail {
   readonly notFound = signal(false);
 
   ngOnInit(): void {
+
     this.route.paramMap
       .pipe(
         switchMap((params) => {
+
           const id = params.get('id');
 
           this.line.set(null);
@@ -69,6 +74,7 @@ export class LineDetail {
           this.notFound.set(false);
 
           if (!id) {
+
             this.loading.set(false);
             this.notFound.set(true);
 
@@ -79,6 +85,7 @@ export class LineDetail {
             .getById(id)
             .pipe(
               catchError((error: HttpErrorResponse) => {
+
                 if (error.status === 404) {
                   this.notFound.set(true);
                 } else {
@@ -87,11 +94,13 @@ export class LineDetail {
 
                 return of(null);
               }),
+
               finalize(() => {
                 this.loading.set(false);
               }),
             );
         }),
+
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((line) => {

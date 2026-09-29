@@ -3,6 +3,7 @@ import {
 } from '@nestjs/swagger';
 
 export class FigureCharacterSummaryDto {
+
   @ApiProperty({
     example: 'cmf9ja8oq0000efgh12345678',
   })
@@ -20,17 +21,8 @@ export class FigureCharacterSummaryDto {
   image!: string | null;
 }
 
-export class FigureManufacturerSummaryDto {
-  @ApiProperty() id!: string;
-  @ApiProperty() name!: string;
-}
-
-export class FigureFranchiseSummaryDto {
-  @ApiProperty() id!: string;
-  @ApiProperty() name!: string;
-}
-
 export class FigureLineSummaryDto {
+
   @ApiProperty({
     example: 'cmf9jb1ms0001efgh87654321',
   })
@@ -52,25 +44,10 @@ export class FigureLineSummaryDto {
     nullable: true,
   })
   logo!: string | null;
-
-  @ApiProperty({ type: FigureManufacturerSummaryDto })
-  manufacturer!: FigureManufacturerSummaryDto;
-
-  @ApiProperty({ type: FigureFranchiseSummaryDto })
-  franchise!: FigureFranchiseSummaryDto;
-}
-
-export class FigureProductReleaseSummaryDto {
-  @ApiProperty() id!: string;
-  @ApiProperty() name!: string;
-  @ApiProperty({ nullable: true }) packagingType!: string | null;
-  @ApiProperty({ nullable: true }) region!: string | null;
-  @ApiProperty({ nullable: true }) releaseDate!: string | null;
-  @ApiProperty({ nullable: true }) barcode!: string | null;
-  @ApiProperty({ nullable: true }) imageUrl!: string | null;
 }
 
 export class FigureVariantSummaryDto {
+
   @ApiProperty({
     example: 'cmf9jc2nt0002efgh11223344',
   })
@@ -93,12 +70,10 @@ export class FigureVariantSummaryDto {
     nullable: true,
   })
   imageUrl!: string | null;
-
-  @ApiProperty({ type: [FigureProductReleaseSummaryDto] })
-  productReleases!: FigureProductReleaseSummaryDto[];
 }
 
 export class FigureDetailResponseDto {
+
   @ApiProperty({
     example: 'cmf9jd3ou0003efgh55667788',
   })

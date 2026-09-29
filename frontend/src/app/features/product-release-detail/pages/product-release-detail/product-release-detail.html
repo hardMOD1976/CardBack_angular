@@ -1,34 +1,344 @@
 <main class="detail-page">
-  @if (loading()) { <p role="status">Loading product release…</p> }
-  @else if (notFound()) { <h1>Product release not found</h1><a routerLink="/search">Back to search</a> }
-  @else if (error()) { <h1>Unable to load product release</h1><p>Please try again.</p> }
-  @else if (data(); as release) {
-    <a class="back-link" routerLink="/databank">← Back to databank</a>
-    <div class="hero"><img [src]="release.imageUrl || 'assets/cardback_placeholder.jpeg'" [alt]="release.name"><div>
-      <p class="eyebrow">Product release</p><h1>{{ release.name }}</h1>
-      <p><a [routerLink]="['/variants', release.variant.id]">{{ release.variant.name || 'Standard variant' }}</a></p>
-      <p><a [routerLink]="['/figures', release.variant.figure.id]">{{ release.variant.figure.name }}</a> · <a [routerLink]="['/lines', release.variant.figure.line.id]">{{ release.variant.figure.line.name }}</a></p>
-      <p><a [routerLink]="['/characters', release.variant.figure.character.id]">{{ release.variant.figure.character.name }}</a> · {{ release.variant.figure.line.manufacturer.name }}</p>
-      <ul class="metadata"><li>{{ release.packagingType || 'Packaging not recorded' }}</li>@if (release.region) { <li>{{ release.region }}</li> } @if (release.language) { <li>{{ release.language }}</li> } @if (release.retailer) { <li>{{ release.retailer }}</li> } @if (release.releaseDate) { <li>{{ release.releaseDate | date:'longDate' }}</li> }</ul>
-      @if (release.barcode) { <p>Barcode · {{ release.barcode }}</p> }
-    </div></div>
-    <section class="release-actions" aria-label="Collection actions">
-      <button class="primary-action" type="button" [disabled]="savingWishlist()" (click)="toggleWishlist()">{{ savingWishlist() ? 'Saving…' : wishlistEntryId() ? 'Remove from wishlist' : 'Add to wishlist' }}</button>
-      <details class="add-owned">
-        <summary>Add to my collection</summary>
-        <form [formGroup]="collectionForm" (ngSubmit)="addToCollection()">
-          <label>Condition<select formControlName="condition"><option>Mint</option><option>Near Mint</option><option>Good</option><option>Fair</option><option>Poor</option><option>Custom</option></select></label>
-          <label>Completeness<select formControlName="completeness"><option>Complete</option><option>Incomplete</option><option>Unknown</option></select></label>
-          <label>Packaging state<select formControlName="packagingState"><option>Sealed</option><option>Opened</option><option>Loose</option><option>Damaged</option><option>Unknown</option></select></label>
-          <label>Quantity<input type="number" min="1" formControlName="quantity"></label>
-          <label>Purchase price<input type="number" min="0" step="0.01" formControlName="purchasePrice"></label>
-          <label>Currency<input maxlength="3" formControlName="currency"></label>
-          <button class="primary-action" type="submit" [disabled]="savingCollection()">{{ savingCollection() ? 'Adding…' : 'Save to collection' }}</button>
-        </form>
-      </details>
-    </section>
-    @if (notice()) { <p class="action-notice" role="status">{{ notice() }}</p> }
-    @if (actionError()) { <p class="action-error" role="alert">{{ actionError() }}</p> }
-    @if (release.notes) { <section><h2>Catalogue notes</h2><p>{{ release.notes }}</p></section> }
+
+  @if (loading()) {
+
+    <p role="status">
+      Loading product release…
+    </p>
+
+  } @else if (notFound()) {
+
+    <h1>
+      Product release not found
+    </h1>
+
+    <a routerLink="/search">
+      Back to search
+    </a>
+
+  } @else if (error()) {
+
+    <h1>
+      Unable to load product release
+    </h1>
+
+    <p>
+      Please try again.
+    </p>
+
+  } @else if (data(); as release) {
+
+    <a
+      class="back-link"
+      routerLink="/databank"
+    >
+      ← Back to databank
+    </a>
+
+    <div class="hero">
+
+      <img
+        [src]="
+          release.imageUrl ||
+          'assets/cardback_placeholder.jpeg'
+        "
+        [alt]="release.name"
+      >
+
+      <div>
+
+        <p class="eyebrow">
+          Product release
+        </p>
+
+        <h1>
+          {{ release.name }}
+        </h1>
+
+        <p>
+          <a
+            [routerLink]="[
+              '/variants',
+              release.variant.id
+            ]"
+          >
+            {{ release.variant.name || 'Standard variant' }}
+          </a>
+        </p>
+
+        <p>
+
+          <a
+            [routerLink]="[
+              '/figures',
+              release.variant.figure.id
+            ]"
+          >
+            {{ release.variant.figure.name }}
+          </a>
+
+          ·
+
+          <a
+            [routerLink]="[
+              '/lines',
+              release.variant.figure.line.id
+            ]"
+          >
+            {{ release.variant.figure.line.name }}
+          </a>
+
+        </p>
+
+        <p>
+
+          <a
+            [routerLink]="[
+              '/characters',
+              release.variant.figure.character.id
+            ]"
+          >
+            {{ release.variant.figure.character.name }}
+          </a>
+
+          ·
+
+          {{ release.variant.figure.line.manufacturer.name }}
+
+        </p>
+
+        <ul class="metadata">
+
+          <li>
+            {{
+              release.packagingType ||
+              'Packaging not recorded'
+            }}
+          </li>
+
+          @if (release.region) {
+
+            <li>
+              {{ release.region }}
+            </li>
+
+          }
+
+          @if (release.language) {
+
+            <li>
+              {{ release.language }}
+            </li>
+
+          }
+
+          @if (release.retailer) {
+
+            <li>
+              {{ release.retailer }}
+            </li>
+
+          }
+
+          @if (release.releaseDate) {
+
+            <li>
+              {{ release.releaseDate | date:'longDate' }}
+            </li>
+
+          }
+
+        </ul>
+
+        @if (release.barcode) {
+
+          <p>
+            Barcode · {{ release.barcode }}
+          </p>
+
+        }
+
+      </div>
+
+    </div>
+
+    @if (!owned()) {
+
+      <section
+        class="release-actions"
+        aria-label="Collection actions"
+      >
+
+        <button
+          class="primary-action"
+          type="button"
+          [disabled]="savingWishlist()"
+          (click)="toggleWishlist()"
+        >
+          {{
+            savingWishlist()
+              ? 'Saving…'
+              : wishlistEntryId()
+                ? 'Remove from wishlist'
+                : 'Add to wishlist'
+          }}
+        </button>
+
+        <details class="add-owned">
+
+          <summary>
+            Add to my collection
+          </summary>
+
+          <form
+            [formGroup]="collectionForm"
+            (ngSubmit)="addToCollection()"
+          >
+
+            <label>
+              Condition
+
+              <select formControlName="condition">
+
+                <option>Mint</option>
+                <option>Near Mint</option>
+                <option>Good</option>
+                <option>Fair</option>
+                <option>Poor</option>
+                <option>Custom</option>
+
+              </select>
+
+            </label>
+
+            <label>
+              Completeness
+
+              <select formControlName="completeness">
+
+                <option>Complete</option>
+                <option>Incomplete</option>
+                <option>Unknown</option>
+
+              </select>
+
+            </label>
+
+            <label>
+              Packaging state
+
+              <select formControlName="packagingState">
+
+                <option>Sealed</option>
+                <option>Opened</option>
+                <option>Loose</option>
+                <option>Damaged</option>
+                <option>Unknown</option>
+
+              </select>
+
+            </label>
+
+            <label>
+              Quantity
+
+              <input
+                type="number"
+                min="1"
+                formControlName="quantity"
+              >
+
+            </label>
+
+            <label>
+              Purchase price
+
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                formControlName="purchasePrice"
+              >
+
+            </label>
+
+            <label>
+              Currency
+
+              <input
+                maxlength="3"
+                formControlName="currency"
+              >
+
+            </label>
+
+            <button
+              class="primary-action"
+              type="submit"
+              [disabled]="savingCollection()"
+            >
+              {{
+                savingCollection()
+                  ? 'Adding…'
+                  : 'Save to collection'
+              }}
+            </button>
+
+          </form>
+
+        </details>
+
+      </section>
+
+    } @else {
+
+      <p
+        class="action-notice"
+        role="status"
+      >
+        This product release is already in your collection.
+      </p>
+
+    }
+
+    @if (notice()) {
+
+      <p
+        class="action-notice"
+        role="status"
+      >
+        {{ notice() }}
+      </p>
+
+    }
+
+    @if (actionError()) {
+
+      <p
+        class="action-error"
+        role="alert"
+      >
+        {{ actionError() }}
+      </p>
+
+    }
+
+    @if (release.notes) {
+
+      <section>
+
+        <h2>
+          Catalogue notes
+        </h2>
+
+        <p>
+          {{ release.notes }}
+        </p>
+
+      </section>
+
+    }
+
   }
+
 </main>

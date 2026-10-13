@@ -67,7 +67,6 @@
         </p>
 
         <p>
-
           <a
             [routerLink]="[
               '/figures',
@@ -76,9 +75,7 @@
           >
             {{ release.variant.figure.name }}
           </a>
-
           ·
-
           <a
             [routerLink]="[
               '/lines',
@@ -87,11 +84,9 @@
           >
             {{ release.variant.figure.line.name }}
           </a>
-
         </p>
 
         <p>
-
           <a
             [routerLink]="[
               '/characters',
@@ -100,11 +95,15 @@
           >
             {{ release.variant.figure.character.name }}
           </a>
-
           ·
-
-          {{ release.variant.figure.line.manufacturer.name }}
-
+          <a
+            [routerLink]="[
+              '/manufacturers',
+              release.variant.figure.line.manufacturer.id
+            ]"
+          >
+            {{ release.variant.figure.line.manufacturer.name }}
+          </a>
         </p>
 
         <ul class="metadata">
@@ -117,45 +116,35 @@
           </li>
 
           @if (release.region) {
-
             <li>
               {{ release.region }}
             </li>
-
           }
 
           @if (release.language) {
-
             <li>
               {{ release.language }}
             </li>
-
           }
 
           @if (release.retailer) {
-
             <li>
               {{ release.retailer }}
             </li>
-
           }
 
           @if (release.releaseDate) {
-
             <li>
               {{ release.releaseDate | date:'longDate' }}
             </li>
-
           }
 
         </ul>
 
         @if (release.barcode) {
-
           <p>
             Barcode · {{ release.barcode }}
           </p>
-
         }
 
       </div>
@@ -199,44 +188,35 @@
               Condition
 
               <select formControlName="condition">
-
                 <option>Mint</option>
                 <option>Near Mint</option>
                 <option>Good</option>
                 <option>Fair</option>
                 <option>Poor</option>
                 <option>Custom</option>
-
               </select>
-
             </label>
 
             <label>
               Completeness
 
               <select formControlName="completeness">
-
                 <option>Complete</option>
                 <option>Incomplete</option>
                 <option>Unknown</option>
-
               </select>
-
             </label>
 
             <label>
               Packaging state
 
               <select formControlName="packagingState">
-
                 <option>Sealed</option>
                 <option>Opened</option>
                 <option>Loose</option>
                 <option>Damaged</option>
                 <option>Unknown</option>
-
               </select>
-
             </label>
 
             <label>
@@ -247,7 +227,6 @@
                 min="1"
                 formControlName="quantity"
               >
-
             </label>
 
             <label>
@@ -259,7 +238,6 @@
                 step="0.01"
                 formControlName="purchasePrice"
               >
-
             </label>
 
             <label>
@@ -269,7 +247,6 @@
                 maxlength="3"
                 formControlName="currency"
               >
-
             </label>
 
             <button

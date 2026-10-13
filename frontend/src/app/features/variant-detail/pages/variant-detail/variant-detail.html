@@ -1,19 +1,118 @@
 <main class="detail-page">
-  @if (loading()) { <p role="status">Loading variant…</p> }
-  @else if (notFound()) { <h1>Variant not found</h1><a routerLink="/search">Back to search</a> }
-  @else if (error()) { <h1>Unable to load variant</h1><p>Please try again.</p> }
-  @else if (data(); as variant) {
-    <a class="back-link" routerLink="/search">← Back to results</a>
-    <div class="hero"><img [src]="variant.imageUrl || 'assets/cardback_placeholder.jpeg'" [alt]="variant.name || 'Figure variant'"><div>
-      <p class="eyebrow">Variant · {{ variant.figure.franchise.name }}</p><h1>{{ variant.name || 'Standard variant' }}</h1>
-      @if (variant.description) { <p>{{ variant.description }}</p> }
-      <p><a [routerLink]="['/figures', variant.figure.id]">{{ variant.figure.name }}</a> · {{ variant.figure.line.name }} · {{ variant.figure.line.manufacturer.name }}</p>
-      <p><a [routerLink]="['/characters', variant.figure.character.id]">{{ variant.figure.character.name }}</a></p>
-    </div></div>
-    <section><header><h2>Product releases</h2><span>{{ variant.productReleases.length }}</span></header>
-      @if (variant.productReleases.length) { <div class="cards">@for (release of variant.productReleases; track release.id) {
-        <a class="entity-card" [routerLink]="['/product-releases', release.id]"><img [src]="release.imageUrl || 'assets/cardback_placeholder.jpeg'" [alt]="release.name"><div><h3>{{ release.name }}</h3><p>{{ release.packagingType || 'Packaging not recorded' }}</p><small>{{ release.region || 'Region not recorded' }} @if (release.releaseDate) { · {{ release.releaseDate | date:'yyyy' }} }</small></div></a>
-      }</div> } @else { <p class="empty">No active product releases are linked to this variant yet.</p> }
-    </section>
+
+  @if (loading()) {
+    <p role="status">Loading variant…</p>
   }
+
+  @else if (notFound()) {
+    <h1>Variant not found</h1>
+    <a routerLink="/search">Back to search</a>
+  }
+
+  @else if (error()) {
+    <h1>Unable to load variant</h1>
+    <p>Please try again.</p>
+  }
+
+  @else if (data(); as variant) {
+
+    <a class="back-link" routerLink="/search">
+      ← Back to results
+    </a>
+
+    <div class="hero">
+      <img
+        [src]="variant.imageUrl || 'assets/cardback_placeholder.jpeg'"
+        [alt]="variant.name || 'Figure variant'"
+      >
+
+      <div>
+        <p class="eyebrow">
+          Variant ·
+          <a [routerLink]="['/franchises', variant.figure.franchise.id]">
+            {{ variant.figure.franchise.name }}
+          </a>
+        </p>
+
+        <h1>
+          {{ variant.name || 'Standard variant' }}
+        </h1>
+
+        @if (variant.description) {
+          <p>{{ variant.description }}</p>
+        }
+
+        <p>
+          <a [routerLink]="['/figures', variant.figure.id]">
+            {{ variant.figure.name }}
+          </a>
+          ·
+          <a [routerLink]="['/lines', variant.figure.line.id]">
+            {{ variant.figure.line.name }}
+          </a>
+          ·
+          <a [routerLink]="['/manufacturers', variant.figure.line.manufacturer.id]">
+            {{ variant.figure.line.manufacturer.name }}
+          </a>
+        </p>
+
+        <p>
+          <a [routerLink]="['/characters', variant.figure.character.id]">
+            {{ variant.figure.character.name }}
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <section>
+      <header>
+        <h2>Product releases</h2>
+        <span>{{ variant.productReleases.length }}</span>
+      </header>
+
+      @if (variant.productReleases.length) {
+
+        <div class="cards">
+          @for (release of variant.productReleases; track release.id) {
+
+            <a
+              class="entity-card"
+              [routerLink]="['/product-releases', release.id]"
+            >
+              <img
+                [src]="release.imageUrl || 'assets/cardback_placeholder.jpeg'"
+                [alt]="release.name"
+              >
+
+              <div>
+                <h3>{{ release.name }}</h3>
+
+                <p>
+                  {{ release.packagingType || 'Packaging not recorded' }}
+                </p>
+
+                <small>
+                  {{ release.region || 'Region not recorded' }}
+
+                  @if (release.releaseDate) {
+                    · {{ release.releaseDate | date:'yyyy' }}
+                  }
+                </small>
+              </div>
+            </a>
+
+          }
+        </div>
+
+      } @else {
+
+        <p class="empty">
+          No active product releases are linked to this variant yet.
+        </p>
+
+      }
+    </section>
+
+  }
+
 </main>

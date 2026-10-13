@@ -7,7 +7,7 @@ import {
   Post,
   Put,
   Query,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 
 import {
@@ -24,19 +24,27 @@ import {
 } from '@nestjs/swagger';
 
 import { VariantsService } from './variants.service';
+
 import { CreateVariantDto } from './dto/create-variant.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto';
+
+import { VariantDetailResponseDto } from './dto/variant-detail-response.dto';
+
 import { Role } from '@prisma/client';
+
 import { Roles } from '../auth/decorators/roles.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Public } from '../auth/decorators/public.decorator';
+
 import { PaginationQueryDto } from '../common/pagination';
 
 @ApiTags('Variants')
 @Controller('variants')
 export class VariantsController {
-  constructor(private readonly variantsService: VariantsService) {}
+  constructor(
+    private readonly variantsService: VariantsService,
+  ) {}
 
   @ApiOperation({
     summary: 'Get all variants',
@@ -50,26 +58,28 @@ export class VariantsController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
- @Get()
-@Public()
-findAll(
-  @Query('page') page = 1,
-  @Query('limit') limit = 20,
-  @Query('search') search?: string,
-) {
-  const pagination: PaginationQueryDto = {
-    page: Number(page),
-    limit: Number(limit),
-    search,
-  };
+  @Get()
+  @Public()
+  findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
+    @Query('search') search?: string,
+  ) {
+    const pagination: PaginationQueryDto = {
+      page: Number(page),
+      limit: Number(limit),
+      search,
+    };
 
-  return this.variantsService.findAll(pagination);
-}
+    return this.variantsService.findAll(
+      pagination,
+    );
+  }
 
   @ApiOperation({
     summary: 'Get variant by id',
     description:
-      'Returns an active variant by its identifier.',
+      'Returns an active variant and its related product releases by identifier.',
     operationId: 'findVariantById',
   })
   @ApiParam({
@@ -78,6 +88,7 @@ findAll(
   })
   @ApiOkResponse({
     description: 'Variant found.',
+    type: VariantDetailResponseDto,
   })
   @ApiNotFoundResponse({
     description: 'Variant not found.',
@@ -87,8 +98,10 @@ findAll(
   })
   @Public()
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.variantsService.findOne(id);
+  findDetail(
+    @Param('id') id: string,
+  ) {
+    return this.variantsService.findDetail(id);
   }
 
   @ApiOperation({
@@ -112,17 +125,22 @@ findAll(
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
-   @ApiBearerAuth('access-token')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.ADMIN)
+  @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Post()
-  create(@Body() createVariantDto: CreateVariantDto) {
-    return this.variantsService.create(createVariantDto);
+  create(
+    @Body() createVariantDto: CreateVariantDto,
+  ) {
+    return this.variantsService.create(
+      createVariantDto,
+    );
   }
 
   @ApiOperation({
     summary: 'Update variant',
-    description: 'Updates an existing variant.',
+    description:
+      'Updates an existing variant.',
     operationId: 'updateVariant',
   })
   @ApiParam({
@@ -130,13 +148,15 @@ findAll(
     description: 'Variant identifier.',
   })
   @ApiOkResponse({
-    description: 'Variant updated successfully.',
+    description:
+      'Variant updated successfully.',
   })
   @ApiBadRequestResponse({
     description: 'Validation error.',
   })
   @ApiNotFoundResponse({
-    description: 'Variant or Figure not found.',
+    description:
+      'Variant or Figure not found.',
   })
   @ApiConflictResponse({
     description: 'Duplicate variant.',
@@ -144,15 +164,18 @@ findAll(
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
-   @ApiBearerAuth('access-token')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.ADMIN)
+  @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Put(':id')
   update(
     @Param('id') id: string,
     @Body() updateVariantDto: UpdateVariantDto,
   ) {
-    return this.variantsService.update(id, updateVariantDto);
+    return this.variantsService.update(
+      id,
+      updateVariantDto,
+    );
   }
 
   @ApiOperation({
@@ -166,7 +189,8 @@ findAll(
     description: 'Variant identifier.',
   })
   @ApiOkResponse({
-    description: 'Variant deleted successfully.',
+    description:
+      'Variant deleted successfully.',
   })
   @ApiNotFoundResponse({
     description: 'Variant not found.',
@@ -174,11 +198,13 @@ findAll(
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
-   @ApiBearerAuth('access-token')
+  @ApiBearerAuth('access-token')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(
+    @Param('id') id: string,
+  ) {
     return this.variantsService.remove(id);
   }
 }

@@ -58,7 +58,6 @@ import {
   styleUrl: './product-release-detail.scss',
 })
 export class ProductReleaseDetail {
-
   private readonly route =
     inject(ActivatedRoute);
 
@@ -78,7 +77,9 @@ export class ProductReleaseDetail {
     inject(FormBuilder);
 
   readonly data =
-    signal<ProductReleaseDetailModel | null>(null);
+    signal<ProductReleaseDetailModel | null>(
+      null,
+    );
 
   readonly loading =
     signal(true);
@@ -113,13 +114,16 @@ export class ProductReleaseDetail {
         'Good',
         Validators.required,
       ],
+
       completeness: [
         'Complete',
         Validators.required,
       ],
+
       packagingState: [
         'Opened',
       ],
+
       quantity: [
         1,
         [
@@ -127,21 +131,21 @@ export class ProductReleaseDetail {
           Validators.min(1),
         ],
       ],
+
       purchasePrice: [
         0,
         Validators.min(0),
       ],
+
       currency: [
         'EUR',
       ],
     });
 
   ngOnInit(): void {
-
     this.route.paramMap
       .pipe(
         switchMap((params) => {
-
           this.loading.set(true);
           this.error.set(false);
           this.notFound.set(false);
@@ -162,7 +166,6 @@ export class ProductReleaseDetail {
             .getById(id)
             .pipe(
               catchError((e) => {
-
                 if (e.status === 404) {
                   this.notFound.set(true);
                 } else {
@@ -178,21 +181,26 @@ export class ProductReleaseDetail {
             );
         }),
 
-        takeUntilDestroyed(this.destroyRef),
+        takeUntilDestroyed(
+          this.destroyRef,
+        ),
       )
       .subscribe((data) => {
-
         this.data.set(data);
 
         if (data) {
-          this.refreshOwnershipState(data.id);
-          this.refreshWishlistState(data.id);
+          this.refreshOwnershipState(
+            data.id,
+          );
+
+          this.refreshWishlistState(
+            data.id,
+          );
         }
       });
   }
 
   addToCollection(): void {
-
     const release = this.data();
 
     if (
@@ -200,6 +208,7 @@ export class ProductReleaseDetail {
       this.collectionForm.invalid
     ) {
       this.collectionForm.markAllAsTouched();
+
       return;
     }
 
@@ -225,11 +234,12 @@ export class ProductReleaseDetail {
           : {}),
       })
       .pipe(
-        takeUntilDestroyed(this.destroyRef),
+        takeUntilDestroyed(
+          this.destroyRef,
+        ),
       )
       .subscribe({
         next: () => {
-
           this.savingCollection.set(false);
           this.owned.set(true);
           this.notice.set(
@@ -238,19 +248,16 @@ export class ProductReleaseDetail {
         },
 
         error: (error) => {
-
           this.savingCollection.set(false);
-
           this.actionError.set(
             error.error?.message ||
-            'Could not add this release to your collection.',
+              'Could not add this release to your collection.',
           );
         },
       });
   }
 
   toggleWishlist(): void {
-
     const release = this.data();
 
     if (!release || this.owned()) {
@@ -282,11 +289,12 @@ export class ProductReleaseDetail {
 
     request
       .pipe(
-        takeUntilDestroyed(this.destroyRef),
+        takeUntilDestroyed(
+          this.destroyRef,
+        ),
       )
       .subscribe({
         next: (result) => {
-
           this.wishlistEntryId.set(
             result.id,
           );
@@ -301,12 +309,11 @@ export class ProductReleaseDetail {
         },
 
         error: (error) => {
-
           this.savingWishlist.set(false);
 
           this.actionError.set(
             error.error?.message ||
-            'Could not update your wishlist.',
+              'Could not update your wishlist.',
           );
         },
       });
@@ -315,15 +322,20 @@ export class ProductReleaseDetail {
   private refreshOwnershipState(
     productReleaseId: string,
   ): void {
-
     this.collectionService
-      .isProductReleaseOwned(productReleaseId)
+      .isProductReleaseOwned(
+        productReleaseId,
+      )
       .pipe(
-        takeUntilDestroyed(this.destroyRef),
+        takeUntilDestroyed(
+          this.destroyRef,
+        ),
       )
       .subscribe({
         next: (result) => {
-          this.owned.set(result.owned);
+          this.owned.set(
+            result.owned,
+          );
         },
 
         error: () => {
@@ -335,15 +347,15 @@ export class ProductReleaseDetail {
   private refreshWishlistState(
     productReleaseId: string,
   ): void {
-
     this.wishlistService
       .getMine()
       .pipe(
-        takeUntilDestroyed(this.destroyRef),
+        takeUntilDestroyed(
+          this.destroyRef,
+        ),
       )
       .subscribe({
         next: (entries) => {
-
           this.wishlistEntryId.set(
             entries.find(
               (entry) =>

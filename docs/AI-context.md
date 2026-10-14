@@ -1,559 +1,130 @@
-Cardback — AI Context
+# Cardback — AI Context
 
-Project Overview
+**Last updated:** 2026-10-14  
+**Repository/folder:** `FigureArchive`  
+**Current phase:** Frontend MVP consolidation, Detail verification, and development-database recovery.
 
-Cardback (repository/folder: FigureArchive) is a collector-first platform for action figure collectors, initially focused on Star Wars figures from the 1970s to current releases.
+## Project Overview
 
-The goal is a free, community-driven, Discogs-like platform for action figures, with a strong catalogue, collection management, and collector-oriented UX.
+Cardback is a collector-first platform for action-figure collectors, initially focused on Star Wars figures from the 1970s to current releases. The goal is a free, community-driven, Discogs-like catalogue and collection app with collector-oriented UX.
 
 Core principles:
 
-Collector-first, UX-first, mobile-first.
+- Collector-first, UX-first, mobile-first.
+- Catalogue records are separate from user-owned collection records.
+- No marketplace as a core MVP feature.
+- No spending until the product is close to the intended vision and ready for the collector community.
+- Avoid unnecessary abstractions and overengineering.
+- Do not expose raw Prisma entities from public API endpoints.
+- The Angular repository is canonical. React / AI Studio prototypes are for experimentation and UX reference, not automatic architectural authority.
+- Prototype/test records and generated image URLs are not canonical catalogue data.
 
-Separate immutable catalogue data from user-owned collection data.
+## Technology Stack
 
-High-quality catalogue and community contribution.
+### Backend
 
-Fast navigation and accessible interfaces.
+- NestJS, Prisma ORM 6.19.3, PostgreSQL on Neon.
+- JWT access/refresh-token authentication.
+- DTO-based public API contracts, validation, role checks, soft delete.
+- Server-side pagination, search, filtering and sorting where implemented.
 
-Avoid unnecessary abstractions and overengineering.
+### Frontend
 
-Do not expose Prisma entities directly through the API.
+- Angular 22, standalone components, feature-first structure.
+- Signals for business-page state; RxJS for asynchronous flows and HttpClient communication.
+- Shared `cb-input` uses `ControlValueAccessor` and has an Enter output.
+- Authenticated Shell and route guard; login route is outside the Shell.
+- Light/dark theme support.
 
-No marketplace as a core MVP feature.
-
-No spending until the product is close to the intended vision and ready for community release.
-
-Parallel prototypes may be used for experimentation, but they do not automatically redefine Cardback's architecture.
-
-Tech Stack
-
-Backend
-
-NestJS
-
-Prisma ORM
-
-PostgreSQL / Neon
-
-JWT authentication
-
-DTO-based public API contracts
-
-Server-side pagination, sorting, filtering, and search
-
-Soft delete
-
-Frontend
-
-Angular 22
-
-Standalone components
-
-Feature-first architecture
-
-Signals and RxJS
-
-HttpClient
-
-ControlValueAccessor for shared inputs
-
-Authenticated Shell and route guard
-
-Light/dark theme support
-
-Domain Model
+## Domain Model and Canonical Hierarchy
 
 Core catalogue entities:
 
-Manufacturer
+- Manufacturer
+- Franchise
+- Line
+- Character
+- Figure
+- Variant
+- Product Release
 
-Franchise
-
-Line
-
-Character
-
-Figure
-
-Variant
-
-Product Release
-
-User-owned entity:
-
-Owned Figure
+User-owned entities include Owned Figure and Wishlist Entry.
 
 Domain distinctions:
 
-Character = fictional identity.
+- **Character:** fictional identity.
+- **Figure:** physical representation of a Character within a Line.
+- **Variant:** a distinct physical variation of a Figure.
+- **Product Release:** a concrete commercial release, packaging, region, language, retailer, barcode, and related release-specific attributes.
+- **Owned Figure:** a user's collection entry referencing a Product Release.
+- **Wishlist Entry:** a user's watchlist entry for a Product Release; it is separate from ownership.
 
-Figure = physical representation of a Character within a Line.
+Canonical catalogue hierarchy:
 
-Variant = distinct variation of a Figure.
-
-Product Release = concrete commercial release, packaging, region, retailer, language, barcode, etc.
-
-Owned Figure = a user's collection entry referencing a Product Release.
-
-Vehicles/accessories may be supported later as a separate category. They are not Characters.
-
-Catalogue Hierarchy
-
+```text
 Franchise
    └── Line
         └── Figure
              └── Variant
                   └── Product Release
-
-Character is a parallel domain entity related to Franchise and Figure:
 
 Franchise
    └── Character
-         └── Figure
-
-This is a domain relationship model, not a requirement that every Detail endpoint recursively load the entire tree.
-
-Current Implementation
-
-Backend
-
-Authentication and protected routes are implemented.
-
-Databank API supports paginated Product Releases.
-
-Collection API supports server-side pagination, search, sorting, and filtering.
-
-Global Search endpoint is implemented with public DTO mapping and multiple result types.
-
-Product Release response DTO exists.
-
-Franchise Detail backend is implemented and verified.
-
-Line Detail backend is implemented and verified.
-
-Figure Detail backend implementation exists in the current branch as part of the turbo update and is currently being verified/reviewed.
-
-Manufacturer, Character, Variant and Product Release Detail backend implementations are present in the current branch but still require explicit runtime verification before being considered fully verified.
-
-Public DTO mapping is mandatory.
-
-Never return raw Prisma entities from public endpoints.
-
-Frontend
-
-Databank MVP complete.
-
-Collection MVP complete, including server-side sort/filter.
-
-Global Search page and result cards implemented.
-
-Search navigation uses /search?q=<query>.
-
-Global Search result types:
-franchise, manufacturer, line, character, figure, variant, productRelease.
-
-Shared FigureCard exists.
-
-Shared cb-input supports ControlValueAccessor and Enter output.
-
-Franchise Detail frontend is implemented and verified.
-
-Line Detail frontend is implemented and verified.
-
-Figure, Manufacturer, Character, Variant and Product Release detail frontend pages/routes are present in the current branch after the turbo update; runtime verification is still required where not explicitly validated.
-
-Wishlist is separate from collection data and references Product Releases.
-
-Owned Figures public responses are explicitly mapped to API contracts.
-
-Dashboard uses per-user collection aggregates and recent records.
-
-Barcode lookup resolves against the local Product Release catalogue; browser camera/image detection remains capability-dependent.
-
-AI image identification is a suggestion workflow and does not create catalogue records automatically.
-
-Registration, session refresh, password change and password reset are implemented; password reset delivery still requires Resend configuration and a public application URL.
-
-/franchises/:id exists.
-
-/lines/:id exists.
-
-/figures/:id exists.
-
-/manufacturers/:id exists.
-
-/characters/:id exists.
-
-/variants/:id exists.
-
-/product-releases/:id exists.
-
-Franchise Detail Line cards navigate to Line Detail.
-
-Global Search already contains the navigation map for all seven result types.
-
-Current Parity / Prototype Work
-
-A parallel React version of Cardback was generated as a rapid experimentation/prototyping effort. It used the existing Neon database and was initially based on this context plus a small number of additional directions.
-
-The React version is useful as a source of product and UX ideas and as a fast way to test features.
-
-It is not the architectural authority for Angular Cardback.
-
-Do not automatically copy:
-
-React-specific implementation choices.
-
-Demo-only behaviour.
-
-External web lookup used only to make a prototype look populated.
-
-Unverified catalogue data.
-
-UX decisions that conflict with the established Cardback domain model or API boundaries.
-
-AI Studio also inserted a batch of test catalogue data into Neon during experimentation. Those records use demo image URLs and are not canonical catalogue data.
-
-Build / Verification State
-
-Current branch contains a substantial turbo update intended to align Angular feature coverage with the parallel React prototype.
-
-Known verification status:
-
-Franchise Detail backend: verified.
-
-Franchise Detail frontend: verified.
-
-Line Detail backend: verified.
-
-Line Detail frontend: verified.
-
-Figure Detail: implemented/WIP; backend and frontend require current-session verification.
-
-Remaining newly added Detail destinations: implemented/present, verification pending unless explicitly recorded otherwise.
-
-Angular template/type checking has been used during development; do not claim full release build or end-to-end verification unless it has actually been run successfully.
-
-Database migrations still need to be applied to the intended environment where required.
-
-Automated tests have not been treated as complete unless explicitly run and recorded.
-
-Detail Pages — Architecture Decisions
-
-Detail pages are common destinations from Global Search, Databank and Collection.
-
-Do not create one oversized universal Detail DTO.
-
-Use:
-
-Dedicated Detail response contracts.
-
-Small summary/reference DTOs.
-
-Explicit response mapping.
-
-Active-record filtering.
-
-No uncontrolled recursive descendant loading.
-
-The intended canonical hierarchy remains:
-
-Franchise
-   └── Line
         └── Figure
-             └── Variant
-                  └── Product Release
-
-Each Detail page should expose the next relevant level without automatically absorbing all deeper levels.
-
-Important rule for current WIP
-
-The current turbo Figure Detail implementation includes Product Releases nested under Variants.
-
-This is a current implementation detail under review, not a replacement of the established architectural decision.
-
-The previously agreed canonical Figure Detail contract intentionally excluded Product Releases:
-
-Figure Detail
- ├── Figure
- ├── Character summary
- ├── Line summary
- └── Variants
-
-Product Releases remain conceptually owned by Variant Detail unless an explicit product/architecture review changes that decision.
-
-Do not refactor this blindly. First inspect the current implementation and compare it with the intended collector experience and the parallel React feature.
-
-Franchise Detail
-
-Backend
-
-FranchiseDetailResponseDto:
-
-id
-
-name
-
-owner
-
-firstAppearance
-
-description
-
-logo
-
-lines: LineSummaryDto[]
-
-LineSummaryDto:
-
-id
-
-name
-
-startYear
-
-endYear
-
-scale
-
-logo
-
-FranchisesService.findDetail(id):
-
-Returns only active Franchises (deletedAt: null).
-
-Returns only active Lines (deletedAt: null).
-
-Orders Lines by name ascending.
-
-Explicitly maps Franchise and Line data.
-
-Throws NotFoundException for unknown/inactive Franchise.
-
-Verified with a real Star Wars Franchise ID returning 200 OK.
-
-Frontend
-
-Implemented and verified:
-
-features/franchise-detail/models/franchise-detail.model.ts
-
-features/franchise-detail/services/franchise-detail.service.ts
-
-features/franchise-detail/pages/franchise-detail/franchise-detail.ts
-
-features/franchise-detail/pages/franchise-detail/franchise-detail.html
-
-features/franchise-detail/pages/franchise-detail/franchise-detail.scss
-
-/franchises/:id
-
-Line cards use RouterLink and navigate to /lines/:id.
-
-Line Detail
-
-Backend
-
-LineDetailResponseDto contains:
-
-id
-
-name
-
-startYear
-
-endYear
-
-scale
-
-logo
-
-description
-
-manufacturer summary
-
-franchise summary
-
-figure summaries
-
-Figure summary contains:
-
-id
-
-name
-
-code
-
-imageUrl
-
-characterId
-
-characterName
-
-LinesService.findDetail(id):
-
-Loads only an active Line.
-
-Loads related Manufacturer and Franchise.
-
-Loads only active Figures.
-
-Loads only active Characters for those Figures.
-
-Orders Figures by name.
-
-Explicitly maps the response.
-
-Returns 404 when the Line does not exist.
-
-Verified with:
-
-GET /lines/cms8tgdcb000lukxkqhys2t04
-
-Result: 200 OK.
-
-Frontend
-
-Implemented and verified:
-
-Figure summaries.
-
-/lines/:id.
-
-Loading/error/empty states.
-
-Line metadata.
-
-Figure navigation groundwork.
-
-Franchise Detail → Line Detail has been manually verified.
-
-Figure Detail — Current WIP
-
-Prisma relationships:
-
-Figure
- ├── Character
- ├── Line
- └── Variants
-
-Variant:
-
-Variant
- └── Product Releases
-
-Current backend implementation
-
-The current branch now contains FigureDetailResponseDto and FiguresService.findDetail(id).
-
-Current DTO shape includes:
-
-Figure
- ├── id
- ├── name
- ├── code
- ├── description
- ├── imageUrl
- │
- ├── character
- │    ├── id
- │    ├── name
- │    └── image
- │
- ├── line
- │    ├── id
- │    ├── name
- │    ├── scale
- │    ├── logo
- │    ├── manufacturer
- │    └── franchise
- │
- └── variants
-      ├── id
-      ├── name
-      ├── description
-      ├── imageUrl
-      └── productReleases   ← current WIP implementation
-
-Current backend behaviour includes:
-
-Active Figure filtering.
-
-Active Character filtering.
-
-Active Character → Franchise filtering.
-
-Active Line filtering.
-
-Active Line → Manufacturer filtering.
-
-Active Line → Franchise filtering.
-
-Active Variant filtering.
-
-Active Product Release filtering in the current WIP implementation.
-
-Variant ordering by name.
-
-Product Release ordering by name.
-
-Explicit response mapping.
-
-404 Not Found for an unknown/inactive Figure.
-
-The presence of nested Product Releases must still be reviewed against the canonical architecture before Figure Detail is considered final.
-
-Current frontend implementation
-
-The current branch contains:
-
-Figure Detail page.
-
-Figure Detail service/model.
-
-/figures/:id route.
-
-Character navigation.
-
-Line navigation.
-
-Franchise navigation.
-
-Variant navigation.
-
-Product Release navigation.
-
-Variant and Product Release sections.
-
-Current implementation is considered WIP until backend verification and the Product Release boundary are explicitly settled.
-
-Global Search
-
-Global Search is implemented.
-
-Result types:
-
-franchise
-
-manufacturer
-
-line
-
-character
-
-figure
-
-variant
-
-productRelease
-
-The page receives q from query parameters and calls the backend search service.
-
-Result cards emit the selected GlobalSearchResult.
-
-The navigation map already exists:
-
+```
+
+This is a domain relationship model, not a requirement for each Detail endpoint to load all descendants.
+Vehicles/accessories may be considered later as a separate category; they are not Characters. Packaging does not define the canonical Figure.
+
+## Detail Architecture — Decisions to Preserve
+
+- Use dedicated Detail response contracts instead of one oversized universal Detail DTO.
+- Use small summary/reference DTOs where appropriate.
+- Explicitly map public responses; do not return raw Prisma entities.
+- Filter soft-deleted/inactive records and related records appropriately.
+- Avoid recursive descendant loading and unnecessary overfetching.
+- Do not reshape Prisma domain entities merely to satisfy a frontend presentation.
+- **Figure Detail is settled:** Figure + Character summary + Line summary + Variants. Product Releases belong to Variant Detail, not Figure Detail.
+- Do not reopen the Figure → Variant → Product Release boundary without a concrete product/architecture reason.
+
+## Current Implementation State
+
+### Backend — Core
+
+- CRUD for Manufacturer, Franchise, Line, Character, Figure, Variant, Product Release, Collector/User and Owned Figure is present.
+- Auth module includes bcrypt, access/refresh tokens and rotation, JWT strategy/guards, public-route metadata and role guards.
+- Catalogue pagination/search and the Databank Product Release endpoint are implemented.
+- Owned Figure operations derive user identity from JWT; no user ID should be trusted from client DTOs. Owner-only access and explicit public DTO mapping were implemented.
+- Global Search endpoint is implemented with public DTO mapping. Supported result types: `franchise`, `manufacturer`, `line`, `character`, `figure`, `variant`, `productRelease`.
+- Wishlist and password-reset backend flows are present.
+
+### Frontend — Core
+
+- Databank MVP is complete: Product Release list, server-side pagination/search, loading/error/empty states.
+- Collection MVP is complete: `/owned-figures`, server-side pagination/search/sort/filters, loading/error/empty states.
+- Shared `FigureCard` is used by Collection/Databank where appropriate.
+- Global Search page and result cards are implemented at `/search?q=<query>`, including clearing the query and query-parameter-driven search.
+- Dashboard, wishlist, barcode lookup/scanning fallback, and AI image-identification suggestions are implemented in the current branch.
+- AI identification is a suggestion workflow; it must not create catalogue records automatically.
+- Registration, session refresh, password change and password-reset flow are implemented. Actual email delivery requires Resend configuration and a public application URL.
+
+## Detail Pages and Verification State
+
+Treat implementation existence and runtime verification as separate statuses.
+
+| Detail | Backend | Frontend / verification |
+|---|---|---|
+| Franchise | Dedicated response DTO and explicit mapping; real ID returned `200`, unknown/inactive ID `404` | Page/model/service/route verified; Line navigation verified |
+| Line | Dedicated detail response, Manufacturer/Franchise summaries, active Figure summaries; real ID returned `200`, unknown ID `404` | Page/model/service/route verified; Franchise → Line flow verified |
+| Figure | Detail backend was verified; active related records filtered. Canonical response excludes Product Releases | Detail page/model/service/route verified; Variant navigation belongs here |
+| Variant | Backend verified: a real ID returned `200`, nonexistent ID `404` | Frontend manually tested by user across its cases; Product Releases are listed from Variant Detail |
+| Product Release | `GET /product-releases/:id` response contract verified earlier | Dedicated model/service use direct HttpClient; user confirmed the model/service and TS-page changes compiled. Ownership behavior was tested. The latest HTML navigation addition to Manufacturer still needs a manual check |
+| Manufacturer | Detail route/page exists. A dedicated DTO/service/controller alignment was proposed during the current work, but applying/building/verifying those exact changes has not been confirmed | Page/model/service exist in the current branch; confirm current API contract and route behavior before marking verified |
+| Character | Detail route/page and backend implementation are present | Runtime/API/UI verification still needs to be recorded |
+
+Global Search contains a navigation map for all seven types:
+
+```ts
 franchise: 'franchises'
 manufacturer: 'manufacturers'
 line: 'lines'
@@ -561,80 +132,143 @@ character: 'characters'
 figure: 'figures'
 variant: 'variants'
 productRelease: 'product-releases'
+```
 
-No change to global-search.ts was required when Line Detail was added because line: 'lines' was already present.
+Franchise and Line are the branches recorded as verified from Global Search. Do not describe all seven as fully verified until each destination has been exercised.
 
-Only routes/pages that exist and have been runtime-verified should be considered fully functional.
+## Detail Contract Reference Notes
 
-Transversal Detail Navigation
+These shapes summarize the recorded contracts/decisions. Check the current code before changing field names or assuming an unverified recent edit is present.
 
-Verified:
+### Franchise Detail
 
-Global Search
-     │
-     ├── Franchise → Franchise Detail
-     │                    │
-     │                    └── Line → Line Detail
-     │
-     └── Line → Line Detail
+`FranchiseDetailResponseDto` has `id`, `name`, `owner`, `firstAppearance`, `description`, `logo`, and `lines: LineSummaryDto[]`.
 
-Current implemented route network:
+`LineSummaryDto` has `id`, `name`, `startYear`, `endYear`, `scale`, and `logo`. `FranchisesService.findDetail(id)` returns active Franchise data, active Lines ordered by name, explicit mappings, and `404 Not Found` for unknown/inactive IDs.
 
-Global Search
- ├── Franchise → Franchise Detail
- ├── Manufacturer → Manufacturer Detail
- ├── Line → Line Detail
- ├── Character → Character Detail
- ├── Figure → Figure Detail
- ├── Variant → Variant Detail
- └── Product Release → Product Release Detail
+### Line Detail
 
-Only the Franchise and Line branches are currently recorded as manually verified.
+`LineDetailResponseDto` has Line identity/metadata (`id`, `name`, `startYear`, `endYear`, `scale`, `logo`, `description`), Manufacturer and Franchise summaries, and Figure summaries. Figure summaries contain `id`, `name`, `code`, `imageUrl`, `characterId`, and `characterName`. The service filters inactive Line/Figures/Characters and explicitly maps the result. The previously recorded smoke test `GET /lines/cms8tgdcb000lukxkqhys2t04` returned `200 OK`.
 
-Login UX Backlog
+### Figure Detail
 
-The current login experience still needs improvement:
+The agreed response includes Figure fields (`id`, `name`, `code`, `description`, `imageUrl`), a Character summary (`id`, `name`, `image`), a Line summary (including `id`, `name`, `scale`, `logo`, and concise Manufacturer/Franchise context), and active Variants (`id`, `name`, `description`, `imageUrl`). **Do not include `productReleases` under each Variant in the canonical Figure Detail response.** Those releases belong under Variant Detail.
 
-Clear feedback for incorrect credentials.
+### Product Release Detail
 
-“Forgot password?” flow review/finish.
+The current frontend `ProductReleaseDetailModel` reflects the backend response shape:
 
-Overall login UX review and refinement.
+```ts
+export interface ProductReleaseDetailModel {
+  id: string;
+  name: string;
+  barcode: string | null;
+  releaseYear: number | null;
+  releaseDate: string | null;
+  packagingType: string | null;
+  region: string | null;
+  language: string | null;
+  retailer: string | null;
+  notes: string | null;
+  imageUrl: string | null;
+  variant: {
+    id: string;
+    name: string | null;
+    figure: {
+      id: string;
+      name: string;
+      code: string | null;
+      imageUrl: string | null;
+      character: { id: string; name: string; image: string | null };
+      line: { id: string; name: string; manufacturer: { id: string; name: string } };
+    };
+  };
+}
+```
 
-Priority remains after the transversal Detail work, unless implementation sequencing changes.
+The service now calls `GET ${environment.apiUrl}/product-releases/${id}` directly with HttpClient, not through `DatabankService`. The user confirmed the model/service/TS-page changes compile and backend compilation was successful. The latest HTML Manufacturer link still needs manual browser verification.
 
-Data / Demo Database Note
+### Manufacturer Detail — Do Not Assume the Proposed Change Was Applied
 
-The parallel AI Studio experiment inserted a batch of Figure test records into the shared Neon database on 2026-09-23.
+The previously observed backend `findOne()` response was `{ id, name, country, foundedYear, dissolvedYear, lines }`, with each Line summary carrying `{ id, name, startYear, endYear, scale, logo, franchise: { id, name } }`. A dedicated `ManufacturerDetailResponseDto` plus explicit `findDetail()`/controller mapping was proposed most recently, but application and verification were not confirmed. Inspect the actual current files before proceeding; don't duplicate this work if it is already in the working tree.
 
-Those records include demo image URLs and must be treated as experimental data.
+## Database Recovery — Current Development Environment
 
-They are useful for testing UI and navigation but must not be mistaken for canonical Cardback catalogue data.
+The previous Neon account/project had exceeded its quota. The user created a **new Neon project** and does not need to preserve the old database contents. AI Studio/React test records in the former database are not canonical and need not be migrated.
 
-Working Rules for Future Sessions
+Confirmed during setup:
 
-Provide complete changed files for copy/paste when code changes are requested.
+- `npx.cmd prisma validate` succeeded: schema valid.
+- `prisma migrate deploy` initially failed with `P3005` because the new database was not empty.
+- `npx.cmd prisma migrate reset --skip-seed` then completed successfully and applied all six migrations:
+  - `20260721065003_init`
+  - `20260721081713_auth_user_fields`
+  - `20260721154835_refresh_token_hash`
+  - `20260723122558_owned_figure_quantity`
+  - `20260925120000_password_reset_tokens`
+  - `20260925123000_wishlist_entries`
+- The Prisma client was regenerated as part of reset.
+- `prisma.config.ts` is configured to use `DIRECT_URL` for migrations; the Prisma schema/client uses `DATABASE_URL` for runtime access. The intended pattern is pooled `DATABASE_URL` for application runtime and direct `DIRECT_URL` for migration operations.
+- `npm` / `npx` PowerShell aliases may be blocked by ExecutionPolicy; use `npm.cmd` / `npx.cmd` in PowerShell.
 
-Return only the files requested.
+### Golden Seed Dataset
 
-Preserve working code and existing conventions.
+The seed scripts were adjusted for the fresh development database:
 
-Do not invent assumptions about the codebase.
+- Resolve duplicated names using the full catalogue context (`figureName` + `lineName`) when creating Variants.
+- Resolve Product Release Variants using `variantName` plus the associated Figure and Line, rather than `variantName` alone (names such as `Standard` repeat).
+- Reactivate seeded catalogue entities with `deletedAt: null` on upsert updates.
+- Make seeded Owned Figure handling repeatable for the same user/Product Release instead of blindly inserting duplicates.
+- Correct demo Owned Figure values to match UI/domain options: positive quantity, completeness `Unknown` where appropriate, and `Loose` as packaging state.
 
-Avoid premature abstractions.
+The supplied Golden Dataset includes 5 manufacturers, 1 franchise, 10 lines, 8 characters, 14 figures, 14 variants, 12 product releases, 4 demo users, and 7 demo Owned Figure records. The user indicated the database/seed task was done in the latest session; no command output was pasted into the conversation. Prefer a small runtime smoke test over running a destructive reset again.
 
-Preserve the established Cardback domain model.
+Demo users/passwords are local development seed credentials only; do not reuse them outside the local test environment.
 
-Use the Angular implementation as the canonical implementation for this repository.
+### Secrets and Environment Safety
 
-Use the parallel React project as a reference/prototype, not as an automatic source of architectural truth.
+Real Neon credentials and JWT secrets were pasted into the conversation during troubleshooting. Rotation was recommended, but completion has not been confirmed. **Before relying on this environment, confirm that the Neon password and both JWT secrets have been rotated** and update the local `.env`. Do not paste credentials into chat or commit `.env`.
 
-Do not silently replace agreed architectural decisions because the prototype chose another implementation.
+Expected `.env` shape (placeholders only):
 
-Keep AI-context.md, HISTORY.md, and project-status.md separate.
+```dotenv
+DATABASE_URL="<pooled Neon connection string>"
+DIRECT_URL="<direct Neon connection string>"
+JWT_SECRET="<new random secret>"
+JWT_REFRESH_SECRET="<different new random secret>"
+JWT_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=30d
+FRONTEND_URL=http://localhost:4200
+```
 
-HISTORY.md is append-only; add the newest session at the top and preserve previous entries.
+## Login UX Backlog
 
-When pausing a session, update all three state documents separately.
+After current Detail navigation/database integration checks:
 
-Do not repeat already completed DTO reviews unless a concrete implementation issue requires it.
+- Clear, specific feedback for incorrect credentials.
+- Review/finish the “Forgot password?” user flow and email delivery integration.
+- Review and refine the overall login UX.
+
+## Recommended Next Actions
+
+1. Smoke-test the new Neon database: run the app, sign in with a local seed user, and confirm Databank/Collection return data. Do not reset the database just to test it.
+2. Confirm the seed result and repeatability only if there is evidence that the records are missing or duplicated.
+3. Inspect the **actual current** Manufacturer Detail files; confirm whether the proposed dedicated response DTO/controller/service mapping was applied, then build and verify real/invalid IDs.
+4. Manually check the latest Product Release Detail HTML navigation, including Manufacturer, and verify the already-in-collection/wishlist/add-collection states.
+5. Exercise Global Search navigation for Manufacturer, Character, Figure, Variant and Product Release; record actual results.
+6. Continue the public DTO audit and then prioritize Login UX.
+7. Keep localization as a later application-wide task unless priorities change.
+
+## Collaboration Rules
+
+- Provide complete changed files for copy/paste when code changes are requested.
+- Return only the files requested.
+- Preserve working code and established conventions; never invent files, APIs or codebase assumptions.
+- Do not use Replace All for model/API field changes without checking every boundary.
+- Do not introduce abstractions without concrete reuse.
+- Prefer Signals for business-page state and RxJS/HttpClient for communication, consistent with existing features.
+- Keep `AI-context.md`, `HISTORY.md`, and `project-status.md` separate.
+- `HISTORY.md` is append-only: add the newest session at the top and preserve all prior sessions.
+- When pausing a session, update all three status documents separately.
+- Do not repeat completed DTO reviews unless a concrete implementation issue requires it.
+- Never claim a build, test, runtime verification or database operation succeeded unless the user/tool output actually confirms it.

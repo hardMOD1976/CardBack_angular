@@ -10,10 +10,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { ManufacturersService } from './manufacturers.service';
-import { CreateManufacturerDto } from './dto/create-manufacturer.dto';
-import { UpdateManufacturerDto } from './dto/update-manufacturer.dto';
-
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -26,6 +22,15 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
+
+import { ManufacturersService } from './manufacturers.service';
+
+import { CreateManufacturerDto } from './dto/create-manufacturer.dto';
+import { UpdateManufacturerDto } from './dto/update-manufacturer.dto';
+
+import {
+  ManufacturerDetailResponseDto,
+} from './dto/manufacturer-detail-response.dto';
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -56,23 +61,27 @@ export class ManufacturersController {
     description: 'Internal server error.',
   })
   @Get()
-@Public()
-findAll(
-  @Query('page') page = 1,
-  @Query('limit') limit = 20,
-  @Query('search') search?: string,
-) {
-  return this.manufacturersService.findAll({
-    page: Number(page),
-    limit: Number(limit),
-    search,
-  });
-}
+  @Public()
+  findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
+    @Query('search') search?: string,
+  ) {
+    const pagination: PaginationQueryDto = {
+      page: Number(page),
+      limit: Number(limit),
+      search,
+    };
+
+    return this.manufacturersService.findAll(
+      pagination,
+    );
+  }
 
   @ApiOperation({
     summary: 'Get manufacturer by id',
     description:
-      'Returns an active manufacturer by its identifier.',
+      'Returns an active manufacturer and its active lines by identifier.',
     operationId: 'findManufacturerById',
   })
   @ApiParam({
@@ -81,6 +90,7 @@ findAll(
   })
   @ApiOkResponse({
     description: 'Manufacturer found.',
+    type: ManufacturerDetailResponseDto,
   })
   @ApiNotFoundResponse({
     description: 'Manufacturer not found.',
@@ -90,8 +100,10 @@ findAll(
   })
   @Public()
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.manufacturersService.findOne(id);
+  findDetail(
+    @Param('id') id: string,
+  ) {
+    return this.manufacturersService.findDetail(id);
   }
 
   @ApiOperation({
@@ -127,8 +139,7 @@ findAll(
 
   @ApiOperation({
     summary: 'Update manufacturer',
-    description:
-      'Updates an existing manufacturer.',
+    description: 'Updates an existing manufacturer.',
     operationId: 'updateManufacturer',
   })
   @ApiParam({
@@ -188,7 +199,9 @@ findAll(
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(
+    @Param('id') id: string,
+  ) {
     return this.manufacturersService.remove(id);
   }
 }

@@ -24,11 +24,14 @@ async function main() {
       where: {
         name: manufacturer.name,
       },
+
       update: {
         foundedYear: manufacturer.foundedYear,
         dissolvedYear: manufacturer.dissolvedYear,
         country: manufacturer.country,
+        deletedAt: null,
       },
+
       create: manufacturer,
     });
   }
@@ -44,12 +47,15 @@ async function main() {
       where: {
         name: franchise.name,
       },
+
       update: {
         owner: franchise.owner,
         firstAppearance: franchise.firstAppearance,
         description: franchise.description,
         logo: franchise.logo,
+        deletedAt: null,
       },
+
       create: franchise,
     });
   }
@@ -61,17 +67,19 @@ async function main() {
   // ============================================================
 
   for (const line of lines) {
-    const manufacturer = await prisma.manufacturer.findUniqueOrThrow({
-      where: {
-        name: line.manufacturerName,
-      },
-    });
+    const manufacturer =
+      await prisma.manufacturer.findUniqueOrThrow({
+        where: {
+          name: line.manufacturerName,
+        },
+      });
 
-    const franchise = await prisma.franchise.findUniqueOrThrow({
-      where: {
-        name: line.franchiseName,
-      },
-    });
+    const franchise =
+      await prisma.franchise.findUniqueOrThrow({
+        where: {
+          name: line.franchiseName,
+        },
+      });
 
     await prisma.line.upsert({
       where: {
@@ -80,6 +88,7 @@ async function main() {
           name: line.name,
         },
       },
+
       update: {
         startYear: line.startYear,
         endYear: line.endYear,
@@ -87,7 +96,9 @@ async function main() {
         logo: line.logo,
         description: line.description,
         franchiseId: franchise.id,
+        deletedAt: null,
       },
+
       create: {
         name: line.name,
         startYear: line.startYear,
@@ -104,235 +115,307 @@ async function main() {
   console.log(`✅ Seeded ${lines.length} lines`);
 
   // ============================================================
-// Characters
-// ============================================================
+  // Characters
+  // ============================================================
 
-for (const character of characters) {
-  const franchise = await prisma.franchise.findUniqueOrThrow({
-    where: {
-      name: character.franchiseName,
-    },
-  });
+  for (const character of characters) {
+    const franchise =
+      await prisma.franchise.findUniqueOrThrow({
+        where: {
+          name: character.franchiseName,
+        },
+      });
 
-  await prisma.character.upsert({
-    where: {
-      franchiseId_name: {
-        franchiseId: franchise.id,
+    await prisma.character.upsert({
+      where: {
+        franchiseId_name: {
+          franchiseId: franchise.id,
+          name: character.name,
+        },
+      },
+
+      update: {
+        species: character.species,
+        homeworld: character.homeworld,
+        affiliation: character.affiliation,
+        description: character.description,
+        image: character.image,
+        deletedAt: null,
+      },
+
+      create: {
         name: character.name,
+        species: character.species,
+        homeworld: character.homeworld,
+        affiliation: character.affiliation,
+        description: character.description,
+        image: character.image,
+        franchiseId: franchise.id,
       },
-    },
-    update: {
-      species: character.species,
-      homeworld: character.homeworld,
-      affiliation: character.affiliation,
-      description: character.description,
-      image: character.image,
-    },
-    create: {
-      name: character.name,
-      species: character.species,
-      homeworld: character.homeworld,
-      affiliation: character.affiliation,
-      description: character.description,
-      image: character.image,
-      franchiseId: franchise.id,
-    },
-  });
-}
+    });
+  }
 
-console.log(`✅ Seeded ${characters.length} characters`);
-
-// ============================================================
-// Figures
-// ============================================================
-
-for (const figure of figures) {
-  const character = await prisma.character.findFirstOrThrow({
-    where: {
-      name: figure.characterName,
-    },
-  });
-
-  const line = await prisma.line.findFirstOrThrow({
-    where: {
-      name: figure.lineName,
-    },
-  });
-
-  await prisma.figure.upsert({
-    where: {
-      lineId_characterId_name: {
-        lineId: line.id,
-        characterId: character.id,
-        name: figure.name,
-      },
-    },
-    update: {
-      code: figure.code,
-      description: figure.description,
-      imageUrl: figure.imageUrl,
-    },
-    create: {
-      name: figure.name,
-      code: figure.code,
-      description: figure.description,
-      imageUrl: figure.imageUrl,
-      characterId: character.id,
-      lineId: line.id,
-    },
-  });
-}
-
-console.log(`✅ Seeded ${figures.length} figures`);
+  console.log(`✅ Seeded ${characters.length} characters`);
 
   // ============================================================
-// Variants
-// ============================================================
+  // Figures
+  // ============================================================
 
-for (const variant of variants) {
-  const figure = await prisma.figure.findFirstOrThrow({
-    where: {
-      name: variant.figureName,
-    },
-  });
+  for (const figure of figures) {
+    const character =
+      await prisma.character.findFirstOrThrow({
+        where: {
+          name: figure.characterName,
+        },
+      });
 
-  await prisma.variant.upsert({
-    where: {
-      figureId_name: {
-        figureId: figure.id,
+    const line =
+      await prisma.line.findFirstOrThrow({
+        where: {
+          name: figure.lineName,
+        },
+      });
+
+    await prisma.figure.upsert({
+      where: {
+        lineId_characterId_name: {
+          lineId: line.id,
+          characterId: character.id,
+          name: figure.name,
+        },
+      },
+
+      update: {
+        code: figure.code,
+        description: figure.description,
+        imageUrl: figure.imageUrl,
+        deletedAt: null,
+      },
+
+      create: {
+        name: figure.name,
+        code: figure.code,
+        description: figure.description,
+        imageUrl: figure.imageUrl,
+        characterId: character.id,
+        lineId: line.id,
+      },
+    });
+  }
+
+  console.log(`✅ Seeded ${figures.length} figures`);
+
+  // ============================================================
+  // Variants
+  // ============================================================
+
+  for (const variant of variants) {
+    const figure =
+      await prisma.figure.findFirstOrThrow({
+        where: {
+          name: variant.figureName,
+
+          line: {
+            is: {
+              name: variant.lineName,
+            },
+          },
+        },
+      });
+
+    await prisma.variant.upsert({
+      where: {
+        figureId_name: {
+          figureId: figure.id,
+          name: variant.name,
+        },
+      },
+
+      update: {
+        description: variant.description,
+        imageUrl: variant.imageUrl,
+        deletedAt: null,
+      },
+
+      create: {
         name: variant.name,
+        description: variant.description,
+        imageUrl: variant.imageUrl,
+        figureId: figure.id,
       },
-    },
-    update: {
-      description: variant.description,
-      imageUrl: variant.imageUrl,
-    },
-    create: {
-      name: variant.name,
-      description: variant.description,
-      imageUrl: variant.imageUrl,
-      figureId: figure.id,
-    },
-  });
-}
+    });
+  }
 
-console.log(`✅ Seeded ${variants.length} variants`);
+  console.log(`✅ Seeded ${variants.length} variants`);
 
-// ============================================================
-// Product Releases
-// ============================================================
+  // ============================================================
+  // Product Releases
+  // ============================================================
 
-for (const release of productReleases) {
-  const variant = await prisma.variant.findFirstOrThrow({
-    where: {
-      name: release.variantName,
-    },
-  });
+  for (const release of productReleases) {
+    const variant =
+      await prisma.variant.findFirstOrThrow({
+        where: {
+          name: release.variantName,
 
-  await prisma.productRelease.upsert({
-    where: {
-      variantId_name: {
-        variantId: variant.id,
+          figure: {
+            is: {
+              name: release.figureName,
+
+              line: {
+                is: {
+                  name: release.lineName,
+                },
+              },
+            },
+          },
+        },
+      });
+
+    await prisma.productRelease.upsert({
+      where: {
+        variantId_name: {
+          variantId: variant.id,
+          name: release.name,
+        },
+      },
+
+      update: {
+        packagingType: release.packagingType,
+        region: release.region,
+        language: release.language,
+        retailer: release.retailer,
+
+        releaseDate: release.releaseDate
+          ? new Date(release.releaseDate)
+          : null,
+
+        barcode: release.barcode,
+        notes: release.notes,
+        imageUrl: release.imageUrl,
+        deletedAt: null,
+      },
+
+      create: {
         name: release.name,
+        packagingType: release.packagingType,
+        region: release.region,
+        language: release.language,
+        retailer: release.retailer,
+
+        releaseDate: release.releaseDate
+          ? new Date(release.releaseDate)
+          : null,
+
+        barcode: release.barcode,
+        notes: release.notes,
+        imageUrl: release.imageUrl,
+        variantId: variant.id,
       },
-    },
-    update: {
-      packagingType: release.packagingType,
-      region: release.region,
-      language: release.language,
-      retailer: release.retailer,
-      releaseDate: release.releaseDate
-        ? new Date(release.releaseDate)
+    });
+  }
+
+  console.log(`✅ Seeded ${productReleases.length} product releases`);
+
+  // ============================================================
+  // Users
+  // ============================================================
+
+  const users = await getUsers();
+
+  for (const user of users) {
+    await prisma.user.upsert({
+      where: {
+        username: user.username,
+      },
+
+      update: {
+        displayName: user.displayName,
+        email: user.email,
+        passwordHash: user.passwordHash,
+        role: user.role,
+        country: user.country,
+        avatar: user.avatar,
+        deletedAt: null,
+      },
+
+      create: user,
+    });
+  }
+
+  console.log(`✅ Seeded ${users.length} users`);
+
+  // ============================================================
+  // Owned Figures
+  // ============================================================
+
+  for (const ownedFigure of ownedFigures) {
+    const user =
+      await prisma.user.findUniqueOrThrow({
+        where: {
+          username: ownedFigure.userUsername,
+        },
+      });
+
+    const productRelease =
+      await prisma.productRelease.findFirstOrThrow({
+        where: {
+          name: ownedFigure.productReleaseName,
+        },
+      });
+
+    const data = {
+      quantity: ownedFigure.quantity,
+      condition: ownedFigure.condition,
+      completeness: ownedFigure.completeness,
+      packagingState: ownedFigure.packagingState,
+
+      purchaseDate: ownedFigure.purchaseDate
+        ? new Date(ownedFigure.purchaseDate)
         : null,
-      barcode: release.barcode,
-      notes: release.notes,
-      imageUrl: release.imageUrl,
-    },
-    create: {
-      name: release.name,
-      packagingType: release.packagingType,
-      region: release.region,
-      language: release.language,
-      retailer: release.retailer,
-      releaseDate: release.releaseDate
-        ? new Date(release.releaseDate)
-        : null,
-      barcode: release.barcode,
-      notes: release.notes,
-      imageUrl: release.imageUrl,
-      variantId: variant.id,
-    },
-  });
-}
 
-console.log(`✅ Seeded ${productReleases.length} product releases`);
+      purchasePrice: ownedFigure.purchasePrice,
+      currency: ownedFigure.currency,
+      purchaseLocation: ownedFigure.purchaseLocation,
+      estimatedMarketValue: ownedFigure.estimatedMarketValue,
+      storageLocation: ownedFigure.storageLocation,
+      notes: ownedFigure.notes,
+      deletedAt: null,
+    };
 
- // ============================================================
-// Users
-// ============================================================
+    const existingOwnedFigure =
+      await prisma.ownedFigure.findFirst({
+        where: {
+          userId: user.id,
+          productReleaseId: productRelease.id,
+          deletedAt: null,
+        },
 
-const users = await getUsers();
+        select: {
+          id: true,
+        },
+      });
 
-for (const user of users) {
-  await prisma.user.upsert({
-    where: {
-      username: user.username,
-    },
-    update: {
-  displayName: user.displayName,
-  email: user.email,
-  passwordHash: user.passwordHash,
-  role: user.role,
-  country: user.country,
-  avatar: user.avatar,
-},
-    create: user,
-  });
-}
+    if (existingOwnedFigure) {
+      await prisma.ownedFigure.update({
+        where: {
+          id: existingOwnedFigure.id,
+        },
 
-console.log(`✅ Seeded ${users.length} users`);
+        data,
+      });
+    } else {
+      await prisma.ownedFigure.create({
+        data: {
+          userId: user.id,
+          productReleaseId: productRelease.id,
+          ...data,
+        },
+      });
+    }
+  }
 
-// ============================================================
-// Owned Figures
-// ============================================================
-
-for (const ownedFigure of ownedFigures) {
-  const user = await prisma.user.findUniqueOrThrow({
-  where: {
-    username: ownedFigure.userUsername,
-  },
-});
-
-  const productRelease = await prisma.productRelease.findFirstOrThrow({
-    where: {
-      name: ownedFigure.productReleaseName,
-    },
-  });
-
-  await prisma.ownedFigure.create({
-  data: {
-    userId: user.id,
-    productReleaseId: productRelease.id,
-
-    quantity: ownedFigure.quantity,
-
-    condition: ownedFigure.condition,
-    completeness: ownedFigure.completeness,
-    packagingState: ownedFigure.packagingState,
-    purchaseDate: ownedFigure.purchaseDate
-      ? new Date(ownedFigure.purchaseDate)
-      : null,
-    purchasePrice: ownedFigure.purchasePrice,
-    currency: ownedFigure.currency,
-    purchaseLocation: ownedFigure.purchaseLocation,
-    estimatedMarketValue: ownedFigure.estimatedMarketValue,
-    storageLocation: ownedFigure.storageLocation,
-    notes: ownedFigure.notes,
-  },
-});
-}
-
-console.log(`✅ Seeded ${ownedFigures.length} owned figures`);
+  console.log(`✅ Seeded ${ownedFigures.length} owned figures`);
 
   console.log('🎉 FigureArchive seed completed successfully.');
 }
@@ -340,7 +423,7 @@ console.log(`✅ Seeded ${ownedFigures.length} owned figures`);
 main()
   .catch((error) => {
     console.error(error);
-    process.exit(1);
+    process.exitCode = 1;
   })
   .finally(async () => {
     await prisma.$disconnect();

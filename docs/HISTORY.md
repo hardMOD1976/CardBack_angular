@@ -2,6 +2,228 @@
 
 ---
 
+## Session 2026-10-14
+
+### Detail Work and Architecture Checkpoint
+
+This session resumed the Cardback implementation and revisited the Detail area after the September turbo update.
+
+- Figure Detail is now treated as complete and verified against the canonical architecture.
+- The agreed Figure Detail boundary is Figure + Character summary + Line summary + Variants. Product Releases stay under Variant Detail; the earlier WIP note about nested Product Releases in Figure Detail is superseded by this confirmed decision.
+- Variant Detail backend behavior was verified with a real ID returning `200` and a nonexistent ID returning `404`. The user manually tested the frontend cases.
+- Product Release Detail was aligned to a dedicated public-response model matching the backend contract. `ProductReleaseDetailService` now uses HttpClient directly instead of relying on `DatabankService`. The user confirmed the model, service and TS-page changes compile; backend compilation was also reported successful.
+- Product Release ownership state had previously been tested: an already-owned release showed the correct message and hid add-to-collection/wishlist actions. The latest HTML change adding Manufacturer navigation still needs a manual browser check.
+- Manufacturer Detail backend code was under review. A dedicated response DTO and explicit service/controller mapping were proposed, but their application and verification were not confirmed. Inspect the current files before assuming this change is present.
+
+### New Neon Development Database
+
+The previous Neon project had exceeded quota. The user created a new Neon project and did not need to preserve the old catalogue/demo data.
+
+- `npx.cmd prisma validate` succeeded.
+- `prisma migrate deploy` initially failed with `P3005` because the target schema was not empty.
+- `npx.cmd prisma migrate reset --skip-seed` then completed successfully and applied:
+  - `20260721065003_init`
+  - `20260721081713_auth_user_fields`
+  - `20260721154835_refresh_token_hash`
+  - `20260723122558_owned_figure_quantity`
+  - `20260925120000_password_reset_tokens`
+  - `20260925123000_wishlist_entries`
+- `prisma.config.ts` is intended to use `DIRECT_URL` for migrations, with `DATABASE_URL` used by the runtime Prisma client.
+
+### Golden Seed Corrections
+
+Seed files were updated for the clean development database:
+
+- Variant-to-Figure lookup now uses Figure name and Line context, avoiding ambiguity when Figure names repeat across Lines.
+- Product Release-to-Variant lookup now uses Variant name plus Figure and Line context, avoiding ambiguity for repeated Variant names such as `Standard`.
+- Seeded catalogue upserts restore `deletedAt: null`.
+- Seeded Owned Figure records are updated when the same user/Product Release is already present, instead of blindly adding another record on each run.
+- Demo Owned Figure values were adjusted to match UI options, including a positive quantity, `Unknown` completeness when appropriate, and `Loose` packaging state.
+- Golden Dataset size: 5 manufacturers, 1 franchise, 10 lines, 8 characters, 14 figures, 14 variants, 12 product releases, 4 demo users and 7 demo Owned Figure records.
+
+The user then confirmed the database/seed task was done. The exact `db:seed` output was not included in the chat, so a non-destructive runtime smoke test remains the appropriate next verification; do not run another reset without a reason.
+
+### Security Reminder
+
+Database credentials and JWT secrets had been pasted into the troubleshooting conversation. Rotation was recommended but is not confirmed. Verify that the Neon password and both JWT secrets were rotated; do not paste secrets into chat or commit `.env`.
+
+### Next Session
+
+1. Smoke-test sign-in, Databank and Collection against the new Neon database.
+2. Inspect the actual Manufacturer Detail files and verify whether the proposed response DTO/service/controller alignment is already present; test a real ID and an invalid ID.
+3. Manually test Product Release Detail's latest HTML navigation, including Manufacturer, and confirm the ownership/wishlist action states.
+4. Verify Global Search destinations beyond the already verified Franchise and Line flows.
+5. Continue the public API DTO audit, then return to Login UX backlog.
+
+---
+
+## Session 2026-09-25
+
+### Turbo Update / React Parity Checkpoint
+
+Today's session documented a major acceleration of the Angular implementation through the new turbo update performed with Codex / Work.
+
+The relevant recent commits are:
+
+```text
+Turbo update per alinear amb projecte react
+Add detail for franchise, line and WIP figure
+Add detail to global search
+Update global search
+bg update
+Add legal disclaimer and bg image to login
+Update status files
+Remove doble X on cb-input
+Fix global search clear i restyle login
+Add logo for dark theme
+Add global search result card in gbs page
+Update status files
+```
+
+The parallel React project was created as a rapid experimentation/prototyping effort using the existing Neon database. It was initially generated from `AI-context.md` plus a small number of additional directions and has been used to explore product features and UX ideas quickly.
+
+AI Studio also inserted a batch of test catalogue records into Neon during this experimentation. These records use generated/demo image URLs and are not considered canonical Cardback catalogue data.
+
+### Current Angular State
+
+The turbo update has substantially expanded the Angular implementation to cover the same main user-facing journeys already explored in the React version.
+
+The current branch contains implementations for:
+
+- authentication, including registration/session refresh/password change/password reset flow
+- wishlist
+- dashboard
+- barcode lookup/scanning fallbacks
+- AI image identification suggestions
+- Global Search
+- Franchise Detail
+- Line Detail
+- Figure Detail
+- Manufacturer Detail
+- Character Detail
+- Variant Detail
+- Product Release Detail
+
+The existence of code/routes is recorded here as implementation status. Manual runtime verification is still required before every destination is considered verified.
+
+### Detail Architecture — Decision Preserved
+
+The original Cardback architectural rules remain the source of truth.
+
+- Dedicated Detail response contracts are used instead of a universal oversized Detail DTO.
+- Public endpoints must not expose raw Prisma entities.
+- Small summary/reference DTOs should be used where appropriate.
+- Detail pages should avoid recursive descendant loading.
+- Prisma domain entities are not to be reshaped merely to satisfy frontend presentation.
+- React implementation choices are reference material and experimentation, not automatic architectural decisions for Angular.
+
+### Figure Detail — Current WIP
+
+The current turbo implementation includes:
+
+```text
+Figure
+ ├── Character
+ ├── Line
+ │    ├── Manufacturer
+ │    └── Franchise
+ └── Variants
+      └── Product Releases
+```
+
+This is broader than the Detail boundary previously agreed for Cardback.
+
+The previously agreed architectural contract was:
+
+```text
+Figure Detail
+ ├── Figure
+ ├── Character summary
+ ├── Line summary
+ └── Variants
+```
+
+with Product Releases reserved for Variant Detail.
+
+Therefore the current nested Product Release implementation is recorded as **WIP / under review**, not as a superseding architectural decision.
+
+No refactor is being made blindly. The next step is to inspect and verify the current implementation and then explicitly decide whether the richer Figure Detail presentation should become part of the canonical Cardback architecture.
+
+### Immediate Next Step
+
+Before adding more features:
+
+1. Verify the current Figure Detail backend with a real and invalid identifier.
+2. Review the current Figure Detail frontend model/service/page.
+3. Decide the final Figure → Variant → Product Release boundary.
+4. Only then continue auditing the remaining Detail destinations.
+
+---
+
+## Session 2026-09-23
+
+### Line Detail Completed
+
+Line Detail was implemented and manually verified end-to-end.
+
+Backend:
+
+- `LineDetailResponseDto`
+- `LinesService.findDetail(id)`
+- Active Line filtering
+- Active Figure filtering
+- Active Character filtering
+- Manufacturer summary
+- Franchise summary
+- Figure summaries
+- Explicit response mapping
+- `404 Not Found` for unknown Line
+
+Verified endpoint:
+
+```text
+GET /lines/cms8tgdcb000lukxkqhys2t04
+```
+
+Result:
+
+```text
+200 OK
+```
+
+Frontend:
+
+- Figure summary display
+- `/lines/:id`
+- Line Detail loading/error/empty states
+- Figure cards prepared for deeper navigation
+
+Franchise Detail → Line Detail navigation was also manually verified.
+
+### Global Search Navigation
+
+The existing Global Search navigation map already contained:
+
+```ts
+line: 'lines'
+```
+
+Therefore no Global Search refactor was required when Line Detail was implemented.
+
+The same mapping pattern remains in place for the other catalogue entity types.
+
+### Figure Detail Planning
+
+The next canonical Detail milestone was defined as Figure Detail.
+
+The agreed initial contract was intentionally limited to Figure data, Character summary, Line summary and active Variants. Product Releases were to remain at Variant Detail in order to avoid recursive payload growth and preserve the Detail hierarchy.
+
+---
+
+# History
+
+---
+
 ## 2026-07-14
 
 ### Domain Model Completed
@@ -997,7 +1219,7 @@ Next Session
 Estimated progress
 ------------------
 
-Backend
+BackendBackend
 
 ≈ 95%
 
@@ -1965,453 +2187,3 @@ Product Release
 is considered correct and should be preserved.
 
 Detail should compose these entities into collector-oriented response contracts rather than collapsing them into a single generic entity hierarchy.
-
-# Cardback — History
-
-## Session: 2026-09-19 — Franchise Detail Backend Implemented
-
-### Global Search
-
-* Global Search result cards emit a `selected` event containing the selected result.
-* The page has a prepared navigation map for all seven result types:
-  Franchise, Manufacturer, Line, Character, Figure, Variant, and Product Release.
-* The corresponding detail routes/pages do not yet exist, so navigation is not fully functional.
-* The Global Search page HTML correctly binds:
-  `(selected)="onResultSelected($event)"`.
-* Search clearing has already been fixed in a previous session and is considered completed.
-* The relevant fix is represented by commit `a094f8f` (`Fix global search clear i restyle login`).
-* Do not treat search clearing as an outstanding task unless a new regression is observed.
-
-### Detail Pages
-
-* The review of existing response DTOs for Character, Figure, Variant, Franchise, Manufacturer, and Line has already been completed.
-* Do not repeat the DTO review.
-* Line does not have a dedicated general-purpose response DTO.
-* Franchise Detail was selected as the first detail-page vertical.
-* `FranchiseDetailResponseDto` has now been created with:
-  `id`, `name`, `owner`, `firstAppearance`, `description`, `logo`, `lines`.
-* `LineSummaryDto` has now been created with:
-  `id`, `name`, `startYear`, `endYear`, `scale`, `logo`.
-* `FranchisesService.findDetail(id)` has been implemented.
-* The existing `GET /franchises/:id` endpoint now returns the Franchise Detail response.
-* Only active Lines are included (`deletedAt: null`).
-* Lines are ordered alphabetically by name.
-* The response is explicitly mapped instead of exposing Prisma entities.
-* No Prisma schema changes were required.
-* `NotFoundException` was added so an unknown Franchise ID correctly returns HTTP `404`.
-
-### Backend Verification
-
-* `GET /franchises/1` was tested first.
-* Because Franchise ID `1` does not exist, the endpoint initially returned `200` with an empty body.
-* This was corrected by changing `findDetail()` to throw `NotFoundException` when no active Franchise is found.
-* The same request was retested and correctly returned:
-  `404 Not Found`.
-* A real Star Wars Franchise ID was then tested:
-  `GET /franchises/cms8tgcbq0005ukxkcehh2ybw`.
-* The endpoint correctly returned:
-  `200 OK`.
-* The response contained the Franchise data and its active Lines using the new detail contract.
-
-### Current State
-
-The **Franchise Detail backend is complete and verified**.
-
-The frontend implementation has not started yet.
-
-### Next Session
-
-1. Implement the Franchise Detail frontend page.
-2. Follow existing Angular feature/page/service conventions rather than introducing new abstractions.
-3. Add the `/franchises/:id` frontend route.
-4. Connect the Franchise Detail page to `GET /franchises/:id`.
-5. Connect Global Search Franchise result navigation to the new route.
-6. Continue with the remaining Detail pages.
-
-### Backlog
-
-* Improve Login UX:
-
-  * Clear incorrect-credentials feedback.
-  * “Forgot password?” flow.
-  * Review the overall login experience.
-* Login UX remains behind the transversal Detail work in priority.
-# Cardback — Development History
-
-## Session: 2026-09-23 — Line Detail Frontend and Navigation Completed
-
-### Line Detail Frontend
-
-Implemented and verified the Line Detail frontend.
-
-Created:
-
-* `features/line-detail/models/line-detail.model.ts`
-* `features/line-detail/services/line-detail.service.ts`
-* `features/line-detail/pages/line-detail/line-detail.ts`
-* `features/line-detail/pages/line-detail/line-detail.html`
-* `features/line-detail/pages/line-detail/line-detail.scss`
-
-The Line Detail model matches the backend detail contract:
-
-* Figure/Line identity and metadata.
-* Manufacturer summary.
-* Franchise summary.
-* Figure summaries.
-
-The Line Detail component:
-
-* Reads the Line ID from the route.
-* Loads the detail through `LineDetailService`.
-* Handles loading, not-found, and generic error states.
-* Displays Line metadata and Figures.
-* Uses the existing Cardback styling tokens.
-* Compiles successfully.
-
-### Line Detail Route
-
-Added:
-
-```text
-/lines/:id
-```
-
-to the protected Shell routes.
-
-The route was manually validated with:
-
-```text
-/lines/cms8tgdcb000lukxkqhys2t04
-```
-
-and loads the Star Wars PBP Line Detail correctly.
-
-### Franchise Detail → Line Detail
-
-Updated Franchise Detail so Line cards are navigable.
-
-The Line cards now use:
-
-```text
-RouterLink → /lines/:id
-```
-
-No service or DTO changes were required.
-
-The complete flow was tested successfully:
-
-```text
-Franchise Detail
-      ↓
-select Line
-      ↓
-Line Detail
-```
-
-### Global Search Verification
-
-Reviewed the existing `global-search.ts`.
-
-No change was required.
-
-The existing navigation map already contains:
-
-```ts
-franchise: 'franchises',
-manufacturer: 'manufacturers',
-line: 'lines',
-character: 'characters',
-figure: 'figures',
-variant: 'variants',
-productRelease: 'product-releases'
-```
-
-Therefore, because `/lines/:id` now exists, Global Search Line results are automatically connected to Line Detail.
-
-Current functional paths:
-
-```text
-Global Search → Franchise Detail
-Global Search → Line Detail
-Franchise Detail → Line Detail
-```
-
-Other Global Search destination routes remain pending until their corresponding Detail pages are implemented.
-
----
-
-## Session: 2026-09-23 — Figure Detail Planning Started
-
-### Figure Prisma Model Reviewed
-
-Reviewed the current Prisma schema for:
-
-* Figure
-* Character
-* Line
-* Variant
-* ProductRelease
-
-Figure relationships:
-
-```text
-Figure
- ├── Character
- ├── Line
- └── Variants
-```
-
-Variant relationship:
-
-```text
-Variant
- └── ProductReleases
-```
-
-### Figure Detail Architecture Decision
-
-The next Detail page is Figure Detail.
-
-Following the established Detail architecture, Figure Detail will use a dedicated response DTO rather than exposing the Prisma entity or creating a universal Detail DTO.
-
-Proposed Figure Detail response:
-
-```text
-Figure
- ├── id
- ├── name
- ├── code
- ├── description
- ├── imageUrl
- │
- ├── Character summary
- │    ├── id
- │    ├── name
- │    └── image
- │
- ├── Line summary
- │    ├── id
- │    ├── name
- │    ├── scale
- │    └── logo
- │
- └── Variants[]
-      ├── id
-      ├── name
-      ├── description
-      └── imageUrl
-```
-
-Product Releases will **not** be included in Figure Detail.
-
-They belong to the Variant Detail level to avoid recursive/overloaded payloads.
-
-Expected backend rules:
-
-* Active Figure only.
-* Active Character only.
-* Active Line only.
-* Active Variants only.
-* Variants ordered by name.
-* Explicit DTO mapping.
-* `404 Not Found` for an unknown/inactive Figure.
-* No Prisma entity exposure.
-
-### Current Figure DTO State
-
-Figure currently has:
-
-* `CreateFigureDto`
-* `UpdateFigureDto`
-
-There is no existing Figure response DTO.
-
-The current `figures.service.ts` contains:
-
-* `findAll`
-* `findOne`
-* `create`
-* `update`
-* `remove`
-* Character/Line existence validation helpers
-
-The current `figures.controller.ts` exposes:
-
-* `GET /figures`
-* `GET /figures/:id`
-* `POST /figures`
-* `PUT /figures/:id`
-* `DELETE /figures/:id`
-
-### Next Session
-
-Implement Figure Detail backend:
-
-1. Create `FigureDetailResponseDto`.
-2. Add `FiguresService.findDetail(id)`.
-3. Update `GET /figures/:id` to use the detail contract.
-4. Verify `200 OK` with a real Figure.
-5. Verify `404 Not Found` with an unknown Figure ID.
-6. Then implement the Angular Figure Detail page and route.
-7. Connect Line Detail → Figure Detail.
-8. Global Search already has `figure: 'figures'`, so its navigation will become functional once the route exists.
-
----
-
-## Session: 2026-09-19 — Franchise Detail Backend Implemented
-
-### Global Search
-
-* Global Search result cards emit a `selected` event containing the selected result.
-* The page has a prepared navigation map for all seven result types.
-* Search clearing was already fixed.
-* The page correctly binds `(selected)="onResultSelected($event)`.
-
-### Franchise Detail Backend
-
-Implemented:
-
-* `FranchiseDetailResponseDto`
-* `LineSummaryDto`
-* `FranchisesService.findDetail(id)`
-* Existing `GET /franchises/:id` mapped to the detail response.
-* Active Franchise filtering.
-* Active Line filtering.
-* Alphabetical Line ordering.
-* Explicit DTO-shaped response mapping.
-* `404 Not Found` for unknown Franchise IDs.
-
-### Backend Verification
-
-* `GET /franchises/1` correctly returns `404 Not Found`.
-* Real Star Wars Franchise:
-  `GET /franchises/cms8tgcbq0005ukxkcehh2ybw`
-  returned `200 OK`.
-
-### Current State
-
-The Franchise Detail backend was complete and verified.
-
-### Next Session
-
-Implement the Franchise Detail frontend, route integration, Global Search connection, and then continue with subsequent Detail pages.
-
----
-
-## Previous Sessions
-
-Previous project history remains below this point and should not be removed.
-Session 2026-09-25
-
-Turbo Update / React Parity Checkpoint
-
-Today's session documented a major acceleration of the Angular implementation through the new turbo update performed with Codex / Work.
-
-The relevant recent commits are:
-
-Turbo update per alinear amb projecte react
-Add detail for franchise, line and WIP figure
-Add detail to global search
-Update global search
-bg update
-Add legal disclaimer and bg image to login
-Update status files
-Remove doble X on cb-input
-Fix global search clear i restyle login
-Add logo for dark theme
-Add global search result card in gbs page
-Update status files
-
-The parallel React project was created as a rapid experimentation/prototyping effort using the existing Neon database. It was initially generated from AI-context.md plus a small number of additional directions and has been used to explore product features and UX ideas quickly.
-
-AI Studio also inserted a batch of test catalogue records into Neon during this experimentation. These records use generated/demo image URLs and are not considered canonical Cardback catalogue data.
-
-Current Angular State
-
-The turbo update has substantially expanded the Angular implementation to cover the same main user-facing journeys already explored in the React version.
-
-The current branch contains implementations for:
-
-authentication, including registration/session refresh/password change/password reset flow
-
-wishlist
-
-dashboard
-
-barcode lookup/scanning fallbacks
-
-AI image identification suggestions
-
-Global Search
-
-Franchise Detail
-
-Line Detail
-
-Figure Detail
-
-Manufacturer Detail
-
-Character Detail
-
-Variant Detail
-
-Product Release Detail
-
-The existence of code/routes is recorded here as implementation status. Manual runtime verification is still required before every destination is considered verified.
-
-Detail Architecture — Decision Preserved
-
-The original Cardback architectural rules remain the source of truth.
-
-Dedicated Detail response contracts are used instead of a universal oversized Detail DTO.
-
-Public endpoints must not expose raw Prisma entities.
-
-Small summary/reference DTOs should be used where appropriate.
-
-Detail pages should avoid recursive descendant loading.
-
-Prisma domain entities are not to be reshaped merely to satisfy frontend presentation.
-
-React implementation choices are reference material and experimentation, not automatic architectural decisions for Angular.
-
-Figure Detail — Current WIP
-
-The current turbo implementation includes:
-
-Figure
- ├── Character
- ├── Line
- │    ├── Manufacturer
- │    └── Franchise
- └── Variants
-      └── Product Releases
-
-This is broader than the Detail boundary previously agreed for Cardback.
-
-The previously agreed architectural contract was:
-
-Figure Detail
- ├── Figure
- ├── Character summary
- ├── Line summary
- └── Variants
-
-with Product Releases reserved for Variant Detail.
-
-Therefore the current nested Product Release implementation is recorded as WIP / under review, not as a superseding architectural decision.
-
-No refactor is being made blindly. The next step is to inspect and verify the current implementation and then explicitly decide whether the richer Figure Detail presentation should become part of the canonical Cardback architecture.
-
-Immediate Next Step
-
-Before adding more features:
-
-Verify the current Figure Detail backend with a real and invalid identifier.
-
-Review the current Figure Detail frontend model/service/page.
-
-Decide the final Figure → Variant → Product Release boundary.
-
-Only then continue auditing the remaining Detail destinations.

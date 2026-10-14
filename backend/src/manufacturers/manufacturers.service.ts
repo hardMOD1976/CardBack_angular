@@ -1,4 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -6,7 +9,11 @@ import { CreateManufacturerDto } from './dto/create-manufacturer.dto';
 import { UpdateManufacturerDto } from './dto/update-manufacturer.dto';
 
 import {
-   PaginationQueryDto,
+  ManufacturerDetailResponseDto,
+} from './dto/manufacturer-detail-response.dto';
+
+import {
+  PaginationQueryDto,
   buildPaginatedResponse,
 } from '../common/pagination';
 
@@ -15,67 +22,120 @@ export class ManufacturersService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(
-  pagination: PaginationQueryDto,
-) {
-  const { page, limit, search } = pagination;
+    pagination: PaginationQueryDto,
+  ) {
+    const { page, limit, search } = pagination;
+    const skip = (page - 1) * limit;
 
-  const skip = (page - 1) * limit;
-
-  const where = {
-    deletedAt: null,
-    ...(search && {
-      name: {
-        contains: search,
-        mode: 'insensitive' as const,
-      },
-    }),
-  };
-
-  const [manufacturers, total] =
-    await this.prisma.$transaction([
-      this.prisma.manufacturer.findMany({
-        where,
-        orderBy: {
-          name: 'asc',
+    const where = {
+      deletedAt: null,
+      ...(search && {
+        name: {
+          contains: search,
+          mode: 'insensitive' as const,
         },
-        skip,
-        take: limit,
       }),
+    };
 
-      this.prisma.manufacturer.count({
-        where,
-      }),
-    ]);
+    const [manufacturers, total] =
+      await this.prisma.$transaction([
+        this.prisma.manufacturer.findMany({
+          where,
+          orderBy: {
+            name: 'asc',
+          },
+          skip,
+          take: limit,
+        }),
 
-  return buildPaginatedResponse(
-    manufacturers.map(({ id, name, country, foundedYear, dissolvedYear }) => ({ id, name, country, foundedYear, dissolvedYear })),
-    page,
-    limit,
-    total,
-  );
-}
+        this.prisma.manufacturer.count({
+          where,
+        }),
+      ]);
 
-  async findOne(id: string) {
-    const manufacturer = await this.prisma.manufacturer.findFirst({
-      where: {
-        id,
-        deletedAt: null,
-      },
-      include: {
-        lines: {
-          where: { deletedAt: null, franchise: { deletedAt: null } },
-          include: { franchise: { select: { id: true, name: true } } },
-          orderBy: { name: 'asc' },
+    return buildPaginatedResponse(
+      manufacturers.map(
+        ({
+          id,
+          name,
+          country,
+          foundedYear,
+          dissolvedYear,
+        }) => ({
+          id,
+          name,
+          country,
+          foundedYear,
+          dissolvedYear,
+        }),
+      ),
+      page,
+      limit,
+      total,
+    );
+  }
+
+  async findDetail(
+    id: string,
+  ): Promise<ManufacturerDetailResponseDto> {
+    const manufacturer =
+      await this.prisma.manufacturer.findFirst({
+        where: {
+          id,
+          deletedAt: null,
         },
-      },
-    });
-    if (!manufacturer) throw new NotFoundException(`Manufacturer with id '${id}' not found.`);
+
+        select: {
+          id: true,
+          name: true,
+          country: true,
+          foundedYear: true,
+          dissolvedYear: true,
+
+          lines: {
+            where: {
+              deletedAt: null,
+              franchise: {
+                deletedAt: null,
+              },
+            },
+
+            select: {
+              id: true,
+              name: true,
+              startYear: true,
+              endYear: true,
+              scale: true,
+              logo: true,
+
+              franchise: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+
+            orderBy: {
+              name: 'asc',
+            },
+          },
+        },
+      });
+
+    if (!manufacturer) {
+      throw new NotFoundException(
+        `Manufacturer with id '${id}' not found.`,
+      );
+    }
+
     return {
       id: manufacturer.id,
       name: manufacturer.name,
       country: manufacturer.country,
       foundedYear: manufacturer.foundedYear,
       dissolvedYear: manufacturer.dissolvedYear,
+
       lines: manufacturer.lines.map((line) => ({
         id: line.id,
         name: line.name,
@@ -83,7 +143,11 @@ export class ManufacturersService {
         endYear: line.endYear,
         scale: line.scale,
         logo: line.logo,
-        franchise: line.franchise,
+
+        franchise: {
+          id: line.franchise.id,
+          name: line.franchise.name,
+        },
       })),
     };
   }
@@ -93,7 +157,14 @@ export class ManufacturersService {
   ) {
     return this.prisma.manufacturer.create({
       data: createManufacturerDto,
-      select: { id: true, name: true, country: true, foundedYear: true, dissolvedYear: true },
+
+      select: {
+        id: true,
+        name: true,
+        country: true,
+        foundedYear: true,
+        dissolvedYear: true,
+      },
     });
   }
 
@@ -105,8 +176,16 @@ export class ManufacturersService {
       where: {
         id,
       },
+
       data: updateManufacturerDto,
-      select: { id: true, name: true, country: true, foundedYear: true, dissolvedYear: true },
+
+      select: {
+        id: true,
+        name: true,
+        country: true,
+        foundedYear: true,
+        dissolvedYear: true,
+      },
     });
   }
 
@@ -115,10 +194,15 @@ export class ManufacturersService {
       where: {
         id,
       },
+
       data: {
         deletedAt: new Date(),
       },
-      select: { id: true, deletedAt: true },
+
+      select: {
+        id: true,
+        deletedAt: true,
+      },
     });
   }
 }

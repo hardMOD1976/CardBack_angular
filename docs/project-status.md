@@ -1,303 +1,56 @@
 # Cardback — Project Status
 
-**Last updated:** 2026-09-25
+**Last updated:** 2026-10-14  
+**Repository:** `FigureArchive`  
+**Current phase:** Angular MVP consolidation, detail navigation verification, new Neon development database.
 
 ## Overall Status
 
-Cardback now has the main collector journeys represented in Angular: account entry, catalogue browsing and detail navigation, collection tracking, wishlist, dashboard, barcode lookup, and AI-assisted image suggestions. This is feature implementation progress, not a release-readiness sign-off. Database migrations and external service configuration still need to be applied and verified in the intended environment.
+Cardback has the main catalogue and collector journeys implemented in Angular: account flows, Databank, Collection, Global Search, a set of Detail destinations, wishlist, dashboard, barcode lookup and AI-assisted image suggestions. This is feature implementation progress, not a release-readiness sign-off.
+
+The previous Neon project hit its quota. A new Neon project has been created; Prisma schema validation succeeded and all six current migrations were successfully applied with `prisma migrate reset --skip-seed`. Seed scripts were corrected for reliable entity association. The user reported the database/seed task done, but the seed command output was not shared in the conversation. Confirm functionality with a non-destructive smoke test rather than resetting the database again.
 
 ## Feature Status
 
-| Area                      | Status                  | Notes                                                                     |
-| ------------------------- | ----------------------- | ------------------------------------------------------------------------- |
-| Backend infrastructure    | Complete                | NestJS, Prisma, PostgreSQL, auth, validation, DTO approach                |
-| Authentication            | Implemented; integration required | Registration, login, refresh, password change and reset flow; password reset email needs Resend configuration |
-| Databank                  | MVP complete            | Product Release listing, pagination, search, loading/error/empty states   |
-| Collection                | MVP complete            | Server-side pagination, search, sort, and filters                         |
-| Global Search backend     | Implemented             | Search endpoint and public result DTO                                     |
-| Global Search frontend    | Implemented             | Page, service, result cards, query-param search, clearing fixed           |
-| Search result navigation  | Partially complete      | Franchise and Line destinations now functional                            |
-| Franchise Detail backend  | Complete                | Dedicated detail DTO, Line summary DTO, service mapping, 200/404 verified |
-| Franchise Detail frontend | Complete                | Page, model, service, route, Line navigation verified                     |
-| Line Detail backend       | Complete                | Dedicated detail contract, summaries, service mapping, 200 verified       |
-| Line Detail frontend      | Complete                | Page, model, service, route verified                                      |
-| Figure Detail             | Implemented             | Dedicated mapped detail response and release/variant navigation          |
-| Manufacturer Detail       | Implemented             | Dedicated detail destination and links                                    |
-| Character Detail         | Implemented             | Dedicated detail destination and links                                    |
-| Variant Detail            | Implemented             | Dedicated detail destination and release links                            |
-| Product Release Detail    | Implemented             | Detail, add-to-collection, and wishlist actions                           |
-| Wishlist                  | Implemented             | User-owned release watchlist, separate from owned collection              |
-| Dashboard                 | Implemented             | Collection aggregates and recently added items                            |
-| Barcode scanner           | Implemented             | Native browser scanner when supported, image/manual fallback, catalogue lookup |
-| AI identification         | Implemented; key required | Gemini suggestions only; does not write catalogue records                 |
-| Public API DTO boundary   | In progress             | Owned Figures now explicitly mapped; remaining public endpoints require continued audit |
-| Localization              | Pending                 | Angular UI still needs a complete application-wide language system        |
-
-## Global Search
-
-### Completed
-
-* Global Search API integration.
-* Search result model and service.
-* Loading, error, empty, and result states.
-* Result cards.
-* Result selection event.
-* Navigation map for all seven result types.
-* Search clearing fix.
-* Correct page binding:
-  `(selected)="onResultSelected($event)`.
-
-### Currently Functional Destinations
-
-```text
-Global Search → Franchise Detail
-Global Search → Line Detail
-```
-
-The existing navigation map contains:
-
-```ts
-franchise: 'franchises'
-manufacturer: 'manufacturers'
-line: 'lines'
-character: 'characters'
-figure: 'figures'
-variant: 'variants'
-productRelease: 'product-releases'
-```
-
-Catalogue destinations for all seven result types are implemented. Build and runtime validation remain required before treating every route as verified.
-
-### Remaining
-
-Connect additional result navigation as their Detail pages are implemented.
-
-## Detail Navigation
-
-Current verified flow:
-
-```text
-Global Search
-     │
-     ├── Franchise
-     │      ↓
-     │  Franchise Detail
-     │      ↓
-     │    Line
-     │      ↓
-     │  Line Detail
-     │
-     └── Line
-            ↓
-       Line Detail
-```
-
-Planned continuation:
-
-```text
-Line Detail
-     ↓
-Figure Detail
-     ↓
-Variant Detail
-     ↓
-Product Release Detail
-```
-
-## Franchise Detail
-
-### Backend
-
-Complete and verified.
-
-Implemented:
-
-* `FranchiseDetailResponseDto`
-* `LineSummaryDto`
-* `FranchisesService.findDetail(id)`
-* Active Franchise filtering.
-* Active Line filtering.
-* Alphabetical Line ordering.
-* Explicit response mapping.
-* `404 Not Found` for unknown Franchise IDs.
-
-### Frontend
-
-Complete and verified.
-
-Implemented:
-
-* Franchise Detail model.
-* Franchise Detail service.
-* Franchise Detail page.
-* `/franchises/:id` route.
-* Franchise information display.
-* Line summary display.
-* Line navigation through `RouterLink`.
-
-Verified flow:
-
-```text
-Franchise Detail → Line Detail
-```
-
-## Line Detail
-
-### Backend
-
-Complete and verified.
-
-The Line Detail response contains:
-
-* Line identity and metadata.
-* Manufacturer summary.
-* Franchise summary.
-* Figure summaries.
-
-Figure summary contains:
-
-* id
-* name
-* code
-* imageUrl
-* characterId
-* characterName
-
-Backend behaviour:
-
-* Active Line only.
-* Active Figures only.
-* Active Characters only.
-* Figures ordered by name.
-* Explicit response mapping.
-* `404` for unknown Line.
-
-Verified with:
-
-```text
-GET /lines/cms8tgdcb000lukxkqhys2t04
-```
-
-Result: `200 OK`.
-
-### Frontend
-
-Complete and verified.
-
-Implemented:
-
-* Line Detail model.
-* Line Detail service.
-* Line Detail page.
-* `/lines/:id` route.
-* Loading/error/not-found/empty states.
-* Line metadata.
-* Figure summary display.
-
-Verified direct navigation:
-
-```text
-/lines/cms8tgdcb000lukxkqhys2t04
-```
-
-Result: Line Detail loads correctly.
-
-## Next Milestone: Figure Detail
-
-### Current Backend State
-
-Figure currently has only:
-
-* `CreateFigureDto`
-* `UpdateFigureDto`
-
-There is no Figure response DTO.
-
-Current Figure Prisma relationships:
-
-```text
-Figure
- ├── Character
- ├── Line
- └── Variants
-```
-
-Variant:
-
-```text
-Variant
- └── Product Releases
-```
-
-### Proposed Figure Detail Contract
-
-`FigureDetailResponseDto`:
-
-```text
-Figure
- ├── id
- ├── name
- ├── code
- ├── description
- ├── imageUrl
- │
- ├── character
- │    ├── id
- │    ├── name
- │    └── image
- │
- ├── line
- │    ├── id
- │    ├── name
- │    ├── scale
- │    └── logo
- │
- └── variants[]
-      ├── id
-      ├── name
-      ├── description
-      └── imageUrl
-```
-
-Product Releases are intentionally excluded from Figure Detail.
-
-They will belong to Variant Detail.
-
-### Planned Figure Backend Work
-
-1. Create `FigureDetailResponseDto`.
-2. Add `FiguresService.findDetail(id)`.
-3. Update `GET /figures/:id` to return the dedicated detail contract.
-4. Filter inactive Figure, Character, Line, and Variants.
-5. Order Variants by name.
-6. Explicitly map the response.
-7. Verify `200 OK` with an existing Figure.
-8. Verify `404 Not Found` with an unknown Figure ID.
-
-### Planned Figure Frontend Work
-
-After backend verification:
-
-1. Create Figure Detail model.
-2. Create Figure Detail service.
-3. Create Figure Detail page.
-4. Add `/figures/:id`.
-5. Connect Line Detail → Figure Detail.
-6. Verify Global Search Figure navigation.
-
-## Detail Architecture
-
-Do not create one universal Detail DTO.
-
-Use:
-
-* Dedicated Detail response contracts.
-* Small summary/reference DTOs.
-* Explicit response mapping.
-* Active-record filtering.
-* No recursive descendant loading.
-
-Current hierarchy:
+| Area | Status | Notes |
+|---|---|---|
+| Backend infrastructure | Implemented | NestJS, Prisma, PostgreSQL/Neon, validation, auth and DTO approach |
+| New Neon schema | Migrations applied | Six migrations applied by reset; Prisma Client regenerated |
+| Golden seed dataset | Updated; runtime smoke test pending | Association lookup and repeatability fixes made; user indicated setup was done, command output not recorded here |
+| Authentication | Implemented; integration/configuration checks remain | Registration, login, refresh, password change/reset; Resend/public URL needed for email delivery |
+| Databank | MVP complete | Product Release listing, pagination/search, loading/error/empty states |
+| Collection | MVP complete | Server-side pagination, search, sort and filters |
+| Global Search backend | Implemented | Search endpoint and mapped public DTO |
+| Global Search frontend | Implemented | Page, service, result cards, query parameters and query clearing |
+| Global Search navigation | Partially verified | All seven result routes are mapped; Franchise and Line are the recorded verified branches |
+| Franchise Detail | Complete and verified | Backend real ID `200`, unknown/inactive ID `404`; frontend and Line navigation verified |
+| Line Detail | Complete and verified | Backend active filtering/mapping; backend real ID `200`, unknown ID `404`; frontend verified |
+| Figure Detail | Complete and verified | Canonical response is Figure + Character summary + Line summary + Variants; excludes Product Releases |
+| Variant Detail | Complete and verified | Backend real ID `200`, nonexistent ID `404`; frontend manually tested by user |
+| Product Release Detail | Implemented; latest HTML check pending | Dedicated model/service; model/service/TS changes compiled per user; ownership state tested; latest Manufacturer link needs UI check |
+| Manufacturer Detail | Implemented; contract/runtime verification pending | Current branch has page/service/model; exact recent DTO/controller/service alignment not confirmed applied and verified |
+| Character Detail | Implemented; runtime verification pending | Destination exists; record API and UI outcomes after manual testing |
+| Wishlist | Implemented | Per-user Product Release watchlist, separate from owned collection |
+| Dashboard | Implemented | Collection aggregates and recently added items |
+| Barcode lookup/scanning | Implemented | Browser scanner when supported, image/manual fallback, catalogue lookup |
+| AI identification | Implemented; key/config needed | Gemini-style suggestions only; does not write catalogue records |
+| Public API DTO boundary | Ongoing audit | Never expose raw Prisma records; Owned Figure responses explicitly mapped |
+| Localization | Pending | Application-wide language system not complete |
+
+## Database and Environment
+
+- A new Neon project is the current development target; old prototype/demo data does not need to be preserved.
+- `npx.cmd prisma validate` succeeded.
+- A normal `migrate deploy` first failed with `P3005` because the database schema was not empty. Then `npx.cmd prisma migrate reset --skip-seed` succeeded and applied all six migrations.
+- Migrations use `DIRECT_URL` in `prisma.config.ts`; the runtime Prisma client uses `DATABASE_URL`.
+- Use `npm.cmd` / `npx.cmd` in PowerShell where ExecutionPolicy blocks aliases.
+- Golden seed logic now resolves duplicate names using Figure + Line context, updates seeded soft-delete state, and handles seeded Owned Figure records repeatably. Demo collection values were aligned with UI options.
+- Next step: verify login and catalogue/collection data against the new database without another destructive reset.
+- **Security follow-up:** rotate the Neon password and both JWT secrets previously exposed in chat, unless already done. Keep `.env` local and never paste secrets into chat.
+
+## Detail Architecture — Canonical Decision
+
+No universal oversized Detail DTO. Each detail endpoint uses a dedicated response contract, small summaries/references, explicit mapping and active-record filtering. Avoid recursive descendant fetching.
 
 ```text
 Franchise
@@ -305,36 +58,59 @@ Franchise
         └── Figure
              └── Variant
                   └── Product Release
+
+Franchise
+   └── Character
+        └── Figure
 ```
 
-Each Detail page should expose the next relevant level without overfetching deeper descendants.
+**Figure Detail is settled:** it exposes Figure information, Character summary, Line summary and Variants. Product Releases belong in Variant Detail. The richer nested Product Release implementation recorded as WIP on 2026-09-25 is no longer the canonical Figure Detail contract; do not restore it without an explicit architecture review.
 
-## Login UX Backlog
+## Detail Verification Notes
 
-* Clear incorrect-credentials feedback.
-* Implement “Forgot password?” flow.
-* Review and improve the overall login experience.
+### Franchise
 
-**Priority:** After the transversal Detail work, if it fits the implementation plan.
+Backend dedicated detail response, active Franchise/Line filtering, alphabetical Lines and explicit mapping. Real ID and unknown/inactive ID behavior were verified. Frontend page/model/service/route and Franchise → Line navigation verified.
 
-## Immediate Next Actions
+### Line
 
-1. Implement Figure Detail backend.
-2. Verify Figure Detail API with real and invalid IDs.
-3. Implement Figure Detail frontend.
-4. Add `/figures/:id`.
-5. Connect Line Detail → Figure Detail.
-6. Verify Global Search Figure navigation.
-7. Continue with Variant Detail.
-8. Continue with Product Release Detail.
+Backend response includes Line metadata, Manufacturer/Franchise summaries and active Figure summaries. Real ID returned `200`; unknown Line returned `404`. Frontend direct route and display verified.
+
+### Figure
+
+Backend/frontend detail implemented and verified. Product Releases are excluded from the canonical Figure response. Variant navigation is the next level.
+
+### Variant
+
+Backend verified with a real identifier (`200`) and a nonexistent identifier (`404`). User manually tested the frontend cases. Variant Detail is the destination for associated Product Releases.
+
+### Product Release
+
+The backend `GET /product-releases/:id` response contract was checked previously. The dedicated frontend model matches the public response and the service now calls HttpClient directly rather than depending on `DatabankService`. The user confirmed that the model, service and TS-page changes compile; backend compilation was also reported successful. The already-in-collection state was manually observed for a test release: the page stated it was already in the collection and hid the add-to-collection/wishlist actions. The latest HTML navigation addition (including Manufacturer) still needs a manual UI check.
+
+### Manufacturer
+
+The destination exists, but don't call it verified yet. During the current session the backend `findOne` response and Angular page/model/service were reviewed. A dedicated response DTO and explicit backend mapping/controller wiring were proposed, but there is no confirmation in the recorded session that those exact changes were applied and built. Inspect the actual working tree before modifying it further.
+
+### Character and Global Search routes
+
+Character Detail and navigation destinations for all seven Global Search result types exist in the current branch; runtime verification still needs to be recorded for destinations other than the explicitly verified Franchise and Line paths.
+
+## Next Actions
+
+1. Smoke-test the new Neon database using a seed account; confirm sign-in, Databank results and Collection data.
+2. Review the actual Manufacturer Detail files and determine whether the proposed dedicated DTO/service/controller mapping is already present. If it is, build and test a real ID plus an invalid ID; if not, continue from the existing conventions.
+3. Manually test the latest Product Release Detail HTML navigation and its ownership/wishlist/add-collection states.
+4. Verify Global Search → Manufacturer, Character, Figure, Variant and Product Release; record each destination's result.
+5. Continue the public DTO audit.
+6. Improve Login UX: incorrect-credential feedback, forgotten-password flow and general login polish. Keep this after current Detail checks unless priorities change.
+7. Localization remains a later, application-wide task.
 
 ## Collaboration Rules
 
-* Provide complete changed files for copy/paste when code changes are requested.
-* Return only the files requested.
-* Preserve working code and existing conventions.
-* Do not invent assumptions about the codebase.
-* Avoid premature abstractions.
-* Keep `AI-context.md`, `HISTORY.md`, and `project-status.md` separate.
-* `HISTORY.md` is append-only.
-* Do not repeat already completed DTO reviews unless a concrete implementation issue requires it.
+- Return the complete files requested, separately, for copy/paste.
+- Preserve working code and existing naming/conventions; do not invent repository details.
+- Avoid premature abstraction and blind refactors.
+- Keep `AI-context.md`, `HISTORY.md`, and `project-status.md` as three separate files.
+- `HISTORY.md` is append-only; never delete prior sessions.
+- Update all three documents at session end.

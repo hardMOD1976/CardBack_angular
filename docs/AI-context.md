@@ -1,8 +1,8 @@
 # Cardback — AI Context
 
-**Last updated:** 2026-10-14  
+**Last updated:** 2026-10-15  
 **Repository/folder:** `FigureArchive`  
-**Current phase:** Frontend MVP consolidation, Detail verification, and development-database recovery.
+**Current phase:** Angular MVP consolidation; Detail pages and all Global Search destinations manually verified; next focus is public API DTO audit and Login UX.
 
 ## Project Overview
 
@@ -112,17 +112,17 @@ Vehicles/accessories may be considered later as a separate category; they are no
 
 Treat implementation existence and runtime verification as separate statuses.
 
-| Detail | Backend | Frontend / verification |
+| Detail | Backend / response | Frontend / runtime verification |
 |---|---|---|
-| Franchise | Dedicated response DTO and explicit mapping; real ID returned `200`, unknown/inactive ID `404` | Page/model/service/route verified; Line navigation verified |
-| Line | Dedicated detail response, Manufacturer/Franchise summaries, active Figure summaries; real ID returned `200`, unknown ID `404` | Page/model/service/route verified; Franchise → Line flow verified |
-| Figure | Detail backend was verified; active related records filtered. Canonical response excludes Product Releases | Detail page/model/service/route verified; Variant navigation belongs here |
-| Variant | Backend verified: a real ID returned `200`, nonexistent ID `404` | Frontend manually tested by user across its cases; Product Releases are listed from Variant Detail |
-| Product Release | `GET /product-releases/:id` response contract verified earlier | Dedicated model/service use direct HttpClient; user confirmed the model/service and TS-page changes compiled. Ownership behavior was tested. The latest HTML navigation addition to Manufacturer still needs a manual check |
-| Manufacturer | Detail route/page exists. A dedicated DTO/service/controller alignment was proposed during the current work, but applying/building/verifying those exact changes has not been confirmed | Page/model/service exist in the current branch; confirm current API contract and route behavior before marking verified |
-| Character | Detail route/page and backend implementation are present | Runtime/API/UI verification still needs to be recorded |
+| Franchise | Dedicated response DTO and explicit mapping; real ID returned `200`, unknown/inactive ID `404` | Verified in prior session; Franchise → Line and Global Search destination work |
+| Line | Dedicated detail response, Manufacturer/Franchise summaries, active Figure summaries; real ID returned `200`, unknown ID `404` | Verified in prior session; direct route and Global Search destination work |
+| Figure | Detail response uses Figure + Character summary + Line summary + Variants; Product Releases excluded by design | Real detail loads; invalid ID is handled as not found; Figure → Character, Line and Variant links work; Global Search destination verified |
+| Variant | Backend real ID returned `200`, nonexistent ID `404` | Standard Variant loads and lists its Product Release(s); invalid ID handled; navigation from Product Release → Variant and the Global Search destination verified |
+| Product Release | Public `GET /product-releases/:id` contract and dedicated frontend model/service are aligned | The Mandalorian Retro detail loads release metadata and related links; already-owned state is correct; Product Release → Variant and Global Search destination verified; invalid ID handled |
+| Manufacturer | Detail endpoint loads manufacturer metadata and related Line summaries; public DTO audit remains a broader ongoing task | Hasbro shows its three associated Lines; Manufacturer → Line works; invalid ID displays `Manufacturer not found`; console was clean; Global Search destination verified |
+| Character | Detail endpoint loads Character data and associated Figures | Luke Skywalker displays associated Figures; Character → Figure works; invalid ID displays `Character not found` with clean console; Global Search destination verified |
 
-Global Search contains a navigation map for all seven types:
+Global Search destination map:
 
 ```ts
 franchise: 'franchises'
@@ -134,7 +134,7 @@ variant: 'variants'
 productRelease: 'product-releases'
 ```
 
-Franchise and Line are the branches recorded as verified from Global Search. Do not describe all seven as fully verified until each destination has been exercised.
+**All seven Global Search destination types have now been manually exercised and confirmed functional:** Franchise, Manufacturer, Line, Character, Figure, Variant and Product Release. Cross-detail navigation was also checked for Manufacturer → Line, Character → Figure, Figure → Character/Line/Variant, and Product Release → Variant. Variant Detail also visibly lists its associated Product Release.
 
 ## Detail Contract Reference Notes
 
@@ -186,11 +186,11 @@ export interface ProductReleaseDetailModel {
 }
 ```
 
-The service now calls `GET ${environment.apiUrl}/product-releases/${id}` directly with HttpClient, not through `DatabankService`. The user confirmed the model/service/TS-page changes compile and backend compilation was successful. The latest HTML Manufacturer link still needs manual browser verification.
+The service now calls `GET ${environment.apiUrl}/product-releases/${id}` directly with HttpClient, not through `DatabankService`. The user confirmed the model/service/TS-page changes compile and backend compilation was successful. The page was manually checked in the browser. The Manufacturer reference is displayed; navigation to Variant Detail was exercised and works. The already-in-collection state was also confirmed.
 
-### Manufacturer Detail — Do Not Assume the Proposed Change Was Applied
+### Manufacturer Detail
 
-The previously observed backend `findOne()` response was `{ id, name, country, foundedYear, dissolvedYear, lines }`, with each Line summary carrying `{ id, name, startYear, endYear, scale, logo, franchise: { id, name } }`. A dedicated `ManufacturerDetailResponseDto` plus explicit `findDetail()`/controller mapping was proposed most recently, but application and verification were not confirmed. Inspect the actual current files before proceeding; don't duplicate this work if it is already in the working tree.
+Manual runtime verification is complete for the current development environment. The Hasbro detail displayed its metadata and three associated Lines (Retro Collection, The Power of the Force II and The Vintage Collection); opening a Line navigated to Line Detail. An invalid Manufacturer ID displayed `Manufacturer not found` and the browser console was clean. Keep the wider public API DTO audit open separately; do not rework this feature without evidence of a contract issue.
 
 ## Database Recovery — Current Development Environment
 
@@ -221,7 +221,7 @@ The seed scripts were adjusted for the fresh development database:
 - Make seeded Owned Figure handling repeatable for the same user/Product Release instead of blindly inserting duplicates.
 - Correct demo Owned Figure values to match UI/domain options: positive quantity, completeness `Unknown` where appropriate, and `Loose` as packaging state.
 
-The supplied Golden Dataset includes 5 manufacturers, 1 franchise, 10 lines, 8 characters, 14 figures, 14 variants, 12 product releases, 4 demo users, and 7 demo Owned Figure records. The user indicated the database/seed task was done in the latest session; no command output was pasted into the conversation. Prefer a small runtime smoke test over running a destructive reset again.
+The supplied Golden Dataset includes 5 manufacturers, 1 franchise, 10 lines, 8 characters, 14 figures, 14 variants, 12 product releases, 4 demo users, and 7 demo Owned Figure records. The user reported the database/seed setup complete. Subsequent authenticated frontend checks displayed seeded catalogue and collection data, and the user confirmed the backend responds to queries both with IDs and without IDs. The exact seed command output and a second-run idempotency test were not recorded. Do not run a destructive reset just to verify it.
 
 Demo users/passwords are local development seed credentials only; do not reuse them outside the local test environment.
 
@@ -251,14 +251,13 @@ After current Detail navigation/database integration checks:
 
 ## Recommended Next Actions
 
-1. Smoke-test the new Neon database: run the app, sign in with a local seed user, and confirm Databank/Collection return data. Do not reset the database just to test it.
-2. Confirm the seed result and repeatability only if there is evidence that the records are missing or duplicated.
-3. Inspect the **actual current** Manufacturer Detail files; confirm whether the proposed dedicated response DTO/controller/service mapping was applied, then build and verify real/invalid IDs.
-4. Manually check the latest Product Release Detail HTML navigation, including Manufacturer, and verify the already-in-collection/wishlist/add-collection states.
-5. Exercise Global Search navigation for Manufacturer, Character, Figure, Variant and Product Release; record actual results.
-6. Continue the public DTO audit and then prioritize Login UX.
-7. Keep localization as a later application-wide task unless priorities change.
+1. Continue the public API DTO audit. Inspect current controller/service responses and ensure public endpoints explicitly map contracts rather than returning raw Prisma entities. Track audited endpoints so completed reviews are not repeated without a concrete issue.
+2. Improve Login UX: clear incorrect-credential feedback, review/finish the "Forgot password?" flow, and refine the overall login experience.
+3. Verify Resend email delivery and public-URL configuration when those values are configured for the intended environment.
+4. Confirm Neon password and both JWT secrets were rotated after they were exposed during troubleshooting; keep `.env` local and out of version control.
+5. Keep application-wide localization as a later task unless priorities change.
 
+The Detail verification round is complete. Do not repeat the same manual Detail/Global Search checks unless a code change introduces a regression or a specific issue appears.
 ## Collaboration Rules
 
 - Provide complete changed files for copy/paste when code changes are requested.

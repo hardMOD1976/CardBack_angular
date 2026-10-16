@@ -1,39 +1,39 @@
 # Cardback — Project Status
 
-**Last updated:** 2026-10-14  
+**Last updated:** 2026-10-15  
 **Repository:** `FigureArchive`  
-**Current phase:** Angular MVP consolidation, detail navigation verification, new Neon development database.
+**Current phase:** Angular MVP consolidation; Detail and all Global Search destinations manually verified; next focus is public API DTO audit and Login UX.
 
 ## Overall Status
 
-Cardback has the main catalogue and collector journeys implemented in Angular: account flows, Databank, Collection, Global Search, a set of Detail destinations, wishlist, dashboard, barcode lookup and AI-assisted image suggestions. This is feature implementation progress, not a release-readiness sign-off.
+Cardback has the main catalogue and collector journeys implemented in Angular: account flows, Databank, Collection, Global Search, all seven Detail destinations, wishlist, dashboard, barcode lookup and AI-assisted image suggestions. During the 2026-10-14/15 manual verification session, every Global Search destination and the tested cross-detail links worked. The invalid-ID states tested during that session were handled as not found; Manufacturer and Character not-found cases showed a clean browser console.
 
-The previous Neon project hit its quota. A new Neon project has been created; Prisma schema validation succeeded and all six current migrations were successfully applied with `prisma migrate reset --skip-seed`. Seed scripts were corrected for reliable entity association. The user reported the database/seed task done, but the seed command output was not shared in the conversation. Confirm functionality with a non-destructive smoke test rather than resetting the database again.
+This is feature implementation progress, not a release-readiness sign-off. The previous Neon project hit its quota. A new Neon project has been created and all six current migrations were successfully applied with `prisma migrate reset --skip-seed`. The user reported the database/seed setup done; seeded catalogue and collection data are now being returned in runtime UI/API checks. The exact seed command output and a second-run idempotency test were not recorded. Do not reset the database merely for verification.
 
 ## Feature Status
 
 | Area | Status | Notes |
 |---|---|---|
 | Backend infrastructure | Implemented | NestJS, Prisma, PostgreSQL/Neon, validation, auth and DTO approach |
-| New Neon schema | Migrations applied | Six migrations applied by reset; Prisma Client regenerated |
-| Golden seed dataset | Updated; runtime smoke test pending | Association lookup and repeatability fixes made; user indicated setup was done, command output not recorded here |
-| Authentication | Implemented; integration/configuration checks remain | Registration, login, refresh, password change/reset; Resend/public URL needed for email delivery |
-| Databank | MVP complete | Product Release listing, pagination/search, loading/error/empty states |
-| Collection | MVP complete | Server-side pagination, search, sort and filters |
-| Global Search backend | Implemented | Search endpoint and mapped public DTO |
-| Global Search frontend | Implemented | Page, service, result cards, query parameters and query clearing |
-| Global Search navigation | Partially verified | All seven result routes are mapped; Franchise and Line are the recorded verified branches |
+| New Neon schema | Migrations applied | Six migrations applied; Prisma Client regenerated |
+| Golden seed dataset | Runtime data confirmed; repeatability check not recorded | Seeded catalogue/collection data appears in authenticated UI/API; seed command output and a second run were not recorded |
+| Authentication | Implemented; configuration checks remain | Authenticated session is in use; password-reset email requires Resend and public URL configuration |
+| Databank | MVP complete | Product Release listing, pagination/search and loading/error/empty states |
+| Collection | MVP complete | Server-side pagination, search, sort and filters; ownership state confirmed for a Product Release |
+| Global Search backend | Implemented | Search endpoint and mapped public result DTO |
+| Global Search frontend | Complete and manually verified | Page, service, result cards, query parameter handling and query clearing |
+| Global Search navigation | Complete and manually verified | All seven result types navigate to their Detail pages: Franchise, Manufacturer, Line, Character, Figure, Variant and Product Release |
 | Franchise Detail | Complete and verified | Backend real ID `200`, unknown/inactive ID `404`; frontend and Line navigation verified |
-| Line Detail | Complete and verified | Backend active filtering/mapping; backend real ID `200`, unknown ID `404`; frontend verified |
-| Figure Detail | Complete and verified | Canonical response is Figure + Character summary + Line summary + Variants; excludes Product Releases |
-| Variant Detail | Complete and verified | Backend real ID `200`, nonexistent ID `404`; frontend manually tested by user |
-| Product Release Detail | Implemented; latest HTML check pending | Dedicated model/service; model/service/TS changes compiled per user; ownership state tested; latest Manufacturer link needs UI check |
-| Manufacturer Detail | Implemented; contract/runtime verification pending | Current branch has page/service/model; exact recent DTO/controller/service alignment not confirmed applied and verified |
-| Character Detail | Implemented; runtime verification pending | Destination exists; record API and UI outcomes after manual testing |
+| Line Detail | Complete and verified | Backend mapping/filtering; real ID `200`, unknown ID `404`; frontend display and navigation verified |
+| Figure Detail | Complete and verified | Canonical response is Figure + Character summary + Line summary + Variants; invalid ID handled; links to Character, Line and Variant work |
+| Manufacturer Detail | Complete and manually verified | Hasbro metadata and three Lines display; Manufacturer → Line works; invalid ID shows `Manufacturer not found` with clean console |
+| Character Detail | Complete and manually verified | Character displays associated Figures; Character → Figure works; invalid ID shows `Character not found` with clean console |
+| Variant Detail | Complete and verified | Variant displays associated Product Releases; navigation from Product Release works; invalid ID handled |
+| Product Release Detail | Complete and verified | Release metadata and related links display; already-in-collection state works; Variant navigation and invalid-ID case verified |
 | Wishlist | Implemented | Per-user Product Release watchlist, separate from owned collection |
 | Dashboard | Implemented | Collection aggregates and recently added items |
 | Barcode lookup/scanning | Implemented | Browser scanner when supported, image/manual fallback, catalogue lookup |
-| AI identification | Implemented; key/config needed | Gemini-style suggestions only; does not write catalogue records |
+| AI identification | Implemented; key/config needed | Suggestions only; does not automatically write catalogue records |
 | Public API DTO boundary | Ongoing audit | Never expose raw Prisma records; Owned Figure responses explicitly mapped |
 | Localization | Pending | Application-wide language system not complete |
 
@@ -45,7 +45,7 @@ The previous Neon project hit its quota. A new Neon project has been created; Pr
 - Migrations use `DIRECT_URL` in `prisma.config.ts`; the runtime Prisma client uses `DATABASE_URL`.
 - Use `npm.cmd` / `npx.cmd` in PowerShell where ExecutionPolicy blocks aliases.
 - Golden seed logic now resolves duplicate names using Figure + Line context, updates seeded soft-delete state, and handles seeded Owned Figure records repeatably. Demo collection values were aligned with UI options.
-- Next step: verify login and catalogue/collection data against the new database without another destructive reset.
+- Runtime API/UI checks now confirm that the seeded catalogue and collection data are available. Continue development without another destructive reset; seed idempotency was not re-tested in this verification round.
 - **Security follow-up:** rotate the Neon password and both JWT secrets previously exposed in chat, unless already done. Keep `.env` local and never paste secrets into chat.
 
 ## Detail Architecture — Canonical Decision
@@ -68,44 +68,47 @@ Franchise
 
 ## Detail Verification Notes
 
-### Franchise
+### Franchise and Line
 
-Backend dedicated detail response, active Franchise/Line filtering, alphabetical Lines and explicit mapping. Real ID and unknown/inactive ID behavior were verified. Frontend page/model/service/route and Franchise → Line navigation verified.
-
-### Line
-
-Backend response includes Line metadata, Manufacturer/Franchise summaries and active Figure summaries. Real ID returned `200`; unknown Line returned `404`. Frontend direct route and display verified.
+Both Detail pages were already verified in previous sessions. Franchise Detail displays active Lines and links to Line Detail. Line Detail displays related Manufacturer/Franchise context and Figure summaries. Their API real-ID and not-found behavior is recorded in the earlier verification notes above and in `HISTORY.md`.
 
 ### Figure
 
-Backend/frontend detail implemented and verified. Product Releases are excluded from the canonical Figure response. Variant navigation is the next level.
-
-### Variant
-
-Backend verified with a real identifier (`200`) and a nonexistent identifier (`404`). User manually tested the frontend cases. Variant Detail is the destination for associated Product Releases.
-
-### Product Release
-
-The backend `GET /product-releases/:id` response contract was checked previously. The dedicated frontend model matches the public response and the service now calls HttpClient directly rather than depending on `DatabankService`. The user confirmed that the model, service and TS-page changes compile; backend compilation was also reported successful. The already-in-collection state was manually observed for a test release: the page stated it was already in the collection and hid the add-to-collection/wishlist actions. The latest HTML navigation addition (including Manufacturer) still needs a manual UI check.
+The current canonical response contains Figure fields, Character summary, Line summary, and Variants. Product Releases are excluded. The user confirmed an invalid ID is handled as not found and verified Figure → Character, Figure → Line and Figure → Variant navigation.
 
 ### Manufacturer
 
-The destination exists, but don't call it verified yet. During the current session the backend `findOne` response and Angular page/model/service were reviewed. A dedicated response DTO and explicit backend mapping/controller wiring were proposed, but there is no confirmation in the recorded session that those exact changes were applied and built. Inspect the actual working tree before modifying it further.
+Hasbro Detail displayed its metadata and three Lines: Retro Collection, The Power of the Force II and The Vintage Collection. Selecting a Line navigates to Line Detail. An invalid ID displays `Manufacturer not found`, with no console errors reported.
 
-### Character and Global Search routes
+### Character
 
-Character Detail and navigation destinations for all seven Global Search result types exist in the current branch; runtime verification still needs to be recorded for destinations other than the explicitly verified Franchise and Line paths.
+Luke Skywalker Detail displays associated Figures. Selecting a Figure navigates to Figure Detail. An invalid ID displays `Character not found`, with no console errors reported.
+
+### Variant
+
+The `Standard` Variant displays the related `The Mandalorian Retro` Product Release. Navigation from Product Release Detail to Variant Detail works, and the invalid-ID case was reported as working.
+
+### Product Release
+
+`The Mandalorian Retro` Detail displays release metadata and links to Variant, Figure, Line, Character and Manufacturer. The page correctly identifies that this release is already in the user's collection. The Variant link opens Variant Detail, which displays its associated Product Release. The invalid-ID case was reported as working.
+
+### Global Search and Cross-Detail Navigation
+
+All seven Global Search result types have been opened and confirmed working: Franchise, Manufacturer, Line, Character, Figure, Variant and Product Release. Confirmed cross-detail navigation includes Manufacturer → Line, Character → Figure, Figure → Character/Line/Variant, and Product Release → Variant; Variant Detail lists associated Product Releases.
+
+### Architecture
+
+Do not create a universal oversized Detail DTO. Use dedicated response contracts, summary/reference DTOs, explicit mapping, active-record filtering, and no uncontrolled recursive loading. Figure Detail intentionally excludes Product Releases; those belong to Variant Detail.
 
 ## Next Actions
 
-1. Smoke-test the new Neon database using a seed account; confirm sign-in, Databank results and Collection data.
-2. Review the actual Manufacturer Detail files and determine whether the proposed dedicated DTO/service/controller mapping is already present. If it is, build and test a real ID plus an invalid ID; if not, continue from the existing conventions.
-3. Manually test the latest Product Release Detail HTML navigation and its ownership/wishlist/add-collection states.
-4. Verify Global Search → Manufacturer, Character, Figure, Variant and Product Release; record each destination's result.
-5. Continue the public DTO audit.
-6. Improve Login UX: incorrect-credential feedback, forgotten-password flow and general login polish. Keep this after current Detail checks unless priorities change.
-7. Localization remains a later, application-wide task.
+1. Continue the public API DTO audit. Inspect current controller/service responses and ensure public endpoints explicitly map contracts rather than returning raw Prisma entities. Track completed reviews and do not repeat them without a concrete issue.
+2. Improve Login UX: clear incorrect-credential feedback, review/finish the "Forgot password?" flow, and refine the overall login experience.
+3. Verify Resend email delivery and public-URL configuration when available for the intended environment.
+4. Confirm the Neon password and both JWT secrets were rotated after being exposed during troubleshooting; keep `.env` local and out of version control.
+5. Keep application-wide localization as a later task unless priorities change.
 
+The current Detail and Global Search manual verification round is complete. Do not repeat these checks unless code changes introduce a regression or a specific issue appears.
 ## Collaboration Rules
 
 - Return the complete files requested, separately, for copy/paste.

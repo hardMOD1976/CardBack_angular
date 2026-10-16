@@ -2,6 +2,47 @@
 
 ---
 
+## Session 2026-10-15
+
+### Detail Pages and Global Search — Manual Runtime Verification Complete
+
+This session continued the manual verification started on 2026-10-14. The user confirmed that the backend responds to queries both with identifiers and without identifiers. The currently seeded development data is being returned through the UI/API.
+
+#### Detail pages checked
+
+- **Manufacturer Detail:** Hasbro loads with its metadata and three associated Lines: Retro Collection, The Power of the Force II and The Vintage Collection. Opening a Line navigates correctly to Line Detail. `/manufacturers/invalid-id-123` displays `Manufacturer not found`; the browser console was clean.
+- **Character Detail:** Luke Skywalker loads and displays associated Figures. Opening a Figure navigates to Figure Detail. `/characters/invalid-id-123` displays `Character not found`; the browser console was clean.
+- **Figure Detail:** An invalid ID is handled consistently as not found. From Figure Detail, navigation to Character, Line and Variant Detail works. The agreed contract remains Figure + Character summary + Line summary + Variants; Product Releases are not part of Figure Detail.
+- **Variant Detail:** The `Standard` variant loads and lists its associated Product Release, `The Mandalorian Retro`. Navigation from the release back to Variant Detail works. An invalid variant ID was tested and reported working.
+- **Product Release Detail:** `The Mandalorian Retro` loads the release metadata and links to Variant, Figure, Line, Character and Manufacturer. It correctly reports `This product release is already in your collection`. Opening the Variant link works. An invalid Product Release ID was tested and reported working.
+- **Franchise and Line Detail:** These had already been verified in prior sessions, including their related navigation and API not-found behavior as recorded in the project state.
+
+#### Global Search destinations
+
+All seven result types have now been exercised directly from Global Search and confirmed working:
+
+```text
+Global Search → Franchise Detail
+Global Search → Manufacturer Detail
+Global Search → Line Detail
+Global Search → Character Detail
+Global Search → Figure Detail
+Global Search → Variant Detail
+Global Search → Product Release Detail
+```
+
+The currently confirmed cross-detail links include Manufacturer → Line, Character → Figure, Figure → Character/Line/Variant, and Product Release → Variant, with Variant Detail listing its Product Releases.
+
+#### Outcome and next focus
+
+- The current Detail and Global Search navigation verification round is complete; no code changes were needed during this verification session.
+- Do not reopen the canonical Figure Detail boundary: Product Releases remain under Variant Detail.
+- Next development focus: continue the public API DTO audit, then address Login UX (incorrect-credential feedback, forgotten-password flow, and general polish).
+- The database/seed setup was reported complete earlier. The current UI/API runtime checks demonstrate that catalogue and collection records are available; a second seed run for idempotency was not recorded.
+- Security follow-up remains: confirm the Neon password and JWT secrets exposed during troubleshooting have been rotated.
+
+---
+
 ## Session 2026-10-14
 
 ### Detail Work and Architecture Checkpoint

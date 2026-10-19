@@ -1,12 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ThemeService } from '../../../core/services/theme.service';
 
-interface NavItem {
-  route: string;
-  label: string;
-}
+import { CurrentUserService } from '../../../core/auth/current-user.service';
+import { ThemeService } from '../../../core/services/theme.service';
+import { NavigationItem } from '../../models/navigation-item.model';
+import { NavigationService } from '../../services/navigation.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -17,18 +16,18 @@ interface NavItem {
 })
 export class Sidebar {
   private readonly themeService = inject(ThemeService);
+  private readonly navigationService = inject(NavigationService);
+  private readonly currentUserService = inject(CurrentUserService);
 
   readonly theme = this.themeService.theme;
 
-  navigation: NavItem[] = [
-    { route: '/dashboard', label: 'Dashboard' },
-    { route: '/collection', label: 'Collection' },
-    { route: '/databank', label: 'Databank' },
-    { route: '/wishlist', label: 'Wishlist' },
-    { route: '/identify', label: 'AI Identify' },
-    { route: '/scan', label: 'Scan Barcode' },
-    { route: '/profile', label: 'Profile' },
-  ];
+  get navigation(): NavigationItem[] {
+    const role = this.currentUserService.getCurrentUser()?.role;
+
+    return this.navigationService.navigation.filter(
+      (item) => !item.roles || (!!role && item.roles.includes(role)),
+    );
+  }
 
   get logoPath(): string {
     return this.themeService.theme() === 'light'

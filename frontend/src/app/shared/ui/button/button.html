@@ -1,7 +1,6 @@
 <button
-    class="cb-button"
-    [type]="type()">
-
-    <ng-content />
-
+  class="cb-button"
+  [type]="type()"
+  [disabled]="disabled()">
+  <ng-content />
 </button>

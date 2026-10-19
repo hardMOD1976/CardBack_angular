@@ -1,7 +1,9 @@
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -21,9 +23,7 @@ import {
 export class ManufacturersService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(
-    pagination: PaginationQueryDto,
-  ) {
+  async findAll(pagination: PaginationQueryDto) {
     const { page, limit, search } = pagination;
     const skip = (page - 1) * limit;
 
@@ -37,96 +37,76 @@ export class ManufacturersService {
       }),
     };
 
-    const [manufacturers, total] =
-      await this.prisma.$transaction([
-        this.prisma.manufacturer.findMany({
-          where,
-          orderBy: {
-            name: 'asc',
-          },
-          skip,
-          take: limit,
-        }),
-
-        this.prisma.manufacturer.count({
-          where,
-        }),
-      ]);
+    const [manufacturers, total] = await this.prisma.$transaction([
+      this.prisma.manufacturer.findMany({
+        where,
+        orderBy: {
+          name: 'asc',
+        },
+        skip,
+        take: limit,
+      }),
+      this.prisma.manufacturer.count({
+        where,
+      }),
+    ]);
 
     return buildPaginatedResponse(
-      manufacturers.map(
-        ({
-          id,
-          name,
-          country,
-          foundedYear,
-          dissolvedYear,
-        }) => ({
-          id,
-          name,
-          country,
-          foundedYear,
-          dissolvedYear,
-        }),
-      ),
+      manufacturers.map(({ id, name, country, foundedYear, dissolvedYear }) => ({
+        id,
+        name,
+        country,
+        foundedYear,
+        dissolvedYear,
+      })),
       page,
       limit,
       total,
     );
   }
 
-  async findDetail(
-    id: string,
-  ): Promise<ManufacturerDetailResponseDto> {
-    const manufacturer =
-      await this.prisma.manufacturer.findFirst({
-        where: {
-          id,
-          deletedAt: null,
-        },
-
-        select: {
-          id: true,
-          name: true,
-          country: true,
-          foundedYear: true,
-          dissolvedYear: true,
-
-          lines: {
-            where: {
+  async findDetail(id: string): Promise<ManufacturerDetailResponseDto> {
+    const manufacturer = await this.prisma.manufacturer.findFirst({
+      where: {
+        id,
+        deletedAt: null,
+      },
+      select: {
+        id: true,
+        name: true,
+        country: true,
+        foundedYear: true,
+        dissolvedYear: true,
+        lines: {
+          where: {
+            deletedAt: null,
+            franchise: {
               deletedAt: null,
-              franchise: {
-                deletedAt: null,
-              },
-            },
-
-            select: {
-              id: true,
-              name: true,
-              startYear: true,
-              endYear: true,
-              scale: true,
-              logo: true,
-
-              franchise: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
-            },
-
-            orderBy: {
-              name: 'asc',
             },
           },
+          select: {
+            id: true,
+            name: true,
+            startYear: true,
+            endYear: true,
+            scale: true,
+            logo: true,
+            franchise: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+          orderBy: {
+            name: 'asc',
+          },
         },
-      });
+      },
+    });
 
     if (!manufacturer) {
-      throw new NotFoundException(
-        `Manufacturer with id '${id}' not found.`,
-      );
+      throw new NotFoundException(`Manufacturer with id '${id}' not found.`);
     }
 
     return {
@@ -135,7 +115,6 @@ export class ManufacturersService {
       country: manufacturer.country,
       foundedYear: manufacturer.foundedYear,
       dissolvedYear: manufacturer.dissolvedYear,
-
       lines: manufacturer.lines.map((line) => ({
         id: line.id,
         name: line.name,
@@ -143,7 +122,6 @@ export class ManufacturersService {
         endYear: line.endYear,
         scale: line.scale,
         logo: line.logo,
-
         franchise: {
           id: line.franchise.id,
           name: line.franchise.name,
@@ -152,57 +130,97 @@ export class ManufacturersService {
     };
   }
 
-  async create(
-    createManufacturerDto: CreateManufacturerDto,
-  ) {
-    return this.prisma.manufacturer.create({
-      data: createManufacturerDto,
-
-      select: {
-        id: true,
-        name: true,
-        country: true,
-        foundedYear: true,
-        dissolvedYear: true,
-      },
-    });
+  async create(createManufacturerDto: CreateManufacturerDto) {
+    try {
+      return await this.prisma.manufacturer.create({
+        data: createManufacturerDto,
+        select: {
+          id: true,
+          name: true,
+          country: true,
+          foundedYear: true,
+          dissolvedYear: true,
+        },
+      });
+    } catch (error: unknown) {
+      this.rethrowManufacturerWriteError(error);
+    }
   }
 
-  async update(
-    id: string,
-    updateManufacturerDto: UpdateManufacturerDto,
-  ) {
-    return this.prisma.manufacturer.update({
-      where: {
-        id,
-      },
-
-      data: updateManufacturerDto,
-
-      select: {
-        id: true,
-        name: true,
-        country: true,
-        foundedYear: true,
-        dissolvedYear: true,
-      },
-    });
+  async update(id: string, updateManufacturerDto: UpdateManufacturerDto) {
+    try {
+      return await this.prisma.manufacturer.update({
+        where: {
+          id,
+        },
+        data: updateManufacturerDto,
+        select: {
+          id: true,
+          name: true,
+          country: true,
+          foundedYear: true,
+          dissolvedYear: true,
+        },
+      });
+    } catch (error: unknown) {
+      this.rethrowManufacturerWriteError(error);
+    }
   }
 
   async remove(id: string) {
-    return this.prisma.manufacturer.update({
-      where: {
-        id,
-      },
+    return this.prisma.$transaction(async (transaction) => {
+      const manufacturer = await transaction.manufacturer.findFirst({
+        where: {
+          id,
+          deletedAt: null,
+        },
+        select: {
+          id: true,
+          name: true,
+          lines: {
+            where: {
+              deletedAt: null,
+            },
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
 
-      data: {
-        deletedAt: new Date(),
-      },
+      if (!manufacturer) {
+        throw new NotFoundException(`Manufacturer with id '${id}' not found.`);
+      }
 
-      select: {
-        id: true,
-        deletedAt: true,
-      },
+      if (manufacturer.lines.length > 0) {
+        throw new ConflictException(
+          `Cannot delete manufacturer '${manufacturer.name}' while it has active lines. Archive or reassign its active lines first.`,
+        );
+      }
+
+      return transaction.manufacturer.update({
+        where: {
+          id,
+        },
+        data: {
+          deletedAt: new Date(),
+        },
+        select: {
+          id: true,
+          deletedAt: true,
+        },
+      });
     });
+  }
+
+  private rethrowManufacturerWriteError(error: unknown): never {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2002'
+    ) {
+      throw new ConflictException('A manufacturer with this name already exists.');
+    }
+
+    throw error;
   }
 }

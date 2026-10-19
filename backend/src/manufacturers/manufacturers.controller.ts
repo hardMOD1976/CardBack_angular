@@ -50,8 +50,7 @@ export class ManufacturersController {
 
   @ApiOperation({
     summary: 'Get all manufacturers',
-    description:
-      'Returns all active manufacturers ordered alphabetically.',
+    description: 'Returns all active manufacturers ordered alphabetically.',
     operationId: 'findAllManufacturers',
   })
   @ApiOkResponse({
@@ -73,9 +72,7 @@ export class ManufacturersController {
       search,
     };
 
-    return this.manufacturersService.findAll(
-      pagination,
-    );
+    return this.manufacturersService.findAll(pagination);
   }
 
   @ApiOperation({
@@ -100,16 +97,13 @@ export class ManufacturersController {
   })
   @Public()
   @Get(':id')
-  findDetail(
-    @Param('id') id: string,
-  ) {
+  findDetail(@Param('id') id: string) {
     return this.manufacturersService.findDetail(id);
   }
 
   @ApiOperation({
     summary: 'Create manufacturer',
-    description:
-      'Creates a new manufacturer in the catalog.',
+    description: 'Creates a new manufacturer in the catalog.',
     operationId: 'createManufacturer',
   })
   @ApiCreatedResponse({
@@ -128,13 +122,8 @@ export class ManufacturersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @Post()
-  create(
-    @Body()
-    createManufacturerDto: CreateManufacturerDto,
-  ) {
-    return this.manufacturersService.create(
-      createManufacturerDto,
-    );
+  create(@Body() createManufacturerDto: CreateManufacturerDto) {
+    return this.manufacturersService.create(createManufacturerDto);
   }
 
   @ApiOperation({
@@ -167,19 +156,15 @@ export class ManufacturersController {
   @Put(':id')
   update(
     @Param('id') id: string,
-    @Body()
-    updateManufacturerDto: UpdateManufacturerDto,
+    @Body() updateManufacturerDto: UpdateManufacturerDto,
   ) {
-    return this.manufacturersService.update(
-      id,
-      updateManufacturerDto,
-    );
+    return this.manufacturersService.update(id, updateManufacturerDto);
   }
 
   @ApiOperation({
     summary: 'Soft delete manufacturer',
     description:
-      'Soft deletes a manufacturer by setting its deletedAt timestamp.',
+      'Soft deletes a manufacturer only when it has no active lines. Active lines must be archived or reassigned first.',
     operationId: 'deleteManufacturer',
   })
   @ApiParam({
@@ -192,6 +177,10 @@ export class ManufacturersController {
   @ApiNotFoundResponse({
     description: 'Manufacturer not found.',
   })
+  @ApiConflictResponse({
+    description:
+      'Manufacturer cannot be deleted while it has active lines.',
+  })
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
   })
@@ -199,9 +188,7 @@ export class ManufacturersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @Delete(':id')
-  remove(
-    @Param('id') id: string,
-  ) {
+  remove(@Param('id') id: string) {
     return this.manufacturersService.remove(id);
   }
 }

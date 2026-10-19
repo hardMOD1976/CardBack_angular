@@ -1,0 +1,190 @@
+<section class="admin-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">CATALOG ADMINISTRATION</p>
+      <h1>Manufacturers</h1>
+      <p class="page-description">
+        Create and maintain the manufacturers represented in the Cardback catalog.
+      </p>
+    </div>
+
+    <cb-button type="button" (click)="startCreate()">
+      Add manufacturer
+    </cb-button>
+  </header>
+
+  @if (noticeMessage) {
+    <p class="notice-message" role="status">{{ noticeMessage }}</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="error-message" role="alert">{{ errorMessage() }}</p>
+  }
+
+  <section class="catalog-toolbar" aria-label="Manufacturer search">
+    <div class="search-field">
+      <label for="manufacturer-search">Search manufacturers</label>
+      <cb-input
+        inputId="manufacturer-search"
+        ariaLabel="Search manufacturers"
+        type="search"
+        placeholder="Search by name"
+        [clearable]="true"
+        [(ngModel)]="searchTerm"
+        name="manufacturerSearch"
+        (enter)="applySearch()"
+        (clear)="applySearch()">
+      </cb-input>
+    </div>
+
+    <cb-button type="button" (click)="applySearch()">
+      Search
+    </cb-button>
+  </section>
+
+  @if (formVisible) {
+    <section class="form-panel" aria-labelledby="manufacturer-form-title">
+      <div class="form-heading">
+        <div>
+          <h2 id="manufacturer-form-title">
+            {{ editingId ? 'Edit manufacturer' : 'Add manufacturer' }}
+          </h2>
+          <p>Name is required. The remaining fields are optional.</p>
+        </div>
+      </div>
+
+      @if (formError) {
+        <p class="error-message" role="alert">{{ formError }}</p>
+      }
+
+      <form class="manufacturer-form" (ngSubmit)="save()">
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="manufacturer-name">Name *</label>
+            <cb-input
+              inputId="manufacturer-name"
+              ariaLabel="Manufacturer name"
+              [(ngModel)]="form.name"
+              name="manufacturerName"
+              placeholder="e.g. Kenner"
+              [required]="true">
+            </cb-input>
+          </div>
+
+          <div class="form-field">
+            <label for="manufacturer-country">Country</label>
+            <cb-input
+              inputId="manufacturer-country"
+              ariaLabel="Manufacturer country"
+              [(ngModel)]="form.country"
+              name="manufacturerCountry"
+              placeholder="e.g. United States">
+            </cb-input>
+          </div>
+
+          <div class="form-field">
+            <label for="manufacturer-founded-year">Founded year</label>
+            <cb-input
+              inputId="manufacturer-founded-year"
+              ariaLabel="Founded year"
+              type="number"
+              [(ngModel)]="form.foundedYear"
+              name="manufacturerFoundedYear"
+              placeholder="e.g. 1946">
+            </cb-input>
+          </div>
+
+          <div class="form-field">
+            <label for="manufacturer-dissolved-year">Dissolved year</label>
+            <cb-input
+              inputId="manufacturer-dissolved-year"
+              ariaLabel="Dissolved year"
+              type="number"
+              [(ngModel)]="form.dissolvedYear"
+              name="manufacturerDissolvedYear"
+              placeholder="Optional">
+            </cb-input>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <cb-button type="submit" [disabled]="saving()">
+            {{ saving() ? 'Saving…' : 'Save manufacturer' }}
+          </cb-button>
+          <cb-button type="button" [disabled]="saving()" (click)="cancelForm()">
+            Cancel
+          </cb-button>
+        </div>
+      </form>
+    </section>
+  }
+
+  <section class="manufacturer-list" aria-labelledby="manufacturer-list-title">
+    <div class="list-heading">
+      <h2 id="manufacturer-list-title">Catalog manufacturers</h2>
+      <span>{{ total() }} total</span>
+    </div>
+
+    @if (loading()) {
+      <p class="loading-state" role="status">Loading manufacturers…</p>
+    } @else if (manufacturers().length === 0) {
+      <div class="empty-state">
+        <h3>No manufacturers found</h3>
+        <p>Try another search or add a manufacturer to the catalog.</p>
+      </div>
+    } @else {
+      <div class="table-scroll">
+        <table class="manufacturer-table">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Country</th>
+              <th scope="col">Founded</th>
+              <th scope="col">Dissolved</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (manufacturer of manufacturers(); track manufacturer.id) {
+              <tr>
+                <td class="manufacturer-name">{{ manufacturer.name }}</td>
+                <td>{{ manufacturer.country || '—' }}</td>
+                <td>{{ manufacturer.foundedYear ?? '—' }}</td>
+                <td>{{ manufacturer.dissolvedYear ?? '—' }}</td>
+                <td>
+                  <div class="row-actions">
+                    <cb-button type="button" (click)="startEdit(manufacturer)">
+                      Edit
+                    </cb-button>
+                    <cb-button
+                      type="button"
+                      [disabled]="deletingId() === manufacturer.id || loading()"
+                      (click)="removeManufacturer(manufacturer)">
+                      {{ deletingId() === manufacturer.id ? 'Deleting…' : 'Delete' }}
+                    </cb-button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    <footer class="pagination-controls">
+      <cb-button
+        type="button"
+        [disabled]="page() <= 1 || loading()"
+        (click)="goToPage(page() - 1)">
+        Previous
+      </cb-button>
+      <span>Page {{ page() }} of {{ totalPages() || 1 }}</span>
+      <cb-button
+        type="button"
+        [disabled]="totalPages() === 0 || page() >= totalPages() || loading()"
+        (click)="goToPage(page() + 1)">
+        Next
+      </cb-button>
+    </footer>
+  </section>
+</section>

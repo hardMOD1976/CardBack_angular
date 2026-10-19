@@ -25,10 +25,11 @@ import {
 })
 export class Input implements ControlValueAccessor {
   readonly type = input('text');
-
   readonly placeholder = input('');
-
   readonly clearable = input(false);
+  readonly inputId = input('');
+  readonly ariaLabel = input('');
+  readonly required = input(false);
 
   /**
    * Emitted when the user presses Enter
@@ -43,26 +44,20 @@ export class Input implements ControlValueAccessor {
   readonly clear = output<void>();
 
   private value = '';
-
   private disabled = false;
 
   private onChange: (value: string) => void = () => {};
-
   private onTouched: () => void = () => {};
 
   writeValue(value: string | null): void {
     this.value = value ?? '';
   }
 
-  registerOnChange(
-    fn: (value: string) => void,
-  ): void {
+  registerOnChange(fn: (value: string) => void): void {
     this.onChange = fn;
   }
 
-  registerOnTouched(
-    fn: () => void,
-  ): void {
+  registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
 
@@ -79,17 +74,12 @@ export class Input implements ControlValueAccessor {
   }
 
   get showClearButton(): boolean {
-    return this.clearable() &&
-      this.value.length > 0 &&
-      !this.disabled;
+    return this.clearable() && this.value.length > 0 && !this.disabled;
   }
 
   handleInput(event: Event): void {
-    const input =
-      event.target as HTMLInputElement;
-
-    this.value = input.value;
-
+    const inputElement = event.target as HTMLInputElement;
+    this.value = inputElement.value;
     this.onChange(this.value);
   }
 
@@ -107,10 +97,8 @@ export class Input implements ControlValueAccessor {
 
   handleClear(): void {
     this.value = '';
-
     this.onChange(this.value);
     this.onTouched();
-
     this.clear.emit();
   }
 }

@@ -48,5 +48,11 @@ export class NavigationService {
       icon: 'admin_panel_settings',
       roles: ['ADMIN'],
     },
+    {
+      label: 'Line administration',
+      route: '/admin/lines',
+      icon: 'category',
+      roles: ['ADMIN'],
+    },
   ];
 }

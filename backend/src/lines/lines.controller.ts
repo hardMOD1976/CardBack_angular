@@ -33,30 +33,22 @@ import { Role } from '@prisma/client';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { Public } from '../auth/decorators/public.decorator';
 
 import { PaginationQueryDto } from '../common/pagination';
-
-import { Public } from '../auth/decorators/public.decorator';
 
 @Controller('lines')
 @ApiTags('Lines')
 export class LinesController {
-  constructor(
-    private readonly linesService: LinesService,
-  ) {}
+  constructor(private readonly linesService: LinesService) {}
 
   @ApiOperation({
     summary: 'Get all lines',
-    description:
-      'Returns all active lines ordered alphabetically.',
+    description: 'Returns all active lines ordered alphabetically.',
     operationId: 'findAllLines',
   })
-  @ApiOkResponse({
-    description: 'Lines retrieved successfully.',
-  })
-  @ApiInternalServerErrorResponse({
-    description: 'Internal server error.',
-  })
+  @ApiOkResponse({ description: 'Lines retrieved successfully.' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   @Get()
   @Public()
   findAll(
@@ -64,11 +56,13 @@ export class LinesController {
     @Query('limit') limit = 20,
     @Query('search') search?: string,
   ) {
-    return this.linesService.findAll({
+    const pagination: PaginationQueryDto = {
       page: Number(page),
       limit: Number(limit),
       search,
-    });
+    };
+
+    return this.linesService.findAll(pagination);
   }
 
   @ApiOperation({
@@ -77,19 +71,10 @@ export class LinesController {
       'Returns an active figure line with its manufacturer, franchise and figures.',
     operationId: 'findLineById',
   })
-  @ApiParam({
-    name: 'id',
-    description: 'Line identifier.',
-  })
-  @ApiOkResponse({
-    description: 'Line found.',
-  })
-  @ApiNotFoundResponse({
-    description: 'Line not found.',
-  })
-  @ApiInternalServerErrorResponse({
-    description: 'Internal server error.',
-  })
+  @ApiParam({ name: 'id', description: 'Line identifier.' })
+  @ApiOkResponse({ description: 'Line found.' })
+  @ApiNotFoundResponse({ description: 'Line not found.' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -99,24 +84,14 @@ export class LinesController {
   @ApiOperation({
     summary: 'Create line',
     description:
-      'Creates a new figure line associated with an existing manufacturer and franchise.',
+      'Creates a new figure line associated with an active manufacturer and franchise.',
     operationId: 'createLine',
   })
-  @ApiCreatedResponse({
-    description: 'Line created successfully.',
-  })
-  @ApiBadRequestResponse({
-    description: 'Validation error.',
-  })
-  @ApiNotFoundResponse({
-    description: 'Manufacturer or Franchise not found.',
-  })
-  @ApiConflictResponse({
-    description: 'Duplicate line.',
-  })
-  @ApiInternalServerErrorResponse({
-    description: 'Internal server error.',
-  })
+  @ApiCreatedResponse({ description: 'Line created successfully.' })
+  @ApiBadRequestResponse({ description: 'Validation error.' })
+  @ApiNotFoundResponse({ description: 'Manufacturer or Franchise not found.' })
+  @ApiConflictResponse({ description: 'Duplicate line.' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   @ApiBearerAuth('access-token')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
@@ -127,52 +102,39 @@ export class LinesController {
 
   @ApiOperation({
     summary: 'Update line',
-    description: 'Updates an existing line.',
+    description: 'Updates an existing active line.',
     operationId: 'updateLine',
   })
-  @ApiParam({
-    name: 'id',
-    description: 'Line identifier.',
-  })
-  @ApiOkResponse({
-    description: 'Line updated successfully.',
-  })
-  @ApiNotFoundResponse({
-    description: 'Line, Manufacturer or Franchise not found.',
-  })
-  @ApiConflictResponse({
-    description: 'Duplicate line.',
-  })
-  @ApiInternalServerErrorResponse({
-    description: 'Internal server error.',
-  })
+  @ApiParam({ name: 'id', description: 'Line identifier.' })
+  @ApiOkResponse({ description: 'Line updated successfully.' })
+  @ApiBadRequestResponse({ description: 'Validation error.' })
+  @ApiNotFoundResponse({ description: 'Line, Manufacturer or Franchise not found.' })
+  @ApiConflictResponse({ description: 'Duplicate line.' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+  @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Put(':id')
-  update(
-    @Param('id') id: string,
-    @Body() dto: UpdateLineDto,
-  ) {
+  update(@Param('id') id: string, @Body() dto: UpdateLineDto) {
     return this.linesService.update(id, dto);
   }
 
   @ApiOperation({
     summary: 'Soft delete line',
     description:
-      'Soft deletes a line by setting its deletedAt timestamp.',
+      'Soft deletes a line only when it has no active figures. Active figures must be archived or reassigned first.',
     operationId: 'deleteLine',
   })
-  @ApiParam({
-    name: 'id',
-    description: 'Line identifier.',
+  @ApiParam({ name: 'id', description: 'Line identifier.' })
+  @ApiOkResponse({ description: 'Line deleted successfully.' })
+  @ApiNotFoundResponse({ description: 'Line not found.' })
+  @ApiConflictResponse({
+    description: 'Line cannot be deleted while it has active figures.',
   })
-  @ApiOkResponse({
-    description: 'Line deleted successfully.',
-  })
-  @ApiNotFoundResponse({
-    description: 'Line not found.',
-  })
-  @ApiInternalServerErrorResponse({
-    description: 'Internal server error.',
-  })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+  @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.linesService.remove(id);

@@ -1,3 +1,4 @@
+
 import {
   Body,
   Controller,
@@ -27,28 +28,21 @@ import {
 import { FiguresService } from './figures.service';
 
 import { CreateFigureDto } from './dto/create-figure.dto';
-
 import { UpdateFigureDto } from './dto/update-figure.dto';
-
 import { FigureDetailResponseDto } from './dto/figure-detail-response.dto';
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-
 import { RolesGuard } from '../auth/guards/roles.guard';
-
 import { Roles } from '../auth/decorators/roles.decorator';
-
 import { Public } from '../auth/decorators/public.decorator';
 
 import { Role } from '@prisma/client';
-
 import { PaginationQueryDto } from '../common/pagination';
 
 @ApiTags('Figures')
 @ApiBearerAuth('access-token')
 @Controller('figures')
 export class FiguresController {
-
   constructor(
     private readonly figuresService: FiguresService,
   ) {}
@@ -87,7 +81,6 @@ export class FiguresController {
     @Query('limit') limit = 20,
     @Query('search') search?: string,
   ) {
-
     const pagination: PaginationQueryDto = {
       page: Number(page),
       limit: Number(limit),
@@ -100,7 +93,7 @@ export class FiguresController {
   @ApiOperation({
     summary: 'Get figure by id',
     description:
-      'Returns an active figure by its identifier, including its character, line and variants.',
+      'Returns an active figure by its identifier, including its character, line and active variants.',
     operationId: 'findFigureById',
   })
   @ApiParam({
@@ -136,7 +129,8 @@ export class FiguresController {
     description: 'Validation error.',
   })
   @ApiNotFoundResponse({
-    description: 'Character or Line not found.',
+    description:
+      'Character or Line not found or not active.',
   })
   @ApiConflictResponse({
     description: 'Duplicate figure.',
@@ -154,7 +148,8 @@ export class FiguresController {
 
   @ApiOperation({
     summary: 'Update figure',
-    description: 'Updates an existing figure.',
+    description:
+      'Updates an active figure and validates any new character or line references.',
     operationId: 'updateFigure',
   })
   @ApiParam({
@@ -168,7 +163,8 @@ export class FiguresController {
     description: 'Validation error.',
   })
   @ApiNotFoundResponse({
-    description: 'Figure, Character or Line not found.',
+    description:
+      'Figure, Character or Line not found or not active.',
   })
   @ApiConflictResponse({
     description: 'Duplicate figure.',
@@ -190,7 +186,7 @@ export class FiguresController {
   @ApiOperation({
     summary: 'Soft delete figure',
     description:
-      'Soft deletes a figure by setting its deletedAt timestamp.',
+      'Archives an active figure by setting its deletedAt timestamp. Active variants must be archived first.',
     operationId: 'deleteFigure',
   })
   @ApiParam({
@@ -198,10 +194,14 @@ export class FiguresController {
     description: 'Figure identifier.',
   })
   @ApiOkResponse({
-    description: 'Figure deleted successfully.',
+    description: 'Figure archived successfully.',
   })
   @ApiNotFoundResponse({
-    description: 'Figure not found.',
+    description: 'Figure not found or already archived.',
+  })
+  @ApiConflictResponse({
+    description:
+      'Figure cannot be archived while it has active variants.',
   })
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',

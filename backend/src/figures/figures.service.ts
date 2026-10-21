@@ -1,4 +1,6 @@
+
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -6,9 +8,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 
 import { CreateFigureDto } from './dto/create-figure.dto';
-
 import { UpdateFigureDto } from './dto/update-figure.dto';
-
 import { FigureDetailResponseDto } from './dto/figure-detail-response.dto';
 
 import {
@@ -18,27 +18,20 @@ import {
 
 @Injectable()
 export class FiguresService {
+  constructor(private readonly prisma: PrismaService) {}
 
-  constructor(private prisma: PrismaService) {}
-
-  async findAll(
-    pagination: PaginationQueryDto,
-  ) {
-
+  async findAll(pagination: PaginationQueryDto) {
     const { page, limit, search } = pagination;
-
     const skip = (page - 1) * limit;
 
     const where = {
       deletedAt: null,
-
       character: {
         deletedAt: null,
         franchise: {
           deletedAt: null,
         },
       },
-
       line: {
         deletedAt: null,
         manufacturer: {
@@ -48,7 +41,6 @@ export class FiguresService {
           deletedAt: null,
         },
       },
-
       ...(search && {
         name: {
           contains: search,
@@ -57,33 +49,32 @@ export class FiguresService {
       }),
     };
 
-    const [figures, total] =
-      await this.prisma.$transaction([
-        this.prisma.figure.findMany({
-          where,
-          include: {
-            character: {
-              include: {
-                franchise: true,
-              },
-            },
-            line: {
-              include: {
-                manufacturer: true,
-                franchise: true,
-              },
+    const [figures, total] = await this.prisma.$transaction([
+      this.prisma.figure.findMany({
+        where,
+        include: {
+          character: {
+            include: {
+              franchise: true,
             },
           },
-          orderBy: {
-            name: 'asc',
+          line: {
+            include: {
+              manufacturer: true,
+              franchise: true,
+            },
           },
-          skip,
-          take: limit,
-        }),
-        this.prisma.figure.count({
-          where,
-        }),
-      ]);
+        },
+        orderBy: {
+          name: 'asc',
+        },
+        skip,
+        take: limit,
+      }),
+      this.prisma.figure.count({
+        where,
+      }),
+    ]);
 
     return buildPaginatedResponse(
       figures.map((figure) => ({
@@ -92,24 +83,20 @@ export class FiguresService {
         code: figure.code,
         description: figure.description,
         imageUrl: figure.imageUrl,
-
         character: {
           id: figure.character.id,
           name: figure.character.name,
           image: figure.character.image,
         },
-
         line: {
           id: figure.line.id,
           name: figure.line.name,
           scale: figure.line.scale,
           logo: figure.line.logo,
-
           manufacturer: {
             id: figure.line.manufacturer.id,
             name: figure.line.manufacturer.name,
           },
-
           franchise: {
             id: figure.line.franchise.id,
             name: figure.line.franchise.name,
@@ -122,26 +109,30 @@ export class FiguresService {
     );
   }
 
-  async findDetail(
-    id: string,
-  ): Promise<FigureDetailResponseDto> {
-
+  async findDetail(id: string): Promise<FigureDetailResponseDto> {
     const figure = await this.prisma.figure.findFirst({
       where: {
         id,
         deletedAt: null,
         character: {
           deletedAt: null,
+          franchise: {
+            deletedAt: null,
+          },
         },
         line: {
           deletedAt: null,
+          manufacturer: {
+            deletedAt: null,
+          },
+          franchise: {
+            deletedAt: null,
+          },
         },
       },
       include: {
         character: true,
-
         line: true,
-
         variants: {
           where: {
             deletedAt: null,
@@ -165,20 +156,17 @@ export class FiguresService {
       code: figure.code,
       description: figure.description,
       imageUrl: figure.imageUrl,
-
       character: {
         id: figure.character.id,
         name: figure.character.name,
         image: figure.character.image,
       },
-
       line: {
         id: figure.line.id,
         name: figure.line.name,
         scale: figure.line.scale,
         logo: figure.line.logo,
       },
-
       variants: figure.variants.map((variant) => ({
         id: variant.id,
         name: variant.name,
@@ -189,14 +177,8 @@ export class FiguresService {
   }
 
   async create(createFigureDto: CreateFigureDto) {
-
-    await this.ensureCharacterExists(
-      createFigureDto.characterId,
-    );
-
-    await this.ensureLineExists(
-      createFigureDto.lineId,
-    );
+    await this.ensureCharacterExists(createFigureDto.characterId);
+    await this.ensureLineExists(createFigureDto.lineId);
 
     return this.prisma.figure.create({
       data: createFigureDto,
@@ -212,21 +194,15 @@ export class FiguresService {
     });
   }
 
-  async update(
-    id: string,
-    updateFigureDto: UpdateFigureDto,
-  ) {
+  async update(id: string, updateFigureDto: UpdateFigureDto) {
+    await this.ensureActiveFigureExists(id);
 
-    if (updateFigureDto.characterId) {
-      await this.ensureCharacterExists(
-        updateFigureDto.characterId,
-      );
+    if (updateFigureDto.characterId !== undefined) {
+      await this.ensureCharacterExists(updateFigureDto.characterId);
     }
 
-    if (updateFigureDto.lineId) {
-      await this.ensureLineExists(
-        updateFigureDto.lineId,
-      );
+    if (updateFigureDto.lineId !== undefined) {
+      await this.ensureLineExists(updateFigureDto.lineId);
     }
 
     return this.prisma.figure.update({
@@ -246,7 +222,21 @@ export class FiguresService {
     });
   }
 
-  remove(id: string) {
+  async remove(id: string) {
+    await this.ensureActiveFigureExists(id);
+
+    const activeVariants = await this.prisma.variant.count({
+      where: {
+        figureId: id,
+        deletedAt: null,
+      },
+    });
+
+    if (activeVariants > 0) {
+      throw new ConflictException(
+        'This figure cannot be archived while it has active variants. Archive its active variants first.',
+      );
+    }
 
     return this.prisma.figure.update({
       where: {
@@ -262,17 +252,37 @@ export class FiguresService {
     });
   }
 
-  private async ensureCharacterExists(
-    characterId: string,
-  ) {
+  private async ensureActiveFigureExists(id: string) {
+    const figure = await this.prisma.figure.findFirst({
+      where: {
+        id,
+        deletedAt: null,
+      },
+      select: {
+        id: true,
+      },
+    });
 
-    const character =
-      await this.prisma.character.findFirst({
-        where: {
-          id: characterId,
+    if (!figure) {
+      throw new NotFoundException(
+        `Figure with id '${id}' not found.`,
+      );
+    }
+  }
+
+  private async ensureCharacterExists(characterId: string) {
+    const character = await this.prisma.character.findFirst({
+      where: {
+        id: characterId,
+        deletedAt: null,
+        franchise: {
           deletedAt: null,
         },
-      });
+      },
+      select: {
+        id: true,
+      },
+    });
 
     if (!character) {
       throw new NotFoundException(
@@ -281,17 +291,22 @@ export class FiguresService {
     }
   }
 
-  private async ensureLineExists(
-    lineId: string,
-  ) {
-
-    const line =
-      await this.prisma.line.findFirst({
-        where: {
-          id: lineId,
+  private async ensureLineExists(lineId: string) {
+    const line = await this.prisma.line.findFirst({
+      where: {
+        id: lineId,
+        deletedAt: null,
+        manufacturer: {
           deletedAt: null,
         },
-      });
+        franchise: {
+          deletedAt: null,
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
 
     if (!line) {
       throw new NotFoundException(

@@ -22,6 +22,7 @@ import { CharacterDetail } from './features/character-detail/pages/character-det
 import { VariantDetail } from './features/variant-detail/pages/variant-detail/variant-detail';
 import { ProductReleaseDetail } from './features/product-release-detail/pages/product-release-detail/product-release-detail';
 import { ManufacturersAdmin } from './features/admin/pages/manufacturers-admin/manufacturers-admin';
+import { LinesAdmin } from './features/admin/pages/lines-admin/lines-admin';
 
 import { authGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
@@ -117,6 +118,10 @@ export const routes: Routes = [
           {
             path: 'manufacturers',
             component: ManufacturersAdmin,
+          },
+          {
+            path: 'lines',
+            component: LinesAdmin,
           },
         ],
       },

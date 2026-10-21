@@ -1,0 +1,256 @@
+<section class="admin-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">CATALOG ADMINISTRATION</p>
+      <h1>Lines</h1>
+      <p class="page-description">
+        Create and maintain the figure lines represented in the Cardback catalog.
+      </p>
+    </div>
+
+    <cb-button
+      type="button"
+      [disabled]="loadingReferences() || manufacturers().length === 0 || franchises().length === 0"
+      (click)="startCreate()">
+      Add line
+    </cb-button>
+  </header>
+
+  @if (noticeMessage) {
+    <p class="notice-message" role="status">{{ noticeMessage }}</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="error-message" role="alert">{{ errorMessage() }}</p>
+  }
+
+  @if (referenceErrorMessage()) {
+    <p class="error-message" role="alert">{{ referenceErrorMessage() }}</p>
+    <div>
+      <cb-button type="button" (click)="loadReferences()">Retry loading options</cb-button>
+    </div>
+  }
+
+  <section class="catalog-toolbar" aria-label="Line search">
+    <div class="search-field">
+      <label for="line-search">Search lines</label>
+      <cb-input
+        inputId="line-search"
+        ariaLabel="Search lines"
+        type="search"
+        placeholder="Search by line name"
+        [clearable]="true"
+        [(ngModel)]="searchTerm"
+        name="lineSearch"
+        (enter)="applySearch()"
+        (clear)="applySearch()">
+      </cb-input>
+    </div>
+
+    <cb-button type="button" (click)="applySearch()">Search</cb-button>
+  </section>
+
+  @if (formVisible) {
+    <section class="form-panel" aria-labelledby="line-form-title">
+      <div class="form-heading">
+        <div>
+          <h2 id="line-form-title">{{ editingId ? 'Edit line' : 'Add line' }}</h2>
+          <p>Name, manufacturer and franchise are required. Other fields are optional.</p>
+        </div>
+      </div>
+
+      @if (formError) {
+        <p class="error-message" role="alert">{{ formError }}</p>
+      }
+
+      @if (loadingReferences()) {
+        <p class="loading-state" role="status">Loading manufacturer and franchise options…</p>
+      } @else {
+        <form class="line-form" (ngSubmit)="save()">
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="line-name">Name *</label>
+              <cb-input
+                inputId="line-name"
+                ariaLabel="Line name"
+                [(ngModel)]="form.name"
+                name="lineName"
+                placeholder="e.g. The Vintage Collection"
+                [required]="true">
+              </cb-input>
+            </div>
+
+            <div class="form-field">
+              <label for="line-manufacturer">Manufacturer *</label>
+              <select
+                id="line-manufacturer"
+                name="lineManufacturer"
+                [(ngModel)]="form.manufacturerId"
+                required>
+                <option value="" disabled>Select a manufacturer</option>
+                @for (manufacturer of manufacturers(); track manufacturer.id) {
+                  <option [value]="manufacturer.id">{{ manufacturer.name }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="line-franchise">Franchise *</label>
+              <select
+                id="line-franchise"
+                name="lineFranchise"
+                [(ngModel)]="form.franchiseId"
+                required>
+                <option value="" disabled>Select a franchise</option>
+                @for (franchise of franchises(); track franchise.id) {
+                  <option [value]="franchise.id">{{ franchise.name }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="line-scale">Scale</label>
+              <cb-input
+                inputId="line-scale"
+                ariaLabel="Line scale"
+                [(ngModel)]="form.scale"
+                name="lineScale"
+                placeholder='e.g. 3.75"'>
+              </cb-input>
+            </div>
+
+            <div class="form-field">
+              <label for="line-start-year">Start year</label>
+              <cb-input
+                inputId="line-start-year"
+                ariaLabel="Line start year"
+                type="number"
+                [(ngModel)]="form.startYear"
+                name="lineStartYear"
+                placeholder="e.g. 2010">
+              </cb-input>
+            </div>
+
+            <div class="form-field">
+              <label for="line-end-year">End year</label>
+              <cb-input
+                inputId="line-end-year"
+                ariaLabel="Line end year"
+                type="number"
+                [(ngModel)]="form.endYear"
+                name="lineEndYear"
+                placeholder="Optional">
+              </cb-input>
+            </div>
+
+            <div class="form-field form-field--full">
+              <label for="line-logo">Logo URL</label>
+              <cb-input
+                inputId="line-logo"
+                ariaLabel="Line logo URL"
+                type="url"
+                [(ngModel)]="form.logo"
+                name="lineLogo"
+                placeholder="https://…">
+              </cb-input>
+            </div>
+
+            <div class="form-field form-field--full">
+              <label for="line-description">Description</label>
+              <textarea
+                id="line-description"
+                name="lineDescription"
+                [(ngModel)]="form.description"
+                rows="3"
+                placeholder="Optional description"></textarea>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <cb-button type="submit" [disabled]="saving() || loadingReferences()">
+              {{ saving() ? 'Saving…' : 'Save line' }}
+            </cb-button>
+            <cb-button type="button" [disabled]="saving()" (click)="cancelForm()">
+              Cancel
+            </cb-button>
+          </div>
+        </form>
+      }
+    </section>
+  }
+
+  <section class="line-list" aria-labelledby="line-list-title">
+    <div class="list-heading">
+      <h2 id="line-list-title">Catalog lines</h2>
+      <span>{{ total() }} total</span>
+    </div>
+
+    @if (loading()) {
+      <p class="loading-state" role="status">Loading lines…</p>
+    } @else if (lines().length === 0) {
+      <div class="empty-state">
+        <h3>No lines found</h3>
+        <p>Try another search or add a line to the catalog.</p>
+      </div>
+    } @else {
+      <div class="table-scroll">
+        <table class="line-table">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Manufacturer</th>
+              <th scope="col">Franchise</th>
+              <th scope="col">Years</th>
+              <th scope="col">Scale</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (line of lines(); track line.id) {
+              <tr>
+                <td class="line-name">{{ line.name }}</td>
+                <td>{{ line.manufacturer.name }}</td>
+                <td>{{ line.franchise.name }}</td>
+                <td>
+                  @if (line.startYear !== null || line.endYear !== null) {
+                    {{ line.startYear ?? '—' }} – {{ line.endYear ?? 'Present' }}
+                  } @else {
+                    —
+                  }
+                </td>
+                <td>{{ line.scale || '—' }}</td>
+                <td>
+                  <div class="row-actions">
+                    <cb-button type="button" (click)="startEdit(line)">Edit</cb-button>
+                    <cb-button
+                      type="button"
+                      [disabled]="deletingId() === line.id || loading()"
+                      (click)="removeLine(line)">
+                      {{ deletingId() === line.id ? 'Deleting…' : 'Delete' }}
+                    </cb-button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    <footer class="pagination-controls">
+      <cb-button
+        type="button"
+        [disabled]="page() <= 1 || loading()"
+        (click)="goToPage(page() - 1)">
+        Previous
+      </cb-button>
+      <span>Page {{ page() }} of {{ totalPages() || 1 }}</span>
+      <cb-button
+        type="button"
+        [disabled]="totalPages() === 0 || page() >= totalPages() || loading()"
+        (click)="goToPage(page() + 1)">
+        Next
+      </cb-button>
+    </footer>
+  </section>
+</section>

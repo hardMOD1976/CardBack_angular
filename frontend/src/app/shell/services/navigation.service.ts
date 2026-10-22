@@ -54,5 +54,11 @@ export class NavigationService {
       icon: 'category',
       roles: ['ADMIN'],
     },
+    {
+      label: 'Figure administration',
+      route: '/admin/figures',
+      icon: 'category',
+      roles: ['ADMIN'],
+    },
   ];
 }

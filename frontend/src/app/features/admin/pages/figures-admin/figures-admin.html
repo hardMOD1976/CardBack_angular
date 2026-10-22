@@ -1,0 +1,304 @@
+
+<section class="figures-admin">
+  <header class="page-header">
+    <div>
+      <h1>Figure administration</h1>
+      <p>Manage figures in the Cardback catalog.</p>
+    </div>
+
+    <button
+      type="button"
+      class="button button--primary"
+      (click)="startCreate()"
+      [disabled]="loadingReferences() || !!referenceErrorMessage()"
+    >
+      Add figure
+    </button>
+  </header>
+
+  @if (referenceErrorMessage()) {
+    <div class="message message--error" role="alert">
+      {{ referenceErrorMessage() }}
+
+      <button
+        type="button"
+        class="button button--secondary"
+        (click)="loadReferences()"
+        [disabled]="loadingReferences()"
+      >
+        Retry
+      </button>
+    </div>
+  }
+
+  <div class="search-bar">
+    <form
+      class="search-form"
+      (ngSubmit)="applySearch()"
+    >
+      <label for="figure-search">Search figures</label>
+
+      <div class="search-controls">
+        <cb-input
+          name="figureSearch"
+          [(ngModel)]="searchTerm"
+          placeholder="Search by figure name..."
+          (enter)="applySearch()"
+        />
+
+        <button
+          type="submit"
+          class="button button--secondary"
+          [disabled]="loading()"
+        >
+          Search
+        </button>
+      </div>
+    </form>
+  </div>
+
+  @if (formVisible) {
+    <section class="form-panel">
+      <div class="form-panel__header">
+        <h2>{{ editingId ? 'Edit figure' : 'Add figure' }}</h2>
+      </div>
+
+      @if (formErrorMessage()) {
+        <div class="message message--error" role="alert">
+          {{ formErrorMessage() }}
+        </div>
+      }
+
+      <form class="figure-form" (ngSubmit)="saveFigure()">
+        <div class="form-field">
+          <label for="figure-name">Name *</label>
+          <input
+            id="figure-name"
+            name="name"
+            type="text"
+            [(ngModel)]="form.name"
+            required
+            maxlength="255"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="figure-code">Code</label>
+          <input
+            id="figure-code"
+            name="code"
+            type="text"
+            [(ngModel)]="form.code"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="figure-character">Character *</label>
+          <select
+            id="figure-character"
+            name="characterId"
+            [(ngModel)]="form.characterId"
+            required
+            [disabled]="loadingReferences()"
+          >
+            <option value="" disabled>Select a character</option>
+
+            @for (character of characters(); track character.id) {
+              <option [value]="character.id">
+                {{ character.name }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label for="figure-line">Line *</label>
+          <select
+            id="figure-line"
+            name="lineId"
+            [(ngModel)]="form.lineId"
+            required
+            [disabled]="loadingReferences()"
+          >
+            <option value="" disabled>Select a line</option>
+
+            @for (line of lines(); track line.id) {
+              <option [value]="line.id">
+                {{ line.name }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="form-field form-field--full">
+          <label for="figure-image-url">Image URL</label>
+          <input
+            id="figure-image-url"
+            name="imageUrl"
+            type="url"
+            [(ngModel)]="form.imageUrl"
+            autocomplete="url"
+          />
+        </div>
+
+        <div class="form-field form-field--full">
+          <label for="figure-description">Description</label>
+          <textarea
+            id="figure-description"
+            name="description"
+            [(ngModel)]="form.description"
+            rows="4"
+          ></textarea>
+        </div>
+
+        <p class="form-hint form-field--full">
+          Fields marked with * are required. Optional fields can be
+          cleared when editing a figure.
+        </p>
+
+        <div class="form-actions form-field--full">
+          <button
+            type="submit"
+            class="button button--primary"
+            [disabled]="saving() || loadingReferences()"
+          >
+            @if (saving()) {
+              Saving...
+            } @else {
+              {{ editingId ? 'Save changes' : 'Create figure' }}
+            }
+          </button>
+
+          <button
+            type="button"
+            class="button button--secondary"
+            (click)="cancelForm()"
+            [disabled]="saving()"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </section>
+  }
+
+  @if (errorMessage()) {
+    <div class="message message--error" role="alert">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <section class="table-section">
+    <div class="table-heading">
+      <h2>Figures</h2>
+      <span class="result-count">
+        {{ total() }} {{ total() === 1 ? 'figure' : 'figures' }}
+      </span>
+    </div>
+
+    @if (loading()) {
+      <div class="state-message" role="status">
+        Loading figures...
+      </div>
+    } @else if (figures().length === 0) {
+      <div class="state-message">
+        @if (searchTerm.trim()) {
+          No figures match your search.
+        } @else {
+          No figures found in the catalog.
+        }
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Figure</th>
+              <th scope="col">Code</th>
+              <th scope="col">Character</th>
+              <th scope="col">Line</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (figure of figures(); track figure.id) {
+              <tr>
+                <td>
+                  <div class="figure-name">
+                    @if (figure.imageUrl) {
+                      <img
+                        class="figure-thumbnail"
+                        [src]="figure.imageUrl"
+                        [alt]="figure.name"
+                        loading="lazy"
+                      />
+                    }
+
+                    <span>{{ figure.name }}</span>
+                  </div>
+                </td>
+
+                <td>{{ figure.code || '—' }}</td>
+                <td>{{ figure.character.name }}</td>
+                <td>{{ figure.line.name }}</td>
+
+                <td>
+                  <div class="row-actions">
+                    <button
+                      type="button"
+                      class="button button--small button--secondary"
+                      (click)="startEdit(figure)"
+                      [disabled]="!!deletingId()"
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      type="button"
+                      class="button button--small button--danger"
+                      (click)="removeFigure(figure)"
+                      [disabled]="!!deletingId()"
+                    >
+                      @if (deletingId() === figure.id) {
+                        Archiving...
+                      } @else {
+                        Archive
+                      }
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <nav class="pagination" aria-label="Figure pages">
+        <button
+          type="button"
+          class="button button--secondary"
+          (click)="goToPage(page() - 1)"
+          [disabled]="page() <= 1 || loading()"
+        >
+          Previous
+        </button>
+
+        <span>
+          Page {{ page() }} of {{ totalPages() || 1 }}
+        </span>
+
+        <button
+          type="button"
+          class="button button--secondary"
+          (click)="goToPage(page() + 1)"
+          [disabled]="page() >= totalPages() || loading()"
+        >
+          Next
+        </button>
+      </nav>
+    }
+  </section>
+</section>

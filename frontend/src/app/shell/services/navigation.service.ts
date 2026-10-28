@@ -54,5 +54,23 @@ export class NavigationService {
       icon: 'category',
       roles: ['ADMIN'],
     },
+    {
+      label: 'Figure administration',
+      route: '/admin/figures',
+      icon: 'category',
+      roles: ['ADMIN'],
+    },
+    {
+      label: 'Variant administration',
+      icon: 'category',
+      route: '/admin/variant',
+      roles: ['ADMIN'],
+    },
+    {
+      label: 'Product Releases administration',
+      icon: 'category',
+      route: '/admin/product-releases',
+      roles: ['ADMIN'],
+    },
   ];
 }

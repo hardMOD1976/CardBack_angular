@@ -1,0 +1,409 @@
+<section class="admin-page">
+  <header class="page-header">
+    <div>
+      <h1>Product Release Administration</h1>
+      <p>Manage commercial releases and their catalog information.</p>
+    </div>
+
+    <button
+      type="button"
+      class="primary-button"
+      (click)="startCreate()"
+      [disabled]="loadingReferences() || !!referenceErrorMessage()"
+    >
+      Add product release
+    </button>
+  </header>
+
+  <form class="search-form" (ngSubmit)="applySearch()">
+    <cb-input
+      name="search"
+      label="Search product releases"
+      placeholder="Search by name, barcode, variant, figure or packaging"
+      [(ngModel)]="searchTerm"
+      (enter)="applySearch()"
+    />
+
+    <button type="submit" class="secondary-button">
+      Search
+    </button>
+  </form>
+
+  @if (errorMessage()) {
+    <div class="alert alert-error" role="alert">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  @if (referenceErrorMessage()) {
+    <div class="alert alert-error" role="alert">
+      <p>{{ referenceErrorMessage() }}</p>
+
+      <button
+        type="button"
+        class="secondary-button"
+        (click)="loadReferences()"
+        [disabled]="loadingReferences()"
+      >
+        Retry loading variants
+      </button>
+    </div>
+  }
+
+  @if (formVisible) {
+    <section class="form-panel">
+      <div class="form-header">
+        <div>
+          <h2>
+            {{ editingId ? 'Edit product release' : 'Create product release' }}
+          </h2>
+          <p>Enter the commercial release details.</p>
+        </div>
+      </div>
+
+      @if (formErrorMessage()) {
+        <div class="alert alert-error" role="alert">
+          {{ formErrorMessage() }}
+        </div>
+      }
+
+      <form class="release-form" (ngSubmit)="saveProductRelease()">
+        <div class="form-field">
+          <label for="release-name">Name *</label>
+          <input
+            id="release-name"
+            name="name"
+            type="text"
+            [(ngModel)]="form.name"
+            required
+            maxlength="255"
+            placeholder="e.g. VC13 - US Release"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="variant-search">Find a variant</label>
+
+          <div class="variant-search">
+            <input
+              id="variant-search"
+              name="variantSearch"
+              type="search"
+              [(ngModel)]="variantSearchTerm"
+              placeholder="Search variants..."
+              (keydown.enter)="$event.preventDefault(); searchVariants()"
+            />
+
+            <button
+              type="button"
+              class="secondary-button"
+              (click)="searchVariants()"
+              [disabled]="loadingReferences()"
+            >
+              {{ loadingReferences() ? 'Searching...' : 'Search' }}
+            </button>
+          </div>
+
+          <p class="field-hint">
+            Search by variant name or any other fields supported by the variant
+            catalog search.
+          </p>
+        </div>
+
+        <div class="form-field">
+          <label for="release-variant">Variant *</label>
+
+          <select
+            id="release-variant"
+            name="variantId"
+            [(ngModel)]="form.variantId"
+            required
+            [disabled]="loadingReferences()"
+          >
+            <option value="" disabled>Select a variant</option>
+
+            @for (variant of variants(); track variant.id) {
+              <option [value]="variant.id">
+                {{ formatVariantLabel(variant) }}
+              </option>
+            }
+          </select>
+
+          @if (loadingReferences()) {
+            <p class="field-hint">Loading variants...</p>
+          } @else if (variants().length === 0) {
+            <p class="field-hint">
+              No variants found. Try another search term.
+            </p>
+          }
+        </div>
+
+        <div class="form-field">
+          <label for="release-barcode">Barcode</label>
+          <input
+            id="release-barcode"
+            name="barcode"
+            type="text"
+            [(ngModel)]="form.barcode"
+            placeholder="Barcode"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="release-date">Release date</label>
+          <input
+            id="release-date"
+            name="releaseDate"
+            type="date"
+            [(ngModel)]="form.releaseDate"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="release-packaging">Packaging type</label>
+          <input
+            id="release-packaging"
+            name="packagingType"
+            type="text"
+            [(ngModel)]="form.packagingType"
+            placeholder="e.g. Blister Card"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="release-region">Region</label>
+          <input
+            id="release-region"
+            name="region"
+            type="text"
+            [(ngModel)]="form.region"
+            placeholder="e.g. United States"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="release-language">Language</label>
+          <input
+            id="release-language"
+            name="language"
+            type="text"
+            [(ngModel)]="form.language"
+            placeholder="e.g. English"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="release-retailer">Retailer</label>
+          <input
+            id="release-retailer"
+            name="retailer"
+            type="text"
+            [(ngModel)]="form.retailer"
+            placeholder="e.g. Target"
+          />
+        </div>
+
+        <div class="form-field form-field-full">
+          <label for="release-image">Image URL</label>
+          <input
+            id="release-image"
+            name="imageUrl"
+            type="url"
+            [(ngModel)]="form.imageUrl"
+            placeholder="https://..."
+          />
+        </div>
+
+        <div class="form-field form-field-full">
+          <label for="release-notes">Notes</label>
+          <textarea
+            id="release-notes"
+            name="notes"
+            [(ngModel)]="form.notes"
+            rows="3"
+            placeholder="Additional release information"
+          ></textarea>
+        </div>
+
+        <div class="form-actions form-field-full">
+          <button
+            type="button"
+            class="secondary-button"
+            (click)="cancelForm()"
+            [disabled]="saving()"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            class="primary-button"
+            [disabled]="saving() || loadingReferences()"
+          >
+            {{
+              saving()
+                ? 'Saving...'
+                : editingId
+                  ? 'Save changes'
+                  : 'Create release'
+            }}
+          </button>
+        </div>
+      </form>
+    </section>
+  }
+
+  <section class="table-panel">
+    <div class="table-header">
+      <div>
+        <h2>Product releases</h2>
+        <p>{{ total() }} release(s) found</p>
+      </div>
+    </div>
+
+    @if (loading()) {
+      <div class="state-message" role="status">
+        Loading product releases...
+      </div>
+    } @else if (productReleases().length === 0) {
+      <div class="state-message">
+        No product releases found.
+      </div>
+    } @else {
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Release</th>
+              <th>Variant / Figure</th>
+              <th>Character</th>
+              <th>Line / Manufacturer</th>
+              <th>Barcode</th>
+              <th>Release date</th>
+              <th>Region / Language</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (release of productReleases(); track release.id) {
+              <tr>
+                <td>
+                  <div class="release-cell">
+                    @if (release.imageUrl) {
+                      <img
+                        class="release-image"
+                        [src]="release.imageUrl"
+                        [alt]="release.name"
+                        loading="lazy"
+                      />
+                    }
+
+                    <div class="release-info">
+                      <strong>{{ release.name }}</strong>
+
+                      @if (release.packagingType) {
+                        <span>{{ release.packagingType }}</span>
+                      }
+
+                      @if (release.retailer) {
+                        <span>{{ release.retailer }}</span>
+                      }
+                    </div>
+                  </div>
+                </td>
+
+                <td>
+                  <div class="stacked-cell">
+                    <strong>
+                      {{ release.variant.name || 'Unnamed variant' }}
+                    </strong>
+                    <span>{{ release.variant.figure.name }}</span>
+                  </div>
+                </td>
+
+                <td>{{ release.variant.figure.character.name }}</td>
+
+                <td>
+                  <div class="stacked-cell">
+                    <strong>{{ release.variant.figure.line.name }}</strong>
+                    <span>
+                      {{ release.variant.figure.line.manufacturer.name }}
+                    </span>
+                  </div>
+                </td>
+
+                <td>{{ release.barcode || '—' }}</td>
+
+                <td>
+                  {{
+                    release.releaseDate
+                      ? (release.releaseDate | date: 'yyyy-MM-dd')
+                      : '—'
+                  }}
+                </td>
+
+                <td>
+                  <div class="stacked-cell">
+                    <span>{{ release.region || '—' }}</span>
+                    <span>{{ release.language || '—' }}</span>
+                  </div>
+                </td>
+
+                <td>
+                  <div class="row-actions">
+                    <button
+                      type="button"
+                      class="secondary-button"
+                      (click)="startEdit(release)"
+                      [disabled]="!!deletingId()"
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      type="button"
+                      class="danger-button"
+                      (click)="archiveProductRelease(release)"
+                      [disabled]="!!deletingId()"
+                    >
+                      {{
+                        deletingId() === release.id
+                          ? 'Archiving...'
+                          : 'Archive'
+                      }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <footer class="pagination">
+        <span>Page {{ page() }} of {{ totalPages() }}</span>
+
+        <div class="pagination-actions">
+          <button
+            type="button"
+            class="secondary-button"
+            (click)="goToPage(page() - 1)"
+            [disabled]="page() <= 1 || loading()"
+          >
+            Previous
+          </button>
+
+          <button
+            type="button"
+            class="secondary-button"
+            (click)="goToPage(page() + 1)"
+            [disabled]="page() >= totalPages() || loading()"
+          >
+            Next
+          </button>
+        </div>
+      </footer>
+    }
+  </section>
+</section>

@@ -1,7 +1,11 @@
+
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+
+import { Prisma } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -18,9 +22,7 @@ import {
 export class VariantsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(
-    pagination: PaginationQueryDto,
-  ) {
+  async findAll(pagination: PaginationQueryDto) {
     const { page, limit, search } = pagination;
     const skip = (page - 1) * limit;
 
@@ -69,60 +71,59 @@ export class VariantsService {
       }),
     };
 
-    const [variants, total] =
-      await this.prisma.$transaction([
-        this.prisma.variant.findMany({
-          where,
+    const [variants, total] = await this.prisma.$transaction([
+      this.prisma.variant.findMany({
+        where,
 
-          select: {
-            id: true,
-            name: true,
-            description: true,
-            imageUrl: true,
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          imageUrl: true,
 
-            figure: {
-              select: {
-                id: true,
-                name: true,
-                code: true,
-                imageUrl: true,
+          figure: {
+            select: {
+              id: true,
+              name: true,
+              code: true,
+              imageUrl: true,
 
-                character: {
-                  select: {
-                    id: true,
-                    name: true,
-                  },
+              character: {
+                select: {
+                  id: true,
+                  name: true,
                 },
+              },
 
-                line: {
-                  select: {
-                    id: true,
-                    name: true,
+              line: {
+                select: {
+                  id: true,
+                  name: true,
 
-                    manufacturer: {
-                      select: {
-                        id: true,
-                        name: true,
-                      },
+                  manufacturer: {
+                    select: {
+                      id: true,
+                      name: true,
                     },
                   },
                 },
               },
             },
           },
+        },
 
-          orderBy: {
-            name: 'asc',
-          },
+        orderBy: {
+          name: 'asc',
+        },
 
-          skip,
-          take: limit,
-        }),
+        skip,
+        take: limit,
+      }),
 
-        this.prisma.variant.count({
-          where,
-        }),
-      ]);
+      this.prisma.variant.count({
+        where,
+      }),
+    ]);
 
     return buildPaginatedResponse(
       variants.map((variant) => ({
@@ -138,7 +139,6 @@ export class VariantsService {
           imageUrl: variant.figure.imageUrl,
 
           character: variant.figure.character,
-
           line: variant.figure.line,
         },
       })),
@@ -151,66 +151,65 @@ export class VariantsService {
   async findDetail(
     id: string,
   ): Promise<VariantDetailResponseDto> {
-    const variant =
-      await this.prisma.variant.findFirst({
-        where: {
-          id,
+    const variant = await this.prisma.variant.findFirst({
+      where: {
+        id,
+        deletedAt: null,
+
+        figure: {
           deletedAt: null,
 
-          figure: {
+          character: {
             deletedAt: null,
 
-            character: {
+            franchise: {
               deletedAt: null,
+            },
+          },
 
-              franchise: {
-                deletedAt: null,
+          line: {
+            deletedAt: null,
+
+            manufacturer: {
+              deletedAt: null,
+            },
+
+            franchise: {
+              deletedAt: null,
+            },
+          },
+        },
+      },
+
+      include: {
+        figure: {
+          include: {
+            character: {
+              include: {
+                franchise: true,
               },
             },
 
             line: {
-              deletedAt: null,
-
-              manufacturer: {
-                deletedAt: null,
-              },
-
-              franchise: {
-                deletedAt: null,
+              include: {
+                manufacturer: true,
+                franchise: true,
               },
             },
           },
         },
 
-        include: {
-          figure: {
-            include: {
-              character: {
-                include: {
-                  franchise: true,
-                },
-              },
-
-              line: {
-                include: {
-                  manufacturer: true,
-                  franchise: true,
-                },
-              },
-            },
+        productReleases: {
+          where: {
+            deletedAt: null,
           },
 
-          productReleases: {
-            where: {
-              deletedAt: null,
-            },
-
-            orderBy: {
-              name: 'asc',
-            },
+          orderBy: {
+            name: 'asc',
           },
         },
-      });
+      },
+    });
 
     if (!variant) {
       throw new NotFoundException(
@@ -253,74 +252,82 @@ export class VariantsService {
         },
       },
 
-      productReleases:
-        variant.productReleases.map((release) => ({
-          id: release.id,
-          name: release.name,
-          packagingType: release.packagingType,
-          region: release.region,
-          language: release.language,
-          retailer: release.retailer,
-          releaseDate:
-            release.releaseDate?.toISOString() ?? null,
-          barcode: release.barcode,
-          imageUrl: release.imageUrl,
-          notes: release.notes,
-        })),
+      productReleases: variant.productReleases.map((release) => ({
+        id: release.id,
+        name: release.name,
+        packagingType: release.packagingType,
+        region: release.region,
+        language: release.language,
+        retailer: release.retailer,
+        releaseDate: release.releaseDate?.toISOString() ?? null,
+        barcode: release.barcode,
+        imageUrl: release.imageUrl,
+        notes: release.notes,
+      })),
     };
   }
 
-  async create(
-    createVariantDto: CreateVariantDto,
-  ) {
-    await this.ensureFigureExists(
-      createVariantDto.figureId,
-    );
+  async create(createVariantDto: CreateVariantDto) {
+    await this.ensureFigureExists(createVariantDto.figureId);
 
-    return this.prisma.variant.create({
-      data: createVariantDto,
+    try {
+      return await this.prisma.variant.create({
+        data: createVariantDto,
 
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        imageUrl: true,
-        figureId: true,
-      },
-    });
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          imageUrl: true,
+          figureId: true,
+        },
+      });
+    } catch (error) {
+      this.handleUniqueConstraintError(error);
+      throw error;
+    }
   }
 
   async update(
     id: string,
     updateVariantDto: UpdateVariantDto,
   ) {
-    if (updateVariantDto.figureId) {
-      await this.ensureFigureExists(
-        updateVariantDto.figureId,
-      );
+    await this.ensureActiveVariantExists(id);
+
+    if (updateVariantDto.figureId !== undefined) {
+      await this.ensureFigureExists(updateVariantDto.figureId);
     }
 
-    return this.prisma.variant.update({
-      where: {
-        id,
-      },
+    try {
+      return await this.prisma.variant.update({
+        where: {
+          id,
+          deletedAt: null,
+        },
 
-      data: updateVariantDto,
+        data: updateVariantDto,
 
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        imageUrl: true,
-        figureId: true,
-      },
-    });
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          imageUrl: true,
+          figureId: true,
+        },
+      });
+    } catch (error) {
+      this.handleUniqueConstraintError(error);
+      throw error;
+    }
   }
 
-  remove(id: string) {
+  async remove(id: string) {
+    await this.ensureActiveVariantExists(id);
+
     return this.prisma.variant.update({
       where: {
         id,
+        deletedAt: null,
       },
 
       data: {
@@ -334,20 +341,69 @@ export class VariantsService {
     });
   }
 
-  private async ensureFigureExists(
-    figureId: string,
-  ) {
-    const figure =
-      await this.prisma.figure.findFirst({
-        where: {
-          id: figureId,
+  private async ensureActiveVariantExists(id: string) {
+    const variant = await this.prisma.variant.findFirst({
+      where: {
+        id,
+        deletedAt: null,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!variant) {
+      throw new NotFoundException(
+        `Variant with id '${id}' not found.`,
+      );
+    }
+  }
+
+  private async ensureFigureExists(figureId: string) {
+    const figure = await this.prisma.figure.findFirst({
+      where: {
+        id: figureId,
+        deletedAt: null,
+
+        character: {
           deletedAt: null,
+
+          franchise: {
+            deletedAt: null,
+          },
         },
-      });
+
+        line: {
+          deletedAt: null,
+
+          manufacturer: {
+            deletedAt: null,
+          },
+
+          franchise: {
+            deletedAt: null,
+          },
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
 
     if (!figure) {
       throw new NotFoundException(
-        `Figure with id '${figureId}' not found.`,
+        `Figure with id '${figureId}' not found or is not active.`,
+      );
+    }
+  }
+
+  private handleUniqueConstraintError(error: unknown): void {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2002'
+    ) {
+      throw new ConflictException(
+        'A variant with this name already exists for this figure.',
       );
     }
   }

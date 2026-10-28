@@ -1,3 +1,4 @@
+
 <section class="admin-page">
   <header class="page-header">
     <div>
@@ -14,11 +15,15 @@
   </header>
 
   @if (noticeMessage) {
-    <p class="notice-message" role="status">{{ noticeMessage }}</p>
+    <p class="message message--notice" role="status">
+      {{ noticeMessage }}
+    </p>
   }
 
   @if (errorMessage()) {
-    <p class="error-message" role="alert">{{ errorMessage() }}</p>
+    <p class="message message--error" role="alert">
+      {{ errorMessage() }}
+    </p>
   }
 
   <section class="catalog-toolbar" aria-label="Manufacturer search">
@@ -54,7 +59,9 @@
       </div>
 
       @if (formError) {
-        <p class="error-message" role="alert">{{ formError }}</p>
+        <p class="message message--error" role="alert">
+          {{ formError }}
+        </p>
       }
 
       <form class="manufacturer-form" (ngSubmit)="save()">
@@ -111,7 +118,11 @@
           <cb-button type="submit" [disabled]="saving()">
             {{ saving() ? 'Saving…' : 'Save manufacturer' }}
           </cb-button>
-          <cb-button type="button" [disabled]="saving()" (click)="cancelForm()">
+
+          <cb-button
+            type="button"
+            [disabled]="saving()"
+            (click)="cancelForm()">
             Cancel
           </cb-button>
         </div>
@@ -119,14 +130,16 @@
     </section>
   }
 
-  <section class="manufacturer-list" aria-labelledby="manufacturer-list-title">
-    <div class="list-heading">
+  <section class="table-panel" aria-labelledby="manufacturer-list-title">
+    <div class="table-header">
       <h2 id="manufacturer-list-title">Catalog manufacturers</h2>
       <span>{{ total() }} total</span>
     </div>
 
     @if (loading()) {
-      <p class="loading-state" role="status">Loading manufacturers…</p>
+      <p class="state-message state-message--loading" role="status">
+        Loading manufacturers…
+      </p>
     } @else if (manufacturers().length === 0) {
       <div class="empty-state">
         <h3>No manufacturers found</h3>
@@ -134,7 +147,7 @@
       </div>
     } @else {
       <div class="table-scroll">
-        <table class="manufacturer-table">
+        <table class="admin-table">
           <thead>
             <tr>
               <th scope="col">Name</th>
@@ -144,18 +157,22 @@
               <th scope="col">Actions</th>
             </tr>
           </thead>
+
           <tbody>
             @for (manufacturer of manufacturers(); track manufacturer.id) {
               <tr>
-                <td class="manufacturer-name">{{ manufacturer.name }}</td>
+                <td>{{ manufacturer.name }}</td>
                 <td>{{ manufacturer.country || '—' }}</td>
                 <td>{{ manufacturer.foundedYear ?? '—' }}</td>
                 <td>{{ manufacturer.dissolvedYear ?? '—' }}</td>
                 <td>
                   <div class="row-actions">
-                    <cb-button type="button" (click)="startEdit(manufacturer)">
+                    <cb-button
+                      type="button"
+                      (click)="startEdit(manufacturer)">
                       Edit
                     </cb-button>
+
                     <cb-button
                       type="button"
                       [disabled]="deletingId() === manufacturer.id || loading()"
@@ -178,7 +195,9 @@
         (click)="goToPage(page() - 1)">
         Previous
       </cb-button>
+
       <span>Page {{ page() }} of {{ totalPages() || 1 }}</span>
+
       <cb-button
         type="button"
         [disabled]="totalPages() === 0 || page() >= totalPages() || loading()"

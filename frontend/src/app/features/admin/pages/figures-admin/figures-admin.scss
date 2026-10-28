@@ -1,0 +1,194 @@
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Search controls specific to Figures
+   -------------------------------------------------------------------------- */
+
+.figure-search-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+
+  cb-input {
+    display: block;
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Native form controls
+   -------------------------------------------------------------------------- */
+
+.form-field {
+  input,
+  select,
+  textarea {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 2.75rem;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    background: var(--surface-primary);
+    color: var(--text-primary);
+    font: inherit;
+
+    &:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.65;
+    }
+  }
+
+  textarea {
+    min-height: 7rem;
+    resize: vertical;
+  }
+}
+
+.form-hint {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+/* --------------------------------------------------------------------------
+   Native buttons
+   -------------------------------------------------------------------------- */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    opacity 150ms ease;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+  }
+}
+
+.button--primary {
+  background: var(--accent-primary);
+  color: var(--text-on-accent, #fff);
+
+  &:hover:not(:disabled) {
+    filter: brightness(0.95);
+  }
+}
+
+.button--secondary {
+  border-color: var(--border-primary);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+
+  &:hover:not(:disabled) {
+    background: var(--surface-hover);
+  }
+}
+
+.button--danger {
+  border-color: var(--accent-danger);
+  background: transparent;
+  color: var(--accent-danger);
+
+  &:hover:not(:disabled) {
+    background: color-mix(
+      in srgb,
+      var(--accent-danger) 8%,
+      transparent
+    );
+  }
+}
+
+.button--small {
+  min-height: 2.15rem;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.875rem;
+}
+
+/* --------------------------------------------------------------------------
+   Error message treatment
+   -------------------------------------------------------------------------- */
+
+.message {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  line-height: 1.5;
+}
+
+.message--error {
+  border-color: var(--accent-danger);
+  background: color-mix(
+    in srgb,
+    var(--accent-danger) 8%,
+    var(--surface-primary)
+  );
+  color: var(--accent-danger);
+}
+
+/* --------------------------------------------------------------------------
+   Figure-specific table content
+   -------------------------------------------------------------------------- */
+
+.figure-name {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 10rem;
+  font-weight: 600;
+}
+
+.figure-thumbnail {
+  flex: 0 0 auto;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-sm);
+  object-fit: contain;
+  background: var(--surface-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   Responsive adjustments specific to Figures
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 760px) {
+  .figure-search-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .message {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

@@ -24,9 +24,11 @@ import { ProductReleaseDetail } from './features/product-release-detail/pages/pr
 import { ManufacturersAdmin } from './features/admin/pages/manufacturers-admin/manufacturers-admin';
 import { LinesAdmin } from './features/admin/pages/lines-admin/lines-admin';
 import { FiguresAdmin } from './features/admin/pages/figures-admin/figures-admin';
+import { VariantsAdmin } from './features/admin/pages/variant-admin/variant-admin';
 
 import { authGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
+import { ProductReleasesAdmin } from './features/admin/pages/product-releases-admin/product-releases-admin';
 
 export const routes: Routes = [
   {
@@ -127,6 +129,14 @@ export const routes: Routes = [
           {
             path: 'figures',
             component: FiguresAdmin,
+          },
+          {
+            path: 'variant',
+            component: VariantsAdmin,
+          },
+          {
+            path: 'product-releases',
+            component: ProductReleasesAdmin,
           },
         ],
       },

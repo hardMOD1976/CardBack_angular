@@ -1,60 +1,18 @@
-
 :host {
   display: block;
   width: 100%;
-}
-
-.figures-admin {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  width: 100%;
-  color: var(--text-primary);
-}
-
-.page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-
-  h1 {
-    margin: 0;
-    font-size: 1.75rem;
-    font-weight: 700;
-  }
-
-  p {
-    margin: 0.5rem 0 0;
-    color: var(--text-secondary);
-  }
-}
-
-.search-bar,
-.form-panel,
-.table-section {
   min-width: 0;
-  padding: 1.25rem;
-  border: 1px solid var(--border-color);
-  border-radius: 0.75rem;
-  background: var(--surface);
 }
 
-.search-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+/* --------------------------------------------------------------------------
+   Search controls specific to Figures
+   -------------------------------------------------------------------------- */
 
-  > label {
-    font-size: 0.875rem;
-    font-weight: 600;
-  }
-}
-
-.search-controls {
+.figure-search-controls {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  min-width: 0;
 
   cb-input {
     display: block;
@@ -63,51 +21,27 @@
   }
 }
 
-.form-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.form-panel__header {
-  h2 {
-    margin: 0;
-    font-size: 1.25rem;
-  }
-}
-
-.figure-form {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-}
+/* --------------------------------------------------------------------------
+   Native form controls
+   -------------------------------------------------------------------------- */
 
 .form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  min-width: 0;
-
-  > label {
-    font-size: 0.875rem;
-    font-weight: 600;
-  }
-
   input,
   select,
   textarea {
     box-sizing: border-box;
     width: 100%;
+    min-width: 0;
     min-height: 2.75rem;
     padding: 0.7rem 0.8rem;
-    border: 1px solid var(--border-color);
-    border-radius: 0.45rem;
-    background: var(--background);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    background: var(--surface-primary);
     color: var(--text-primary);
     font: inherit;
 
     &:focus-visible {
-      outline: 2px solid var(--accent);
+      outline: 2px solid var(--accent-primary);
       outline-offset: 2px;
     }
 
@@ -123,22 +57,15 @@
   }
 }
 
-.form-field--full {
-  grid-column: 1 / -1;
-}
-
 .form-hint {
   margin: 0;
   color: var(--text-secondary);
   font-size: 0.875rem;
 }
 
-.form-actions {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
+/* --------------------------------------------------------------------------
+   Native buttons
+   -------------------------------------------------------------------------- */
 
 .button {
   display: inline-flex;
@@ -147,7 +74,7 @@
   min-height: 2.5rem;
   padding: 0.6rem 1rem;
   border: 1px solid transparent;
-  border-radius: 0.45rem;
+  border-radius: var(--radius-md);
   font: inherit;
   font-weight: 600;
   line-height: 1.2;
@@ -163,13 +90,13 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--accent);
+    outline: 2px solid var(--accent-primary);
     outline-offset: 2px;
   }
 }
 
 .button--primary {
-  background: var(--accent);
+  background: var(--accent-primary);
   color: var(--text-on-accent, #fff);
 
   &:hover:not(:disabled) {
@@ -178,22 +105,26 @@
 }
 
 .button--secondary {
-  border-color: var(--border-color);
-  background: var(--surface);
+  border-color: var(--border-primary);
+  background: var(--surface-primary);
   color: var(--text-primary);
 
   &:hover:not(:disabled) {
-    background: var(--surface-hover, var(--background));
+    background: var(--surface-hover);
   }
 }
 
 .button--danger {
-  border-color: var(--danger, #b42318);
+  border-color: var(--accent-danger);
   background: transparent;
-  color: var(--danger, #b42318);
+  color: var(--accent-danger);
 
   &:hover:not(:disabled) {
-    background: var(--danger-background, rgb(180 35 24 / 8%));
+    background: color-mix(
+      in srgb,
+      var(--accent-danger) 8%,
+      transparent
+    );
   }
 }
 
@@ -203,73 +134,31 @@
   font-size: 0.875rem;
 }
 
+/* --------------------------------------------------------------------------
+   Error message treatment
+   -------------------------------------------------------------------------- */
+
 .message {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.9rem 1rem;
-  border: 1px solid var(--border-color);
-  border-radius: 0.5rem;
   line-height: 1.5;
 }
 
 .message--error {
-  border-color: var(--danger, #b42318);
-  background: var(--danger-background, rgb(180 35 24 / 8%));
-  color: var(--danger, #b42318);
+  border-color: var(--accent-danger);
+  background: color-mix(
+    in srgb,
+    var(--accent-danger) 8%,
+    var(--surface-primary)
+  );
+  color: var(--accent-danger);
 }
 
-.table-heading {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
-
-  h2 {
-    margin: 0;
-    font-size: 1.25rem;
-  }
-}
-
-.result-count {
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-}
-
-.table-wrapper {
-  width: 100%;
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-
-  th,
-  td {
-    padding: 0.85rem 0.75rem;
-    border-bottom: 1px solid var(--border-color);
-    vertical-align: middle;
-  }
-
-  th {
-    color: var(--text-secondary);
-    font-size: 0.8rem;
-    font-weight: 700;
-    white-space: nowrap;
-  }
-
-  td {
-    font-size: 0.9rem;
-  }
-
-  tbody tr:last-child td {
-    border-bottom: 0;
-  }
-}
+/* --------------------------------------------------------------------------
+   Figure-specific table content
+   -------------------------------------------------------------------------- */
 
 .figure-name {
   display: flex;
@@ -283,60 +172,19 @@ table {
   flex: 0 0 auto;
   width: 2.75rem;
   height: 2.75rem;
-  border-radius: 0.4rem;
+  border-radius: var(--radius-sm);
   object-fit: contain;
-  background: var(--background);
+  background: var(--surface-secondary);
 }
 
-.row-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.state-message {
-  padding: 2rem 1rem;
-  color: var(--text-secondary);
-  text-align: center;
-}
-
-.pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 1.25rem;
-
-  span {
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-  }
-}
+/* --------------------------------------------------------------------------
+   Responsive adjustments specific to Figures
+   -------------------------------------------------------------------------- */
 
 @media (max-width: 760px) {
-  .page-header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .search-controls {
+  .figure-search-controls {
     align-items: stretch;
     flex-direction: column;
-  }
-
-  .figure-form {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .form-field--full {
-    grid-column: auto;
-  }
-
-  .search-bar,
-  .form-panel,
-  .table-section {
-    padding: 1rem;
   }
 
   .message {

@@ -1,0 +1,282 @@
+<section class="admin-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">CATALOG ADMINISTRATION</p>
+      <h1>Variant administration</h1>
+      <p class="page-description">
+        Manage figure variants in the Cardback catalog.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="button button--primary"
+      (click)="startCreate()"
+      [disabled]="loadingReferences() || !!referenceErrorMessage() || saving()">
+      Add variant
+    </button>
+  </header>
+
+  <section class="catalog-toolbar" aria-label="Variant search">
+    <form class="search-form" (ngSubmit)="applySearch()">
+      <cb-input
+        name="search"
+        label="Search variants"
+        placeholder="Search by name or description"
+        [(ngModel)]="searchTerm"
+        (enter)="applySearch()">
+      </cb-input>
+
+      <button
+        type="submit"
+        class="button button--secondary"
+        [disabled]="loading()">
+        Search
+      </button>
+    </form>
+
+    <p class="result-count">
+      {{ total() }} {{ total() === 1 ? 'variant' : 'variants' }}
+    </p>
+  </section>
+
+  @if (errorMessage()) {
+    <div class="message message--error" role="alert">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  @if (referenceErrorMessage()) {
+    <div class="message message--error" role="alert">
+      {{ referenceErrorMessage() }}
+
+      <button
+        type="button"
+        class="button button--secondary"
+        (click)="loadReferences()"
+        [disabled]="loadingReferences()">
+        Retry
+      </button>
+    </div>
+  }
+
+  @if (loadingReferences()) {
+    <div class="state-message state-message--loading" role="status">
+      Loading figure references...
+    </div>
+  }
+
+  @if (formVisible) {
+    <section class="form-panel" aria-labelledby="variant-form-title">
+      <div class="form-panel__header">
+        <div>
+          <h2 id="variant-form-title">
+            {{ editingId ? 'Edit variant' : 'Create variant' }}
+          </h2>
+          <p class="form-description">
+            Enter the variant details and select its parent figure.
+          </p>
+        </div>
+      </div>
+
+      @if (formErrorMessage()) {
+        <div class="message message--error" role="alert">
+          {{ formErrorMessage() }}
+        </div>
+      }
+
+      <form class="admin-form" (ngSubmit)="saveVariant()">
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="variant-name">Name</label>
+            <input
+              id="variant-name"
+              name="name"
+              type="text"
+              [(ngModel)]="form.name"
+              placeholder="e.g. Long Saber"
+              [disabled]="saving()">
+            <small>
+              Optional. Leave empty if the variant has no specific name.
+            </small>
+          </div>
+
+          <div class="form-field">
+            <label for="variant-figure">
+              Figure <span class="required">*</span>
+            </label>
+            <select
+              id="variant-figure"
+              name="figureId"
+              [(ngModel)]="form.figureId"
+              required
+              [disabled]="saving() || loadingReferences()">
+              <option value="">Select a figure</option>
+
+              @for (figure of figures(); track figure.id) {
+                <option [value]="figure.id">{{ figure.name }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field form-field--full">
+            <label for="variant-description">Description</label>
+            <textarea
+              id="variant-description"
+              name="description"
+              [(ngModel)]="form.description"
+              rows="3"
+              placeholder="Describe the physical differences..."
+              [disabled]="saving()">
+            </textarea>
+          </div>
+
+          <div class="form-field form-field--full">
+            <label for="variant-image">Image URL</label>
+            <input
+              id="variant-image"
+              name="imageUrl"
+              type="url"
+              [(ngModel)]="form.imageUrl"
+              placeholder="https://..."
+              [disabled]="saving()">
+          </div>
+
+          <div class="form-actions form-field--full">
+            <button
+              type="button"
+              class="button button--secondary"
+              (click)="cancelForm()"
+              [disabled]="saving()">
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              class="button button--primary"
+              [disabled]="saving() || loadingReferences() || !!referenceErrorMessage()">
+              {{ saving() ? 'Saving...' : editingId ? 'Save changes' : 'Create variant' }}
+            </button>
+          </div>
+        </div>
+      </form>
+    </section>
+  }
+
+  <section class="table-panel" aria-label="Variants list">
+    @if (loading()) {
+      <div class="state-message state-message--loading" role="status">
+        Loading variants...
+      </div>
+    } @else if (variants().length === 0) {
+      <div class="empty-state">
+        <h2>No variants found</h2>
+        <p>
+          @if (searchTerm.trim()) {
+            Try a different search term.
+          } @else {
+            Create a variant to start building the catalog.
+          }
+        </p>
+      </div>
+    } @else {
+      <div class="table-scroll">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th scope="col">Variant</th>
+              <th scope="col">Figure</th>
+              <th scope="col">Character</th>
+              <th scope="col">Line</th>
+              <th scope="col">Manufacturer</th>
+              <th scope="col">Description</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (variant of variants(); track variant.id) {
+              <tr>
+                <td>
+                  <div class="variant-cell">
+                    @if (variant.imageUrl) {
+                      <img
+                        class="variant-image"
+                        [src]="variant.imageUrl"
+                        [alt]="variant.name || 'Variant image'"
+                        loading="lazy">
+                    } @else {
+                      <div class="image-placeholder" aria-hidden="true">
+                        <span>—</span>
+                      </div>
+                    }
+
+                    <div class="variant-name">
+                      <strong>{{ variant.name || 'Unnamed variant' }}</strong>
+                      <small>{{ variant.id }}</small>
+                    </div>
+                  </div>
+                </td>
+
+                <td>{{ variant.figure.name }}</td>
+                <td>{{ variant.figure.character.name }}</td>
+                <td>{{ variant.figure.line.name }}</td>
+                <td>{{ variant.figure.line.manufacturer.name }}</td>
+
+                <td>
+                  <span class="description">
+                    {{ variant.description || '—' }}
+                  </span>
+                </td>
+
+                <td>
+                  <div class="row-actions">
+                    <button
+                      type="button"
+                      class="button button--small button--secondary"
+                      (click)="startEdit(variant)"
+                      [disabled]="saving() || !!deletingId() || loadingReferences() || !!referenceErrorMessage()">
+                      Edit
+                    </button>
+
+                    <button
+                      type="button"
+                      class="button button--small button--danger"
+                      (click)="archiveVariant(variant)"
+                      [disabled]="saving() || !!deletingId()">
+                      {{ deletingId() === variant.id ? 'Archiving...' : 'Archive' }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <footer class="pagination">
+        <span class="pagination-info">
+          Page {{ page() }} of {{ totalPages() }}
+        </span>
+
+        <div class="pagination-actions">
+          <button
+            type="button"
+            class="button button--secondary"
+            (click)="goToPage(page() - 1)"
+            [disabled]="page() <= 1 || loading()">
+            Previous
+          </button>
+
+          <button
+            type="button"
+            class="button button--secondary"
+            (click)="goToPage(page() + 1)"
+            [disabled]="page() >= totalPages() || loading()">
+            Next
+          </button>
+        </div>
+      </footer>
+    }
+  </section>
+</section>

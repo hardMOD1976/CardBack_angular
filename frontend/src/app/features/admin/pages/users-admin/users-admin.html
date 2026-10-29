@@ -1,0 +1,472 @@
+<div class="users-admin">
+  <header class="page-header">
+    <div class="page-heading">
+      <h1>User administration</h1>
+      <p>Manage Cardback accounts and user profiles.</p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="openCreateForm()"
+      [disabled]="isLoading() || isSaving()"
+    >
+      <span aria-hidden="true">+</span>
+      Create user
+    </button>
+  </header>
+
+  @if (errorMessage(); as error) {
+    <div class="feedback feedback-error" role="alert">
+      <span class="feedback-icon" aria-hidden="true">!</span>
+      <span>{{ error }}</span>
+      <button
+        type="button"
+        class="feedback-close"
+        aria-label="Dismiss error"
+        (click)="errorMessage.set(null)"
+      >
+        ×
+      </button>
+    </div>
+  }
+
+  @if (successMessage(); as success) {
+    <div class="feedback feedback-success" role="status">
+      <span aria-hidden="true">✓</span>
+      <span>{{ success }}</span>
+      <button
+        type="button"
+        class="feedback-close"
+        aria-label="Dismiss message"
+        (click)="successMessage.set(null)"
+      >
+        ×
+      </button>
+    </div>
+  }
+
+  <section class="summary-grid" aria-label="User statistics">
+    <article class="summary-card">
+      <span class="summary-label">Total users</span>
+      <strong class="summary-value">{{ totalUsers() }}</strong>
+    </article>
+
+    <article class="summary-card">
+      <span class="summary-label">Regular users</span>
+      <strong class="summary-value">{{ totalRegularUsers() }}</strong>
+    </article>
+
+    <article class="summary-card">
+      <span class="summary-label">Administrators</span>
+      <strong class="summary-value">{{ totalAdministrators() }}</strong>
+    </article>
+  </section>
+
+  <section class="users-panel">
+    <div class="panel-toolbar">
+      <div class="panel-heading">
+        <h2>Users</h2>
+        <span class="result-count">
+          {{ filteredUsers().length }}
+          {{ filteredUsers().length === 1 ? 'user' : 'users' }}
+        </span>
+      </div>
+
+      <label class="search-field">
+        <span class="visually-hidden">Search users</span>
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <input
+          type="search"
+          placeholder="Search username, email, country..."
+          [ngModel]="searchTerm()"
+          (ngModelChange)="onSearchChange($event)"
+          autocomplete="off"
+        />
+        @if (searchTerm()) {
+          <button
+            type="button"
+            class="clear-search"
+            aria-label="Clear search"
+            (click)="onSearchChange('')"
+          >
+            ×
+          </button>
+        }
+      </label>
+    </div>
+
+    @if (isLoading()) {
+      <div class="loading-state" role="status">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        <span>Loading users...</span>
+      </div>
+    } @else if (users().length === 0) {
+      <div class="empty-state">
+        <span class="empty-icon" aria-hidden="true">♙</span>
+        <h3>No users found</h3>
+        <p>There are no active users to display.</p>
+      </div>
+    } @else if (filteredUsers().length === 0) {
+      <div class="empty-state">
+        <span class="empty-icon" aria-hidden="true">⌕</span>
+        <h3>No matching users</h3>
+        <p>Try another search term.</p>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="onSearchChange('')"
+        >
+          Clear search
+        </button>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th scope="col">User</th>
+              <th scope="col">Email</th>
+              <th scope="col">Country</th>
+              <th scope="col">Role</th>
+              <th scope="col">Created</th>
+              <th scope="col" class="actions-heading">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (user of filteredUsers(); track user.id) {
+              <tr>
+                <td>
+                  <div class="user-cell">
+                    <div class="user-avatar" aria-hidden="true">
+                      @if (user.avatar) {
+                        <img
+                          [src]="user.avatar"
+                          [alt]="''"
+                          loading="lazy"
+                        />
+                      } @else {
+                        {{ (user.displayName || user.username).charAt(0).toUpperCase() }}
+                      }
+                    </div>
+
+                    <div class="user-identity">
+                      <span class="user-display-name">
+                        {{ user.displayName || user.username }}
+                      </span>
+                      <span class="user-username">
+                        &#64;{{ user.username }}
+                      </span>
+                    </div>
+                  </div>
+                </td>
+
+                <td>
+                  @if (user.email) {
+                    <span class="email-value">{{ user.email }}</span>
+                  } @else {
+                    <span class="muted-value">Not provided</span>
+                  }
+                </td>
+
+                <td>
+                  @if (user.country) {
+                    {{ user.country }}
+                  } @else {
+                    <span class="muted-value">—</span>
+                  }
+                </td>
+
+                <td>
+                  <span
+                    class="role-badge"
+                    [class.role-admin]="user.role === 'ADMIN'"
+                    [class.role-user]="user.role === 'USER'"
+                  >
+                    <span class="role-indicator" aria-hidden="true"></span>
+                    {{ user.role }}
+                  </span>
+                </td>
+
+                <td>
+                  <span class="date-value">
+                    {{ user.createdAt | date: 'mediumDate' }}
+                  </span>
+                </td>
+
+                <td>
+                  <div class="row-actions">
+                    <button
+                      type="button"
+                      class="btn btn-secondary btn-small"
+                      (click)="openEditForm(user)"
+                      [disabled]="isSaving()"
+                    >
+                      Edit
+                    </button>
+
+                    @if (user.role === 'USER') {
+                      <button
+                        type="button"
+                        class="btn btn-danger-ghost btn-small"
+                        (click)="requestArchive(user)"
+                        [disabled]="isSaving()"
+                      >
+                        Archive
+                      </button>
+                    } @else {
+                      <span class="protected-label" title="Administrator accounts cannot be archived">
+                        Protected
+                      </span>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <footer class="table-footer">
+        <span>
+          Showing {{ filteredUsers().length }} of {{ totalUsers() }} users
+        </span>
+
+        <button
+          type="button"
+          class="btn btn-secondary btn-small"
+          (click)="loadUsers()"
+          [disabled]="isLoading() || isSaving()"
+        >
+          Refresh
+        </button>
+      </footer>
+    }
+  </section>
+
+  @if (isFormOpen()) {
+    <div
+      class="modal-backdrop"
+      (click)="closeForm()"
+      (keydown.escape)="closeForm()"
+    >
+      <section
+        class="user-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="user-form-title"
+        (click)="$event.stopPropagation()"
+      >
+        <header class="modal-header">
+          <div>
+            <h2 id="user-form-title">
+              {{ formMode() === 'create' ? 'Create user' : 'Edit user' }}
+            </h2>
+            <p>
+              @if (formMode() === 'create') {
+                Create a regular Cardback account.
+              } @else {
+                Update the user's profile information.
+              }
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="modal-close"
+            aria-label="Close form"
+            (click)="closeForm()"
+            [disabled]="isSaving()"
+          >
+            ×
+          </button>
+        </header>
+
+        <form class="user-form" (ngSubmit)="saveUser()">
+          <div class="form-field">
+            <label for="username">Username <span class="required">*</span></label>
+            <input
+              id="username"
+              name="username"
+              type="text"
+              required
+              minlength="3"
+              maxlength="24"
+              pattern="[A-Za-z0-9._-]+"
+              autocomplete="off"
+              [ngModel]="formValue().username"
+              (ngModelChange)="updateFormField('username', $event)"
+              [disabled]="isSaving()"
+            />
+            <small>3–24 characters: letters, numbers, dots, underscores or hyphens.</small>
+          </div>
+
+          @if (formMode() === 'create') {
+            <div class="form-field">
+              <label for="password">Initial password <span class="required">*</span></label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                minlength="12"
+                maxlength="128"
+                autocomplete="new-password"
+                [ngModel]="formValue().password"
+                (ngModelChange)="updateFormField('password', $event)"
+                [disabled]="isSaving()"
+              />
+              <small>Must contain between 12 and 128 characters.</small>
+            </div>
+          }
+
+          <div class="form-field">
+            <label for="displayName">Display name</label>
+            <input
+              id="displayName"
+              name="displayName"
+              type="text"
+              maxlength="100"
+              autocomplete="off"
+              [ngModel]="formValue().displayName"
+              (ngModelChange)="updateFormField('displayName', $event)"
+              [disabled]="isSaving()"
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="email">Email</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              [ngModel]="formValue().email"
+              (ngModelChange)="updateFormField('email', $event)"
+              [disabled]="isSaving()"
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="country">Country</label>
+              <input
+                id="country"
+                name="country"
+                type="text"
+                autocomplete="country-name"
+                [ngModel]="formValue().country"
+                (ngModelChange)="updateFormField('country', $event)"
+                [disabled]="isSaving()"
+              />
+            </div>
+
+            <div class="form-field">
+              <label for="avatar">Avatar URL</label>
+              <input
+                id="avatar"
+                name="avatar"
+                type="url"
+                [ngModel]="formValue().avatar"
+                (ngModelChange)="updateFormField('avatar', $event)"
+                [disabled]="isSaving()"
+              />
+            </div>
+          </div>
+
+          <div class="role-information">
+            <span class="role-information-icon" aria-hidden="true">ⓘ</span>
+            <div>
+              <strong>
+                {{ formMode() === 'create' ? 'Role: USER' : 'Role cannot be changed here' }}
+              </strong>
+              <p>
+                {{ formMode() === 'create'
+                  ? 'New accounts are always created as regular users.'
+                  : 'User roles and passwords are managed separately from profile details.' }}
+              </p>
+            </div>
+          </div>
+
+          <footer class="modal-actions">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="closeForm()"
+              [disabled]="isSaving()"
+            >
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="isSaving()"
+            >
+              @if (isSaving()) {
+                Saving...
+              } @else {
+                {{ formMode() === 'create' ? 'Create user' : 'Save changes' }}
+              }
+            </button>
+          </footer>
+        </form>
+      </section>
+    </div>
+  }
+
+  @if (userToArchive(); as user) {
+    <div class="modal-backdrop" (click)="cancelArchive()">
+      <section
+        class="user-modal confirmation-modal"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="archive-title"
+        (click)="$event.stopPropagation()"
+      >
+        <header class="modal-header">
+          <div>
+            <h2 id="archive-title">Archive user?</h2>
+            <p>This action removes the account from the active user list.</p>
+          </div>
+        </header>
+
+        <div class="confirmation-content">
+          <p>
+            Are you sure you want to archive
+            <strong>{{ user.displayName || user.username }}</strong>
+            (<span>&#64;{{ user.username }}</span>)?
+          </p>
+          <p class="muted-value">
+            This is a soft delete. The user's collection data is not deleted by this action.
+          </p>
+        </div>
+
+        <footer class="modal-actions">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="cancelArchive()"
+            [disabled]="isSaving()"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-danger"
+            (click)="confirmArchive()"
+            [disabled]="isSaving()"
+          >
+            @if (isSaving()) {
+              Archiving...
+            } @else {
+              Archive user
+            }
+          </button>
+        </footer>
+      </section>
+    </div>
+  }
+</div>

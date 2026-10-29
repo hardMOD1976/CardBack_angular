@@ -72,5 +72,11 @@ export class NavigationService {
       route: '/admin/product-releases',
       roles: ['ADMIN'],
     },
+    {
+      label: 'User administration',
+      route: '/admin/users',
+      icon: 'manage_accounts',
+      roles: ['ADMIN'],
+    },
   ];
 }

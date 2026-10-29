@@ -2,6 +2,52 @@
 
 ---
 
+## Session 2026-10-29
+
+### User Administration — Initial Angular Implementation and Single-Admin Database Constraint
+
+#### Backend security and database
+
+- Reviewed the User model and seed user data in relation to administrator-only user management.
+- The intended policy is a single administrator account; regular accounts use role `USER`.
+- Applied migration `20261029092143_enforce_single_admin` to the current Neon database. The migration adds a PostgreSQL partial unique index on `User.role` where the role is `ADMIN`, preventing more than one administrator row.
+- Prisma reported the migration as applied and the database in sync. A Windows `EPERM` rename error occurred afterward while replacing a temporary query-engine DLL; running `npx prisma generate` explicitly then succeeded with Prisma Client v6.19.3.
+- The backend User service/DTO changes compile. The implementation forces `USER` on account creation, excludes role and credentials from profile updates, and rejects archiving an administrator.
+- The Users upsert in `prisma/seed.ts` must be checked to ensure its `update` clause does not overwrite roles on seed reruns. Do not record that safeguard as complete until the current file confirms it.
+
+#### Angular User Administration
+
+Created the initial feature files:
+
+- `features/admin/models/user-admin.model.ts`
+- `features/admin/services/user-admin.service.ts`
+- `features/admin/pages/users-admin/users-admin.ts`
+- `features/admin/pages/users-admin/users-admin.html`
+- `features/admin/pages/users-admin/users-admin.scss`
+
+Integrated the page through `/admin/users` under `adminGuard` and added a role-gated `User administration` navigation item for `ADMIN`.
+
+The page includes user listing, client-side search, user/role summary counts, create/edit forms, role indication, and an archive confirmation flow. The frontend service uses `GET /users`, `POST /users`, `PUT /users/:id`, and `DELETE /users/:id`; verify those response contracts against the actual controller/DTO definitions.
+
+#### Verification reported by the user
+
+- Backend compiles.
+- Frontend compiles.
+- User list displays.
+- Search works.
+
+Create, update, and archive actions have not yet been explicitly confirmed through runtime testing. They remain to be tested, including duplicate username/email handling and administrator archive protection.
+
+#### Next session
+
+1. Verify the user-management API contracts and test create, edit, and archive end-to-end.
+2. Check that the seed upsert preserves the role of existing users on reruns.
+3. Choose the next feature or UX-refinement priority. The public API DTO audit and Login UX backlog remain open candidates.
+
+---
+
+---
+
 ## Session 2026-10-15
 
 ### Detail Pages and Global Search — Manual Runtime Verification Complete

@@ -1,8 +1,8 @@
 # Cardback — AI Context
 
-**Last updated:** 2026-10-15  
+**Last updated:** 2026-10-29  
 **Repository/folder:** `FigureArchive`  
-**Current phase:** Angular MVP consolidation; Detail pages and all Global Search destinations manually verified; next focus is public API DTO audit and Login UX.
+**Current phase:** Angular MVP feature development; catalogue detail and Global Search verified; User Administration implemented through initial list/search UI; next step is to validate user mutations and choose the next feature/refinement priority.
 
 ## Project Overview
 
@@ -241,6 +241,42 @@ JWT_REFRESH_EXPIRES_IN=30d
 FRONTEND_URL=http://localhost:4200
 ```
 
+## User Administration and Security — 2026-10-29
+
+### Agreed access rules
+
+- There is intended to be only one administrator account. Other accounts have the `USER` role.
+- User creation through administration must always create a `USER`; role is not a client-editable field.
+- Editing a user profile must not modify the user's role or password.
+- The administrator account must not be archivable through normal user-management routes.
+- Collection records remain owner-protected by the backend; user administration must not weaken ownership checks.
+- Seed reruns must not silently change the role of an existing account. Review the Users upsert in `prisma/seed.ts` and ensure `role` is not in its `update` data.
+- Never rely on frontend hiding/disabling alone for authorization; enforce these rules in the backend and database where appropriate.
+
+### Database enforcement
+
+A migration named `20261029092143_enforce_single_admin` was successfully applied to the current Neon database. It adds a PostgreSQL partial unique index on `User.role` for rows where `role = 'ADMIN'`, enforcing at most one ADMIN row at the database level. The migration command reported the database in sync. A subsequent Prisma Client generation completed successfully with Prisma 6.19.3.
+
+During `migrate dev`, Prisma reported an `EPERM` rename error for a temporary Windows query-engine DLL after reporting the migration as applied. The user then ran `npx prisma generate` successfully. Do not treat the earlier transient rename error as an unresolved migration failure.
+
+### Angular User Administration — initial implementation
+
+Files introduced for the feature:
+
+- `features/admin/models/user-admin.model.ts`
+- `features/admin/services/user-admin.service.ts`
+- `features/admin/pages/users-admin/users-admin.ts`
+- `features/admin/pages/users-admin/users-admin.html`
+- `features/admin/pages/users-admin/users-admin.scss`
+
+The route is `/admin/users`, guarded by `adminGuard`, and the NavigationService item is role-gated to `ADMIN`. The page includes user listing, client-side search, summary counts, create/edit form UI, role indication, and an archive confirmation flow.
+
+**Verified by the user on 2026-10-29:** backend compiles; frontend compiles; the page displays users and search works. Creation, profile update, and archive operations have not yet been explicitly reported as runtime-tested. Do not mark those mutation flows as verified until tested.
+
+### API contract assumptions to validate
+
+The frontend service currently assumes `GET /users` returns `UserAdmin[]`, `POST /users` creates a user, `PUT /users/:id` updates profile fields, and `DELETE /users/:id` archives the user. Before treating the full feature as complete, verify these shapes and the create/update/archive responses against the actual controller and DTOs. The frontend model is not a substitute for checking the backend contract.
+
 ## Login UX Backlog
 
 After current Detail navigation/database integration checks:
@@ -251,11 +287,12 @@ After current Detail navigation/database integration checks:
 
 ## Recommended Next Actions
 
-1. Continue the public API DTO audit. Inspect current controller/service responses and ensure public endpoints explicitly map contracts rather than returning raw Prisma entities. Track audited endpoints so completed reviews are not repeated without a concrete issue.
-2. Improve Login UX: clear incorrect-credential feedback, review/finish the "Forgot password?" flow, and refine the overall login experience.
-3. Verify Resend email delivery and public-URL configuration when those values are configured for the intended environment.
-4. Confirm Neon password and both JWT secrets were rotated after they were exposed during troubleshooting; keep `.env` local and out of version control.
-5. Keep application-wide localization as a later task unless priorities change.
+1. Finish validating User Administration against the actual Users controller/DTO contracts. Manually test create, profile update, archive, duplicate username/email handling, and the prohibition on archiving the administrator.
+2. Review the Users upsert in `prisma/seed.ts`: ensure rerunning the seed does not update the role of an existing user. Do not assume this has been changed unless confirmed in the current file.
+3. Decide the next product priority after User Administration validation. Existing candidates include the public API DTO audit and Login UX improvements; do not begin a broad refactor without choosing a specific scope.
+4. Verify Resend email delivery and public-URL configuration when those values are configured for the intended environment.
+5. Confirm Neon password and both JWT secrets were rotated after they were exposed during troubleshooting; keep `.env` local and out of version control.
+6. Keep application-wide localization as a later task unless priorities change.
 
 The Detail verification round is complete. Do not repeat the same manual Detail/Global Search checks unless a code change introduces a regression or a specific issue appears.
 ## Collaboration Rules

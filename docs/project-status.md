@@ -1,8 +1,8 @@
 # Cardback — Project Status
 
-**Last updated:** 2026-10-15  
+**Last updated:** 2026-10-29  
 **Repository:** `FigureArchive`  
-**Current phase:** Angular MVP consolidation; Detail and all Global Search destinations manually verified; next focus is public API DTO audit and Login UX.
+**Current phase:** Angular MVP feature development; catalogue Detail and Global Search manually verified; User Administration initial UI implemented, with mutation-flow verification still pending.
 
 ## Overall Status
 
@@ -18,6 +18,9 @@ This is feature implementation progress, not a release-readiness sign-off. The p
 | New Neon schema | Migrations applied | Six migrations applied; Prisma Client regenerated |
 | Golden seed dataset | Runtime data confirmed; repeatability check not recorded | Seeded catalogue/collection data appears in authenticated UI/API; seed command output and a second run were not recorded |
 | Authentication | Implemented; configuration checks remain | Authenticated session is in use; password-reset email requires Resend and public URL configuration |
+| User Administration frontend | Initial implementation; listing/search verified | Admin-only `/admin/users` route and navigation; user list, local search, counts, create/edit form UI, role display and archive confirmation are present; create/update/archive runtime flows still need testing |
+| User Administration backend | Core service/DTO security changes compile | Creation forces `USER`; profile update DTO excludes role/password; remove rejects `ADMIN`; validate actual controller response contracts and runtime mutation paths |
+| Single administrator constraint | Migration applied | `20261029092143_enforce_single_admin` applied to Neon; partial unique index enforces at most one row with `role = 'ADMIN'`; Prisma Client regenerated successfully |
 | Databank | MVP complete | Product Release listing, pagination/search and loading/error/empty states |
 | Collection | MVP complete | Server-side pagination, search, sort and filters; ownership state confirmed for a Product Release |
 | Global Search backend | Implemented | Search endpoint and mapped public result DTO |
@@ -47,6 +50,23 @@ This is feature implementation progress, not a release-readiness sign-off. The p
 - Golden seed logic now resolves duplicate names using Figure + Line context, updates seeded soft-delete state, and handles seeded Owned Figure records repeatably. Demo collection values were aligned with UI options.
 - Runtime API/UI checks now confirm that the seeded catalogue and collection data are available. Continue development without another destructive reset; seed idempotency was not re-tested in this verification round.
 - **Security follow-up:** rotate the Neon password and both JWT secrets previously exposed in chat, unless already done. Keep `.env` local and never paste secrets into chat.
+
+## User Administration — Current State (2026-10-29)
+
+- Created model and service files for the Angular user-administration feature.
+- Created `UsersAdmin` component TypeScript, HTML and SCSS.
+- Added `/admin/users` under the existing `adminGuard` and a role-gated `User administration` navigation item.
+- User confirmed both backend and frontend compile. The user list renders and client-side search works.
+- Create, edit, and archive mutations have not yet been explicitly runtime-verified. Treat them as implemented but unverified.
+- Backend rules recorded for this feature: create as `USER`; profile updates exclude role and credentials; administrator cannot be archived; database index prevents a second `ADMIN`.
+- Review `prisma/seed.ts` to ensure the upsert update clause does not overwrite role on reruns; this must be confirmed in the actual file.
+
+### Next Actions
+
+1. Test create, edit, archive, duplicate-field errors, and protection of the administrator account.
+2. Confirm frontend request/response types against the actual Users controller and DTOs.
+3. Confirm seed reruns preserve existing user roles.
+4. Choose the next feature or UX-refinement scope after these checks; the public API DTO audit and Login UX remain candidates.
 
 ## Detail Architecture — Canonical Decision
 
